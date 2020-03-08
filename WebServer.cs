@@ -1,13 +1,8 @@
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Net;
 using System.Threading;
-using Assets.Scripts.Objects.Electrical;
-using Assets.Scripts.Objects.Motherboards;
-using Assets.Scripts.Objects.Pipes;
-using Newtonsoft.Json;
 
 namespace WebAPI
 {
@@ -15,9 +10,12 @@ namespace WebAPI
     {
         public HttpListenerContext Context { get; private set; }
 
-        public RequestEventArgs(HttpListenerContext context)
+        public string Body { get; private set; }
+
+        public RequestEventArgs(HttpListenerContext context, string body)
         {
             this.Context = context;
+            this.Body = body;
         }
     }
     public class WebServer
@@ -53,9 +51,17 @@ namespace WebAPI
         void OnWebRequest(IAsyncResult result)
         {
             var context = _listener.EndGetContext(result);
+            System.Text.Encoding encoding = context.Request.ContentEncoding;
+            if (encoding == null)
+            {
+                encoding = System.Text.Encoding.UTF8;
+            }
+
+            var body = new StreamReader(context.Request.InputStream, encoding).ReadToEnd();
+
             if (OnRequest != null)
             {
-                OnRequest(this, new RequestEventArgs(context));
+                OnRequest(this, new RequestEventArgs(context, body));
             }
         }
 

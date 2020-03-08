@@ -1,14 +1,8 @@
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading;
-using Assets.Scripts.Objects.Electrical;
-using Assets.Scripts.Objects.Motherboards;
-using Assets.Scripts.Objects.Pipes;
 using BepInEx;
-using Newtonsoft.Json;
 using UnityEngine;
 using WebAPI.API;
 
@@ -19,7 +13,8 @@ namespace WebAPI
     {
         public static WebAPIPlugin Instance;
 
-        private WebServer _webServer;
+        private readonly WebServer _webServer = new WebServer();
+        private readonly WebRouter _router = new WebRouter();
 
         public void Log(string line)
         {
@@ -31,70 +26,51 @@ namespace WebAPI
             WebAPIPlugin.Instance = this;
             Dispatcher.Initialize();
             Log("Hello World");
-            _webServer = new WebServer();
+
+            var webRouteType = typeof(IWebRoute);
+            var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
+                .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
+                .ToArray();
+
+            Log("Initializing " + foundTypes.Length + " routes.");
+            foreach (var routeType in foundTypes)
+            {
+                var instance = (IWebRoute)Activator.CreateInstance(routeType);
+                _router.AddRoute(instance);
+            }
+            Log("Routes initialized");
+
             _webServer.OnRequest += OnWebRequest;
             _webServer.Start();
         }
 
         void OnWebRequest(object sender, RequestEventArgs e)
         {
-            Dispatcher.RunOnMainThread(() => HandleRequest(e.Context));
+            Dispatcher.RunOnMainThread(() => HandleRequest(e));
         }
 
-        void HandleRequest(HttpListenerContext context)
+        void HandleRequest(RequestEventArgs e)
         {
-            // Log wont work here, probably threading related.
-            Log("Got web request");
-
-            var request = context.Request;
-            var response = context.Response;
             try
             {
-                // TODO: Get / make a routing library
-                if (request.Url.Segments.Length >= 3 && request.Url.Segments[1] == "logic/" && request.Url.Segments[2] == "transmitters")
-                {
-                    var transmittersJson = GetAllTransmitters();
-                    context.SendResponse(200, transmittersJson);
-                    return;
-                }
+                var handled = _router.HandleRequest(e);
 
-                context.SendResponse(404, new Error()
+                if (!handled)
                 {
-                    message = "Route not found"
-                });
+                    e.Context.SendResponse(404, new Error()
+                    {
+                        message = "Route not found"
+                    });
+                }
             }
             catch (Exception ex)
             {
-                Log("Got error: " + ex.ToString());
-                context.SendResponse(500, new Error()
+                Log("Failed to handle request: " + ex.ToString());
+                e.Context.SendResponse(500, new Error()
                 {
                     message = ex.ToString()
                 });
             }
-        }
-
-        LogicItem[] GetAllTransmitters()
-        {
-            return Transmitters.AllTransmitters.Select(logic => LogicToNetObj(logic)).ToArray();
-        }
-
-        LogicItem LogicToNetObj(ILogicable transmitter)
-        {
-            var logicValues = new Dictionary<string, double>();
-            foreach (LogicType logicType in Enum.GetValues(typeof(LogicType)))
-            {
-                if (transmitter.CanLogicRead(logicType))
-                {
-                    var value = transmitter.GetLogicValue(logicType);
-                    logicValues.Add(logicType.ToString(), value);
-                }
-            }
-
-            return new LogicItem
-            {
-                name = transmitter.DisplayName,
-                logicValues = logicValues
-            };
         }
     }
 }
