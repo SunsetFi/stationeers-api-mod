@@ -6,6 +6,12 @@ Provies a RESTful API for reading and writing data to a live Stationeers game.
 
 Requires [BepInEx 5.0.1](https://github.com/BepInEx/BepInEx/releases) or later.
 
+1. Install BepInEx in the Stationeers steam folder.
+2. Launch the game, reach the main menu, then quit back out.
+3. In the steam folder, there should now be a folder BepInEx/Plugins
+4. Create a folder `stationeers-webapi` in the BepInEx/Plugins folder.
+5. Extract the release zip file to this folder.
+
 # Usage
 
 Make HTTP requests to `localhost:4444`.
