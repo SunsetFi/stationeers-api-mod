@@ -1,4 +1,4 @@
-### vNext
+### 1.1.0
 
 - Include string reference id for javascript consumption.
 - Support device renaming.
