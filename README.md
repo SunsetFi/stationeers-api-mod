@@ -33,7 +33,7 @@ Modifies device properties
 
 #### Supported properties
 
-- `customName`: Change the labeler-given name of a device.
+- `customName` (string): Change the labeler-given name of a device.
 
 ### GET /devices/:deviceId/logic
 
@@ -51,7 +51,7 @@ Writes a writable logic value by logic type.
 
 JSON object with the following properties:
 
-- value (number): The value to write to the logic type.
+- `value` (number): The value to write to the logic type.
 
 Example:
 
