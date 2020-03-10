@@ -27,6 +27,14 @@ Gets an array of all devices
 
 Gets a device by reference id.
 
+### POST /devices/:deviceId
+
+Modifies device properties
+
+#### Supported properties
+
+- `customName`: Change the labeler-given name of a device.
+
 ### GET /devices/:deviceId/logic
 
 Gets all readable logic values for a device.
@@ -57,3 +65,10 @@ Example:
 
 - Make port configurable
 - More endpoints
+  - Endpoints for Things in general?
+    - Things derived from Things
+      - DynamicThing ( => Item)
+      - Structure ( => Device)
+  - Endpoint for items `public static readonly List<Item> AllItems;`
+  - Endpoint for posting chat messages
+  - Devices with slots should give the referenceId of items in their slots.
