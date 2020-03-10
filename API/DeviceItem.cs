@@ -8,6 +8,7 @@ namespace WebAPI.API
     {
         public string displayName { get; set; }
         public Dictionary<string, double> logicValues { get; set; }
+        public Dictionary<int, Dictionary<string, double>> slotValues { get; set; }
 
         public static DeviceItem FromDevice(Device device)
         {
