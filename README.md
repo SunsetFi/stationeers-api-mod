@@ -34,6 +34,7 @@ Modifies device properties
 #### Supported properties
 
 - `customName` (string): Change the labeler-given name of a device.
+- `accessState` (int): Set the bitmask of allowed access card colors.
 
 ### GET /devices/:deviceId/logic
 

@@ -17,6 +17,8 @@ namespace WebAPI.Payloads
 
         public string customName { get; set; }
 
+        // Needs to be nullable as ThingPayload is used for POSTs and we need to
+        //  be able to avoid setting accessState, as 0 is a valid entry.
         public int? accessState { get; set; }
 
         public Dictionary<int, string> slotReferenceIds { get; set; }

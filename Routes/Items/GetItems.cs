@@ -14,7 +14,7 @@ namespace WebAPI.Routes.Devices
 
         public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
         {
-            var items = Item.AllItems.Select(x => ThingPayload.FromThing(x));
+            var items = Item.AllItems.Select(x => ItemPayload.FromItem(x));
             e.Context.SendResponse(200, items);
         }
     }
