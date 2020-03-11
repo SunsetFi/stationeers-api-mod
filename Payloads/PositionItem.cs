@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace WebAPI.API
+namespace WebAPI.Payloads
 {
     public class Vector3Item
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.Objects.Motherboards;
 using Assets.Scripts.Objects.Pipes;
-using WebAPI.API;
+using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices.ById.Logic
 {

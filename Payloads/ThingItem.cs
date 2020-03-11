@@ -3,7 +3,7 @@
 using Assets.Scripts.Objects;
 using UnityEngine;
 
-namespace WebAPI.API
+namespace WebAPI.Payloads
 {
     public class ThingItem
     {

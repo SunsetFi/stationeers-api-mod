@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Assets.Scripts.Objects.Pipes;
 
-namespace WebAPI.API
+namespace WebAPI.Payloads
 {
     public class DeviceItem : ThingItem, ILogicableItem
     {

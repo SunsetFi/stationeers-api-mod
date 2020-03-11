@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using BepInEx;
 using UnityEngine;
-using WebAPI.API;
+using WebAPI.Payloads;
 
 namespace WebAPI
 {

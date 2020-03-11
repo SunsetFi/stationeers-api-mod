@@ -1,5 +1,5 @@
 
-namespace WebAPI.API
+namespace WebAPI.Payloads
 {
     public class Error
     {
