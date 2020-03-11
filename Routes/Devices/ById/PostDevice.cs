@@ -6,6 +6,7 @@ using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices.ById
 {
+    // TODO: Move the Thing specific stuff from here to a shared class so non-Devices can use it too.
     class PostDevice : IWebRoute
     {
         public string Method => "POST";
@@ -44,6 +45,12 @@ namespace WebAPI.Routes.Devices.ById
             {
                 device.CustomName = item.customName;
                 device.IsCustomName = true;
+            }
+
+            if (item.accessState.HasValue)
+            {
+                // TODO: Test if this works, might need to diff and use AddAccess / RemoveAccess
+                device.AccessState = item.accessState.Value;
             }
 
             e.Context.SendResponse(200, DevicePayload.FromDevice(device));

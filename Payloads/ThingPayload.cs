@@ -1,5 +1,6 @@
 
 
+using System.Collections.Generic;
 using Assets.Scripts.Objects;
 
 namespace WebAPI.Payloads
@@ -8,7 +9,17 @@ namespace WebAPI.Payloads
     {
         public string referenceId { get; set; }
 
+        public int prefabHash { get; set; }
+
+        public float health { get; set; }
+
+        public string prefabName { get; set; }
+
         public string customName { get; set; }
+
+        public int? accessState { get; set; }
+
+        public Dictionary<int, string> slotReferenceIds { get; set; }
 
         public Vector3Payload position { get; set; }
 
@@ -21,8 +32,25 @@ namespace WebAPI.Payloads
         public static void CopyFromThing(ThingPayload payload, Thing thing)
         {
             payload.referenceId = thing.ReferenceId.ToString();
-            payload.position = Vector3Payload.FromVector3(thing.Position);
+            payload.prefabHash = thing.PrefabHash;
+            payload.prefabName = thing.PrefabName;
+            payload.health = thing.ThingHealth;
             payload.customName = thing.IsCustomName ? thing.CustomName : null;
+            payload.accessState = thing.AccessState;
+            payload.slotReferenceIds = ThingPayload.GetSlotReferenceIds(thing);
+            payload.position = Vector3Payload.FromVector3(thing.Position);
+        }
+
+        private static Dictionary<int, string> GetSlotReferenceIds(Thing thing)
+        {
+            var refIds = new Dictionary<int, string>();
+            for (var i = 0; i < thing.Slots.Count; i++)
+            {
+                var slot = thing.Slots[i];
+                var refId = slot.Occupant != null ? slot.Occupant.ReferenceId.ToString() : null;
+                refIds.Add(i, refId);
+            }
+            return refIds;
         }
     }
 }

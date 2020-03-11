@@ -6,6 +6,7 @@ using UnityEngine;
 namespace WebAPI
 {
     // From: https://answers.unity.com/questions/305882/how-do-i-invoke-functions-on-the-main-thread.html
+    // TODO: Found UnityMainThreadDispatcher referenced in stationeers code, can we use this instead?
     public class Dispatcher : MonoBehaviour
     {
         public static void RunOnMainThread(Action action)
