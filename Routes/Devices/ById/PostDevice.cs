@@ -19,21 +19,21 @@ namespace WebAPI.Routes.Devices.ById
             var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
             if (device == null)
             {
-                e.Context.SendResponse(404, new Error()
+                e.Context.SendResponse(404, new ErrorPayload()
                 {
                     message = "Device not found."
                 });
                 return;
             }
 
-            DeviceItem item = null;
+            DevicePayload item = null;
             try
             {
-                item = JsonConvert.DeserializeObject<DeviceItem>(e.Body);
+                item = JsonConvert.DeserializeObject<DevicePayload>(e.Body);
             }
             catch
             {
-                e.Context.SendResponse(500, new Error()
+                e.Context.SendResponse(500, new ErrorPayload()
                 {
                     message = "Expected body to be DeviceItem."
                 });
@@ -46,7 +46,7 @@ namespace WebAPI.Routes.Devices.ById
                 device.IsCustomName = true;
             }
 
-            e.Context.SendResponse(200, DeviceItem.FromDevice(device));
+            e.Context.SendResponse(200, DevicePayload.FromDevice(device));
         }
     }
 }

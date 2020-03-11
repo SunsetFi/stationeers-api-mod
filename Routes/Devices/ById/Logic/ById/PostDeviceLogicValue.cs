@@ -21,7 +21,7 @@ namespace WebAPI.Routes.Devices.ById.Logic
             var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
             if (device == null)
             {
-                e.Context.SendResponse(404, new Error()
+                e.Context.SendResponse(404, new ErrorPayload()
                 {
                     message = "Device not found."
                 });
@@ -32,7 +32,7 @@ namespace WebAPI.Routes.Devices.ById.Logic
             LogicType type;
             if (!Enum.TryParse<LogicType>(typeName, out type))
             {
-                e.Context.SendResponse(404, new Error()
+                e.Context.SendResponse(404, new ErrorPayload()
                 {
                     message = "Unrecognized logic type."
                 });
@@ -41,21 +41,21 @@ namespace WebAPI.Routes.Devices.ById.Logic
 
             if (!device.CanLogicWrite(type))
             {
-                e.Context.SendResponse(400, new Error()
+                e.Context.SendResponse(400, new ErrorPayload()
                 {
                     message = "Logic type is not writable."
                 });
                 return;
             }
 
-            LogicValueItem item = null;
+            LogicValuePayload item = null;
             try
             {
-                item = JsonConvert.DeserializeObject<LogicValueItem>(e.Body);
+                item = JsonConvert.DeserializeObject<LogicValuePayload>(e.Body);
             }
             catch
             {
-                e.Context.SendResponse(500, new Error()
+                e.Context.SendResponse(500, new ErrorPayload()
                 {
                     message = "Expected body to be LogicValueItem."
                 });

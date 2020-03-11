@@ -18,14 +18,14 @@ namespace WebAPI.Routes.Devices.ById
             var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
             if (device == null)
             {
-                e.Context.SendResponse(404, new Error()
+                e.Context.SendResponse(404, new ErrorPayload()
                 {
                     message = "Device not found."
                 });
                 return;
             }
 
-            e.Context.SendResponse(200, DeviceItem.FromDevice(device));
+            e.Context.SendResponse(200, DevicePayload.FromDevice(device));
         }
     }
 }

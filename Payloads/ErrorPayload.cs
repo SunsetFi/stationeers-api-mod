@@ -1,7 +1,7 @@
 
 namespace WebAPI.Payloads
 {
-    public class Error
+    public class ErrorPayload
     {
         public string message;
     }

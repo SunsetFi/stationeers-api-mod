@@ -1,7 +1,7 @@
 
 namespace WebAPI.Payloads
 {
-    public class LogicValueItem
+    public class LogicValuePayload
     {
         public double value { get; set; }
     }

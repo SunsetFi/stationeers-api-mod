@@ -6,7 +6,7 @@ using Assets.Scripts.Objects.Pipes;
 
 namespace WebAPI.Payloads
 {
-    public interface ILogicableItem
+    public interface ILogicablePayload
     {
         string displayName { get; set; }
         Dictionary<string, double> logicValues { get; set; }
@@ -16,7 +16,7 @@ namespace WebAPI.Payloads
 
     public static class LogicableItemUtils
     {
-        public static void CopyFromLogicable(ILogicableItem item, ILogicable logicable)
+        public static void CopyFromLogicable(ILogicablePayload item, ILogicable logicable)
         {
             item.displayName = logicable.DisplayName;
             item.logicValues = LogicableItemUtils.GetLogicValues(logicable);

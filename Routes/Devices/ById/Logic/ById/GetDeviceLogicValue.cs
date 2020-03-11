@@ -20,7 +20,7 @@ namespace WebAPI.Routes.Devices.ById.Logic
             var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
             if (device == null)
             {
-                e.Context.SendResponse(404, new Error()
+                e.Context.SendResponse(404, new ErrorPayload()
                 {
                     message = "Device not found."
                 });
@@ -31,7 +31,7 @@ namespace WebAPI.Routes.Devices.ById.Logic
             LogicType type;
             if (!Enum.TryParse<LogicType>(typeName, out type))
             {
-                e.Context.SendResponse(404, new Error()
+                e.Context.SendResponse(404, new ErrorPayload()
                 {
                     message = "Unrecognized logic type."
                 });
@@ -40,7 +40,7 @@ namespace WebAPI.Routes.Devices.ById.Logic
 
             var value = device.GetLogicValue(type);
 
-            e.Context.SendResponse(200, new LogicValueItem() { value = value });
+            e.Context.SendResponse(200, new LogicValuePayload() { value = value });
         }
     }
 }

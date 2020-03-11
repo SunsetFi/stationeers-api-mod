@@ -57,7 +57,7 @@ namespace WebAPI
 
                 if (!handled)
                 {
-                    e.Context.SendResponse(404, new Error()
+                    e.Context.SendResponse(404, new ErrorPayload()
                     {
                         message = "Route not found"
                     });
@@ -66,7 +66,7 @@ namespace WebAPI
             catch (Exception ex)
             {
                 Log("Failed to handle request: " + ex.ToString());
-                e.Context.SendResponse(500, new Error()
+                e.Context.SendResponse(500, new ErrorPayload()
                 {
                     message = ex.ToString()
                 });
