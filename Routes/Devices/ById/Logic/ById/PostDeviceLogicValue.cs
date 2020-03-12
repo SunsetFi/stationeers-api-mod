@@ -55,7 +55,7 @@ namespace WebAPI.Routes.Devices.ById.Logic
             }
             catch
             {
-                e.Context.SendResponse(500, new ErrorPayload()
+                e.Context.SendResponse(400, new ErrorPayload()
                 {
                     message = "Expected body to be LogicValueItem."
                 });

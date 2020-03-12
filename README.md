@@ -66,6 +66,25 @@ Example:
 
 Gets a list of all items on the server.
 
+### GET /server
+
+Gets information about the server.
+
+### POST /server
+
+#### Body
+
+- `password` (string): Sets the server p.assword
+- `name` (string): Sets the server name.
+
+### POST /server/message
+
+Sends a chat message to the server
+
+#### Body
+
+- `message` (string): The message to send to the server.
+
 ### GET /players
 
 Gets a list of all players on the server

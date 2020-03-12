@@ -40,7 +40,7 @@ namespace WebAPI.Routes.Devices
             }
             catch
             {
-                e.Context.SendResponse(500, new ErrorPayload()
+                e.Context.SendResponse(400, new ErrorPayload()
                 {
                     message = "Expected body to be KickPlayerPayload."
                 });

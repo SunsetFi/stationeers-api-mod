@@ -11,6 +11,7 @@
 - Server endpoint
   - Get name, password, maxPlayers
   - Set name, password
+  - Send chat messages
 - Players endpoint
   - Get player names, steamIds
   - Kick players, ban steamIds
