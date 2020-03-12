@@ -11,6 +11,9 @@
 - Server endpoint
   - Get name, password, maxPlayers
   - Set name, password
+- Players endpoint
+  - Get player names, steamIds
+  - Kick players, ban steamIds
 
 ### 1.1.0
 

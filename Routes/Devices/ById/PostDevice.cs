@@ -36,7 +36,7 @@ namespace WebAPI.Routes.Devices.ById
             {
                 e.Context.SendResponse(500, new ErrorPayload()
                 {
-                    message = "Expected body to be DeviceItem."
+                    message = "Expected body to be DevicePayload."
                 });
                 return;
             }

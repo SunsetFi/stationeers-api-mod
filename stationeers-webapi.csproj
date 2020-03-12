@@ -18,6 +18,9 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>.\externals\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+        <Reference Include="UnityEngine.UI">
+      <HintPath>.\externals\UnityEngine.UI.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>.\externals\Newtonsoft.Json.dll</HintPath>
     </Reference>
