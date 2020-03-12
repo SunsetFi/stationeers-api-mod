@@ -21,6 +21,20 @@ This mod should be compatible with both standard Stationeers game installs and t
 Make HTTP requests to `localhost:4444`.
 Expect responses to be `application/json`
 
+# Configuration
+
+Create a file called `config.json` inside the `stationeers-webapi` folder under `BepInEx/Plugins`.
+This file should be a json object with the following properties.
+
+- `enabled` (bool): Specify whether the mod should be enabled or disabled. Set to `true` to enable.
+- `password` (string, optional): The password to invoke endpoints. Sent as a `password` query parameter.
+
+# Security
+
+A password can be configured to protect all endpoints. However, the password and requests are currently sent http / plaintext.
+
+To specify the password, send it as the `password` query parameter. eg `GET /devices?password=mypassword`
+
 ## Supported Requests
 
 ### GET /devices
@@ -35,10 +49,10 @@ Gets a device by reference id.
 
 Modifies device properties
 
-#### Supported properties
+#### Body
 
-- `customName` (string): Change the labeler-given name of a device.
-- `accessState` (int): Set the bitmask of allowed access card colors.
+- `customName` (string, optional): Change the labeler-given name of a device.
+- `accessState` (int, optional): Set the bitmask of allowed access card colors.
 
 ### GET /devices/:deviceId/logic
 
@@ -58,14 +72,6 @@ JSON object with the following properties:
 
 - `value` (number): The value to write to the logic type.
 
-Example:
-
-```json
-{
-  "value": 42
-}
-```
-
 ### GET /items
 
 Gets a list of all items on the server.
@@ -78,8 +84,8 @@ Gets information about the server.
 
 #### Body
 
-- `password` (string): Sets the server p.assword
-- `name` (string): Sets the server name.
+- `password` (string, optional): Sets the server password
+- `name` (string, optional): Sets the server name.
 
 ### POST /server/message
 
@@ -96,21 +102,21 @@ Gets a list of all players on the server
 ### POST /players/:steamId/kick
 
 Kick a player from the server.
-steamId must be a steam ID of a player on the server.
+steamId must be a steamId of a player on the server.
 
 #### Body
 
-- `reason` (string): The reason message for the kick. Can be empty.
+- `reason` (string, optional): The reason message for the kick. Can be empty.
 
 ### POST /players/:steamId/ban
 
 Bans a player from the server.
-steamId should be a valid steamId, but the player does not have to be on the server.
+steamId should be a valid steamId, but the player does not have to be on the server. If they are on the server, they will be kicked.
 
 #### Body
 
-- `reason` (string): The reason message for the ban. Can be empty.
 - `duration` (int): The number of hours to ban the player for.
+- `reason` (string, optional): The reason message for the ban. Can be empty.
 
 # TODO
 
@@ -120,4 +126,6 @@ steamId should be a valid steamId, but the player does not have to be on the ser
     - Things derived from Things
       - DynamicThing ( => Item)
       - Structure ( => Device)
-  - Endpoint for posting chat messages
+  - Endpoint for transmitters (special class of ILogicable seperate from devices)
+  - Endpoint for getting chat log
+- Real endpoint security. https and authentication.

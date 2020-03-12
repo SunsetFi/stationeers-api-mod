@@ -24,24 +24,35 @@ namespace WebAPI
         void Awake()
         {
             WebAPIPlugin.Instance = this;
-            Dispatcher.Initialize();
             Log("Hello World");
 
-            var webRouteType = typeof(IWebRoute);
-            var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
-                .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
-                .ToArray();
+            WebAPI.Config.LoadConfig();
+            Dispatcher.Initialize();
 
-            Log("Initializing " + foundTypes.Length + " routes.");
-            foreach (var routeType in foundTypes)
+            if (WebAPI.Config.Instance.enabled)
             {
-                var instance = (IWebRoute)Activator.CreateInstance(routeType);
-                _router.AddRoute(instance);
-            }
-            Log("Routes initialized");
 
-            _webServer.OnRequest += OnWebRequest;
-            _webServer.Start();
+
+                var webRouteType = typeof(IWebRoute);
+                var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
+                    .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
+                    .ToArray();
+
+                Log("Initializing " + foundTypes.Length + " routes.");
+                foreach (var routeType in foundTypes)
+                {
+                    var instance = (IWebRoute)Activator.CreateInstance(routeType);
+                    _router.AddRoute(instance);
+                }
+                Log("Routes initialized");
+
+                _webServer.OnRequest += OnWebRequest;
+                _webServer.Start();
+            }
+            else
+            {
+                Log("Not enabled.");
+            }
         }
 
         void OnWebRequest(object sender, RequestEventArgs e)

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading;
+using WebAPI.Payloads;
 
 namespace WebAPI
 {
@@ -51,6 +52,21 @@ namespace WebAPI
         void OnWebRequest(IAsyncResult result)
         {
             var context = _listener.EndGetContext(result);
+
+            var password = Config.Instance.password;
+            if (password != null && password.Length > 0)
+            {
+                var suppliedPassword = context.Request.QueryString.Get("password");
+                if (suppliedPassword != password)
+                {
+                    context.SendResponse(401, new ErrorPayload()
+                    {
+                        message = "Access Denied."
+                    });
+                    return;
+                }
+            }
+
             System.Text.Encoding encoding = context.Request.ContentEncoding;
             if (encoding == null)
             {

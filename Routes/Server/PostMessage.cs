@@ -38,7 +38,7 @@ namespace WebAPI.Routes.Devices
 
             NetworkManagerHudOverride.Instance.SendNoticeMessage(payload.message);
 
-            e.Context.SendResponse(201, null);
+            e.Context.SendResponse(200, null);
         }
     }
 }
