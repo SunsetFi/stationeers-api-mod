@@ -1,4 +1,4 @@
-### vNext
+### 1.2.0
 
 - Show thing prefabHash and prefabName.
 - Show thing reference ids in slots.
