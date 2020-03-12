@@ -39,7 +39,7 @@ namespace WebAPI.Routes.Devices
             if (payload.password != null)
             {
                 serverInstance.ServerName.text = payload.password;
-                var prop = serverInstance.GetType().GetField("ServerNameText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var prop = serverInstance.GetType().GetField("PasswordText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 prop.SetValue(serverInstance, payload.password);
             }
 
