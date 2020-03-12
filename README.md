@@ -62,6 +62,33 @@ Example:
 }
 ```
 
+### GET /items
+
+Gets a list of all items on the server.
+
+### GET /players
+
+Gets a list of all players on the server
+
+### POST /players/:steamId/kick
+
+Kick a player from the server.
+steamId must be a steam ID of a player on the server.
+
+#### Body
+
+- `reason` (string): The reason message for the kick. Can be empty.
+
+### POST /players/:steamId/ban
+
+Bans a player from the server.
+steamId should be a valid steamId, but the player does not have to be on the server.
+
+#### Body
+
+- `reason` (string): The reason message for the ban. Can be empty.
+- `duration` (int): The number of hours to ban the player for.
+
 # TODO
 
 - Make port configurable
@@ -70,6 +97,4 @@ Example:
     - Things derived from Things
       - DynamicThing ( => Item)
       - Structure ( => Device)
-  - Endpoint for items `public static readonly List<Item> AllItems;`
   - Endpoint for posting chat messages
-  - Devices with slots should give the referenceId of items in their slots.
