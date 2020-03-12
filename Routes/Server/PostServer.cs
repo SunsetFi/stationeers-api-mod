@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assets.Scripts.Networking;
 using Newtonsoft.Json;
+using Steamworks;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices
@@ -34,13 +35,15 @@ namespace WebAPI.Routes.Devices
                 serverInstance.ServerName.text = payload.name;
                 var prop = serverInstance.GetType().GetField("ServerNameText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 prop.SetValue(serverInstance, payload.name);
+                SteamGameServer.SetServerName(payload.name);
             }
 
             if (payload.password != null)
             {
-                serverInstance.ServerName.text = payload.password;
+                serverInstance.Password.text = payload.password;
                 var prop = serverInstance.GetType().GetField("PasswordText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 prop.SetValue(serverInstance, payload.password);
+                SteamGameServer.SetPasswordProtected(payload.password.Length > 0);
             }
 
             var response = ServerPayload.FromSteamServer(SteamServer.Instance);

@@ -12,6 +12,10 @@ Requires [BepInEx 5.0.1](https://github.com/BepInEx/BepInEx/releases) or later.
 4. Create a folder `stationeers-webapi` in the BepInEx/Plugins folder.
 5. Extract the release zip file to this folder.
 
+# Compatibility
+
+This mod should be compatible with both standard Stationeers game installs and the Stationeers Dedicated Server.
+
 # Usage
 
 Make HTTP requests to `localhost:4444`.
