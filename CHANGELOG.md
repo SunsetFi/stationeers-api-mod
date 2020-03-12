@@ -8,6 +8,9 @@
 - Items endpoint:
   - item parent slotId and referenceId.
   - Item quantity text.
+- Server endpoint
+  - Get name, password, maxPlayers
+  - Set name, password
 
 ### 1.1.0
 
