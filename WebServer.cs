@@ -26,7 +26,7 @@ namespace WebAPI
                 .AddRoute(handler);
 
             var task = HttpServer.ListenAsync(
-                new IPEndPoint(IPAddress.Any, 8080),
+                new IPEndPoint(IPAddress.Any, Config.Instance.port),
                 false,
                 config,
                 tcs.Token
