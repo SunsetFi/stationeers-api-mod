@@ -1,10 +1,11 @@
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Assets.Scripts.Networking;
-using Newtonsoft.Json;
+using Ceen;
 using WebAPI.Payloads;
 
-namespace WebAPI.Routes.Devices
+namespace WebAPI.Routes.Server
 {
     class PostMessage : IWebRoute
     {
@@ -12,16 +13,16 @@ namespace WebAPI.Routes.Devices
 
         public string[] Segments => new[] { "server", "message" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
             ServerMessagePayload payload = null;
             try
             {
-                payload = JsonConvert.DeserializeObject<ServerMessagePayload>(e.Body);
+                payload = context.ParseBody<ServerMessagePayload>();
             }
             catch
             {
-                e.Context.SendResponse(400, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.BadRequest, new ErrorPayload()
                 {
                     message = "Expected body to be ServerMessagePayload."
                 });
@@ -30,15 +31,19 @@ namespace WebAPI.Routes.Devices
 
             if (payload.message == null || payload.message.Length == 0)
             {
-                e.Context.SendResponse(400, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.BadRequest, new ErrorPayload()
                 {
                     message = "Expected a message."
                 });
+                return;
             }
 
-            NetworkManagerHudOverride.Instance.SendNoticeMessage(payload.message);
+            await Dispatcher.RunOnMainThread(() =>
+            {
+                NetworkManagerHudOverride.Instance.SendNoticeMessage(payload.message);
+            });
 
-            e.Context.SendResponse(200, null);
+            await context.SendResponse(HttpStatusCode.OK, null);
         }
     }
 }

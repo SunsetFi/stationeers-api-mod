@@ -1,21 +1,47 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace WebAPI
 {
+
+    internal class QueuedTask
+    {
+        public Func<object> function;
+        public TaskCompletionSource<object> completionSource;
+    }
+
     // From: https://answers.unity.com/questions/305882/how-do-i-invoke-functions-on-the-main-thread.html
-    // TODO: Found UnityMainThreadDispatcher referenced in stationeers code, can we use this instead?
     public class Dispatcher : MonoBehaviour
     {
-        public static void RunOnMainThread(Action action)
+        public static Task RunOnMainThread(Action action)
         {
+            return Dispatcher.RunOnMainThread<object>(() =>
+            {
+                action();
+                return null;
+            });
+        }
+
+        public static Task<T> RunOnMainThread<T>(Func<T> function)
+        {
+            var source = new TaskCompletionSource<object>();
+            var queueItem = new QueuedTask()
+            {
+                function = () => function(),
+                completionSource = source
+            };
+
             lock (_backlog)
             {
-                _backlog.Add(action);
+                _backlog.Add(queueItem);
                 _queued = true;
             }
+
+            // Sigh...
+            return source.Task.ContinueWith(t => (T)t.Result);
         }
 
         public static void Initialize()
@@ -40,7 +66,17 @@ namespace WebAPI
                 }
 
                 foreach (var action in _actions)
-                    action();
+                {
+                    try
+                    {
+                        var result = action.function();
+                        action.completionSource.TrySetResult(result);
+                    }
+                    catch (Exception e)
+                    {
+                        action.completionSource.TrySetException(e);
+                    }
+                }
 
                 _actions.Clear();
             }
@@ -48,7 +84,7 @@ namespace WebAPI
 
         static Dispatcher _instance;
         static volatile bool _queued = false;
-        static List<Action> _backlog = new List<Action>(8);
-        static List<Action> _actions = new List<Action>(8);
+        static List<QueuedTask> _backlog = new List<QueuedTask>(8);
+        static List<QueuedTask> _actions = new List<QueuedTask>(8);
     }
 }

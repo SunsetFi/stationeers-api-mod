@@ -1,10 +1,12 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Assets.Scripts.Networking;
+using Ceen;
 using WebAPI.Payloads;
 
-namespace WebAPI.Routes.Devices
+namespace WebAPI.Routes.Players
 {
     class GetPlayers : IWebRoute
     {
@@ -12,10 +14,10 @@ namespace WebAPI.Routes.Devices
 
         public string[] Segments => new[] { "players" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
-            var players = NetworkManagerOverride.PlayerConnections.Select(x => PlayerPayload.FromPlayerConnection(x));
-            e.Context.SendResponse(200, players);
+            var players = await Dispatcher.RunOnMainThread(() => NetworkManagerOverride.PlayerConnections.Select(x => PlayerPayload.FromPlayerConnection(x)));
+            await context.SendResponse(HttpStatusCode.OK, players);
         }
     }
 }

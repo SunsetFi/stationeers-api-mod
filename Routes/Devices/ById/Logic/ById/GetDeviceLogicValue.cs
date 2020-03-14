@@ -1,8 +1,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Assets.Scripts.Objects.Motherboards;
 using Assets.Scripts.Objects.Pipes;
+using Ceen;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices.ById.Logic
@@ -13,14 +15,14 @@ namespace WebAPI.Routes.Devices.ById.Logic
 
         public string[] Segments => new[] { "devices", ":deviceId", "logic", ":logicType" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
             // TODO: Return UNPROCESSABLE_ENTITY if deviceId invalid.
             var referenceId = long.Parse(pathParams["deviceId"]);
-            var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
+            var device = await Dispatcher.RunOnMainThread(() => Device.AllDevices.Find(x => x.ReferenceId == referenceId));
             if (device == null)
             {
-                e.Context.SendResponse(404, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
                 {
                     message = "Device not found."
                 });
@@ -31,16 +33,16 @@ namespace WebAPI.Routes.Devices.ById.Logic
             LogicType type;
             if (!Enum.TryParse<LogicType>(typeName, out type))
             {
-                e.Context.SendResponse(404, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
                 {
                     message = "Unrecognized logic type."
                 });
                 return;
             }
 
-            var value = device.GetLogicValue(type);
+            var value = await Dispatcher.RunOnMainThread(() => device.GetLogicValue(type));
 
-            e.Context.SendResponse(200, new LogicValuePayload() { value = value });
+            await context.SendResponse(HttpStatusCode.OK, new LogicValuePayload() { value = value });
         }
     }
 }

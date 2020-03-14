@@ -1,8 +1,9 @@
 
 using System;
 using System.Linq;
-using System.Net;
+using System.Threading.Tasks;
 using BepInEx;
+using Ceen;
 using UnityEngine;
 using WebAPI.Payloads;
 
@@ -31,8 +32,6 @@ namespace WebAPI
 
             if (WebAPI.Config.Instance.enabled)
             {
-
-
                 var webRouteType = typeof(IWebRoute);
                 var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
                     .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
@@ -46,8 +45,7 @@ namespace WebAPI
                 }
                 Log("Routes initialized");
 
-                _webServer.OnRequest += OnWebRequest;
-                _webServer.Start();
+                _webServer.Start(OnRequest);
             }
             else
             {
@@ -55,32 +53,19 @@ namespace WebAPI
             }
         }
 
-        void OnWebRequest(object sender, RequestEventArgs e)
-        {
-            Dispatcher.RunOnMainThread(() => HandleRequest(e));
-        }
-
-        void HandleRequest(RequestEventArgs e)
+        async Task<bool> OnRequest(IHttpContext context)
         {
             try
             {
-                var handled = _router.HandleRequest(e);
-
-                if (!handled)
-                {
-                    e.Context.SendResponse(404, new ErrorPayload()
-                    {
-                        message = "Route not found"
-                    });
-                }
+                return await _router.HandleRequest(context);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Log("Failed to handle request: " + ex.ToString());
-                e.Context.SendResponse(500, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.InternalServerError, new ErrorPayload()
                 {
-                    message = ex.ToString()
+                    message = e.ToString()
                 });
+                return true;
             }
         }
     }

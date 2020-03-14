@@ -6,31 +6,36 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
+    <Reference Include="Assembly-CSharp" CopyToPublishDirectory="Never">
       <HintPath>.\externals\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
+    <Reference Include="Assembly-CSharp-firstpass" CopyToPublishDirectory="Never">
       <HintPath>.\externals\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="BepInEx">
+    <Reference Include="BepInEx" CopyToPublishDirectory="Never">
       <HintPath>.\externals\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine">
+    <Reference Include="UnityEngine" CopyToPublishDirectory="Never">
       <HintPath>.\externals\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
+    <Reference Include="UnityEngine.CoreModule" CopyToPublishDirectory="Never">
       <HintPath>.\externals\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-        <Reference Include="UnityEngine.UI">
+        <Reference Include="UnityEngine.UI" CopyToPublishDirectory="Never">
       <HintPath>.\externals\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>.\externals\Newtonsoft.Json.dll</HintPath>
     </Reference>
 
-    <Reference Include="com.unity.multiplayer-hlapi.Runtime">
+    <Reference Include="com.unity.multiplayer-hlapi.Runtime" CopyToPublishDirectory="Never">
       <HintPath>.\externals\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ceen.Httpd" Version="0.9.8" />
+    <PackageReference Include="Ceen.Mvc" Version="0.9.8" />
   </ItemGroup>
 
   <PropertyGroup>

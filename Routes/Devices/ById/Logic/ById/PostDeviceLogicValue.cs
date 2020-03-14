@@ -1,9 +1,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Assets.Scripts.Objects.Motherboards;
 using Assets.Scripts.Objects.Pipes;
-using Newtonsoft.Json;
+using Ceen;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices.ById.Logic
@@ -14,14 +15,14 @@ namespace WebAPI.Routes.Devices.ById.Logic
 
         public string[] Segments => new[] { "devices", ":deviceId", "logic", ":logicType" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
             // TODO: Return UNPROCESSABLE_ENTITY if deviceId invalid.
             var referenceId = long.Parse(pathParams["deviceId"]);
-            var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
+            var device = await Dispatcher.RunOnMainThread(() => Device.AllDevices.Find(x => x.ReferenceId == referenceId));
             if (device == null)
             {
-                e.Context.SendResponse(404, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
                 {
                     message = "Device not found."
                 });
@@ -32,39 +33,40 @@ namespace WebAPI.Routes.Devices.ById.Logic
             LogicType type;
             if (!Enum.TryParse<LogicType>(typeName, out type))
             {
-                e.Context.SendResponse(404, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
                 {
                     message = "Unrecognized logic type."
                 });
                 return;
             }
 
-            if (!device.CanLogicWrite(type))
+            var canLogicWrite = await Dispatcher.RunOnMainThread(() => device.CanLogicWrite(type));
+            if (!canLogicWrite)
             {
-                e.Context.SendResponse(400, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.BadRequest, new ErrorPayload()
                 {
                     message = "Logic type is not writable."
                 });
                 return;
             }
 
-            LogicValuePayload item = null;
+            LogicValuePayload payload = null;
             try
             {
-                item = JsonConvert.DeserializeObject<LogicValuePayload>(e.Body);
+                payload = context.ParseBody<LogicValuePayload>();
             }
             catch
             {
-                e.Context.SendResponse(400, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.BadRequest, new ErrorPayload()
                 {
                     message = "Expected body to be LogicValueItem."
                 });
                 return;
             }
 
-            device.SetLogicValue(type, item.value);
+            await Dispatcher.RunOnMainThread(() => device.SetLogicValue(type, payload.value));
 
-            e.Context.SendResponse(200, item);
+            await context.SendResponse(HttpStatusCode.OK, payload);
         }
     }
 }

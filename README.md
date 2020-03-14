@@ -28,6 +28,7 @@ This file should be a json object with the following properties.
 
 - `enabled` (bool): Specify whether the mod should be enabled or disabled. Set to `true` to enable.
 - `password` (string, optional): The password to invoke endpoints. Sent as a `password` query parameter.
+- `port` (number): The port to use.
 
 # Security
 

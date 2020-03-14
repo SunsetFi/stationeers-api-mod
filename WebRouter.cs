@@ -1,7 +1,7 @@
 
-using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Threading.Tasks;
+using Ceen;
 
 namespace WebAPI
 {
@@ -9,9 +9,7 @@ namespace WebAPI
     {
         string Method { get; }
         string[] Segments { get; }
-        void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams);
-
-
+        Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams);
     }
 
     public class WebRouter
@@ -23,33 +21,36 @@ namespace WebAPI
             _routes.Add(route);
         }
 
-        public bool HandleRequest(RequestEventArgs e)
+        public async Task<bool> HandleRequest(IHttpContext context)
         {
-            var request = e.Context.Request;
+            var request = context.Request;
 
-            var matched = false;
             foreach (var route in _routes)
             {
-                if (request.HttpMethod != route.Method)
+                if (request.Method != route.Method)
                 {
                     continue;
                 }
 
-                var pathParams = MatchRoute(request.Url, route.Segments);
+                var pathParams = MatchRoute(request.Path, route.Segments);
                 if (pathParams == null)
                 {
                     continue;
                 }
-                matched = true;
-                route.OnRequested(e, pathParams);
+
+
+                await route.OnRequested(context, pathParams);
+                return true;
             }
 
-            return matched;
+            return false;
         }
 
-        IDictionary<string, string> MatchRoute(Uri uri, string[] segments)
+        IDictionary<string, string> MatchRoute(string path, string[] segments)
         {
-            if (uri.Segments.Length - 1 != segments.Length)
+            var pathSegments = path.Split('/');
+
+            if (pathSegments.Length - 1 != segments.Length)
             {
                 return null;
             }
@@ -58,12 +59,7 @@ namespace WebAPI
 
             for (var i = 0; i < segments.Length; i++)
             {
-                var pathSegment = uri.Segments[i + 1];
-                if (pathSegment.EndsWith("/"))
-                {
-                    pathSegment = pathSegment.Substring(0, pathSegment.Length - 1);
-                }
-
+                var pathSegment = pathSegments[i + 1];
                 var matchSegment = segments[i];
 
                 if (matchSegment.StartsWith(":"))
