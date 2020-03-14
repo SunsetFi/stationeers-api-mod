@@ -1,58 +1,25 @@
 
 using System;
-using System.IO;
 using System.Net;
 using System.Threading;
-using WebAPI.Payloads;
+using System.Threading.Tasks;
+using Ceen;
+using Ceen.Httpd;
 
 namespace WebAPI
 {
-    public class RequestEventArgs : EventArgs
-    {
-        public HttpListenerContext Context { get; private set; }
-
-        public string Body { get; private set; }
-
-        public RequestEventArgs(HttpListenerContext context, string body)
-        {
-            this.Context = context;
-            this.Body = body;
-        }
-    }
     public class WebServer
     {
-        private HttpListener _listener;
-        private Thread _listenerThread;
-
-        public event EventHandler<RequestEventArgs> OnRequest;
-
-        public void Start()
+        static void Log(string message)
         {
-            Log("Starting web server");
-            _listener = new HttpListener();
-            _listener.Prefixes.Add("http://localhost:4444/");
-            _listener.Prefixes.Add("http://127.0.0.1:4444/");
-            _listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
-            _listener.Start();
-
-            _listenerThread = new Thread(ListenServer);
-            _listenerThread.Start();
-            Log("Server started");
+            WebAPIPlugin.Instance.Log("[WebServer]: " + message);
         }
 
-        void ListenServer()
+        public void Start(HttpHandlerDelegate handler)
         {
-            while (true)
-            {
-                var result = _listener.BeginGetContext(OnWebRequest, _listener);
-                result.AsyncWaitHandle.WaitOne();
-            }
-        }
+            WebServer.Log("Starting web server");
 
-        void OnWebRequest(IAsyncResult result)
-        {
-            var context = _listener.EndGetContext(result);
-
+<<<<<<< HEAD
             if (context.Request.HttpMethod == "OPTIONS")
             {
                 context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
@@ -78,26 +45,28 @@ namespace WebAPI
                     return;
                 }
             }
+=======
+>>>>>>> develop
 
-            System.Text.Encoding encoding = context.Request.ContentEncoding;
-            if (encoding == null)
-            {
-                encoding = System.Text.Encoding.UTF8;
-            }
+            var tcs = new CancellationTokenSource();
+            var config = new ServerConfig()
+                .AddLogger(OnLogMessage)
+                .AddRoute(handler);
 
-            var body = new StreamReader(context.Request.InputStream, encoding).ReadToEnd();
+            var task = HttpServer.ListenAsync(
+                new IPEndPoint(IPAddress.Any, Config.Instance.port),
+                false,
+                config,
+                tcs.Token
+            );
 
-            if (OnRequest != null)
-            {
-                OnRequest(this, new RequestEventArgs(context, body));
-            }
+            WebServer.Log("Server started");
         }
 
-        void Log(string message)
+        Task OnLogMessage(IHttpContext context, Exception exception, DateTime started, TimeSpan duration)
         {
-            WebAPIPlugin.Instance.Log("[WebServer]: " + message);
+            WebServer.Log(exception.ToString());
+            return Task.CompletedTask;
         }
     }
-
-
 }

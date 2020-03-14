@@ -1,10 +1,11 @@
 
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using Assets.Scripts.Networking;
+using Ceen;
 using WebAPI.Payloads;
 
-namespace WebAPI.Routes.Devices
+namespace WebAPI.Routes.Server
 {
     class GetServer : IWebRoute
     {
@@ -12,10 +13,10 @@ namespace WebAPI.Routes.Devices
 
         public string[] Segments => new[] { "server" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
-            var payload = ServerPayload.FromSteamServer(SteamServer.Instance);
-            e.Context.SendResponse(200, payload);
+            var payload = await Dispatcher.RunOnMainThread(() => ServerPayload.FromSteamServer(SteamServer.Instance));
+            await context.SendResponse(HttpStatusCode.OK, payload);
         }
     }
 }

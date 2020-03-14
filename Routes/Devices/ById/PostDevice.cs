@@ -1,7 +1,8 @@
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Assets.Scripts.Objects.Pipes;
-using Newtonsoft.Json;
+using Ceen;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices.ById
@@ -13,47 +14,49 @@ namespace WebAPI.Routes.Devices.ById
 
         public string[] Segments => new[] { "devices", ":deviceId" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
             // TODO: Return UNPROCESSABLE_ENTITY if deviceId invalid.
             var referenceId = long.Parse(pathParams["deviceId"]);
-            var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
+            var device = await Dispatcher.RunOnMainThread(() => Device.AllDevices.Find(x => x.ReferenceId == referenceId));
             if (device == null)
             {
-                e.Context.SendResponse(404, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
                 {
                     message = "Device not found."
                 });
                 return;
             }
 
-            DevicePayload item = null;
+            DevicePayload payload = null;
             try
             {
-                item = JsonConvert.DeserializeObject<DevicePayload>(e.Body);
+                payload = context.ParseBody<DevicePayload>();
             }
             catch
             {
-                e.Context.SendResponse(400, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.BadRequest, new ErrorPayload()
                 {
                     message = "Expected body to be DevicePayload."
                 });
                 return;
             }
 
-            if (item.customName != null && item.customName.Length > 0)
+            await Dispatcher.RunOnMainThread(() =>
             {
-                device.CustomName = item.customName;
-                device.IsCustomName = true;
-            }
+                if (payload.customName != null && payload.customName.Length > 0)
+                {
+                    device.CustomName = payload.customName;
+                    device.IsCustomName = true;
+                }
 
-            if (item.accessState.HasValue)
-            {
-                // TODO: Test if this works, might need to diff and use AddAccess / RemoveAccess
-                device.AccessState = item.accessState.Value;
-            }
+                if (payload.accessState.HasValue)
+                {
+                    device.AccessState = payload.accessState.Value;
+                }
+            });
 
-            e.Context.SendResponse(200, DevicePayload.FromDevice(device));
+            await context.SendResponse(HttpStatusCode.OK, DevicePayload.FromDevice(device));
         }
     }
 }

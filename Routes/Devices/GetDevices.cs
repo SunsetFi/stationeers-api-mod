@@ -1,7 +1,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Assets.Scripts.Objects.Pipes;
+using Ceen;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices
@@ -12,10 +14,10 @@ namespace WebAPI.Routes.Devices
 
         public string[] Segments => new[] { "devices" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
-            var devices = Device.AllDevices.Select(x => DevicePayload.FromDevice(x));
-            e.Context.SendResponse(200, devices);
+            var payload = await Dispatcher.RunOnMainThread(() => Device.AllDevices.Select(x => DevicePayload.FromDevice(x)));
+            await context.SendResponse(HttpStatusCode.OK, payload);
         }
     }
 }
