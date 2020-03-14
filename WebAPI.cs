@@ -55,6 +55,17 @@ namespace WebAPI
 
         async Task<bool> OnRequest(IHttpContext context)
         {
+            if (context.Request.Method == "OPTIONS")
+            {
+                context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
+                context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST");
+                context.Response.AddHeader("Access-Control-Max-Age", "1728000");
+                context.Response.StatusCode = HttpStatusCode.OK;
+                return true;
+            }
+
+            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+
             try
             {
                 return await _router.HandleRequest(context);
@@ -68,5 +79,6 @@ namespace WebAPI
                 return true;
             }
         }
+
     }
 }
