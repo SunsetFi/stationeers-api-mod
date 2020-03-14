@@ -30,7 +30,7 @@ namespace WebAPI.Routes.Server
                 return;
             }
 
-            var response = Dispatcher.RunOnMainThread(() =>
+            var response = await Dispatcher.RunOnMainThread(() =>
             {
                 var serverInstance = SteamServer.Instance;
                 if (payload.name != null && payload.name.Length > 0)

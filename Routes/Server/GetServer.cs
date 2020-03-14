@@ -15,7 +15,7 @@ namespace WebAPI.Routes.Server
 
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
-            var payload = Dispatcher.RunOnMainThread(() => ServerPayload.FromSteamServer(SteamServer.Instance));
+            var payload = await Dispatcher.RunOnMainThread(() => ServerPayload.FromSteamServer(SteamServer.Instance));
             await context.SendResponse(HttpStatusCode.OK, payload);
         }
     }

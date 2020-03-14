@@ -27,17 +27,21 @@ namespace WebAPI
 
         public static Task<T> RunOnMainThread<T>(Func<T> function)
         {
+            var source = new TaskCompletionSource<object>();
+            var queueItem = new QueuedTask()
+            {
+                function = () => function(),
+                completionSource = source
+            };
+
             lock (_backlog)
             {
-                var source = new TaskCompletionSource<object>();
-                _backlog.Add(new QueuedTask()
-                {
-                    function = () => function(),
-                    completionSource = source
-                });
-                // Sigh...
-                return source.Task.ContinueWith(t => (T)t.Result);
+                _backlog.Add(queueItem);
+                _queued = true;
             }
+
+            // Sigh...
+            return source.Task.ContinueWith(t => (T)t.Result);
         }
 
         public static void Initialize()

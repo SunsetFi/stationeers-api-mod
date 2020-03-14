@@ -1,8 +1,11 @@
 
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BepInEx;
 using Ceen;
 using UnityEngine;
+using WebAPI.Payloads;
 
 namespace WebAPI
 {
@@ -29,6 +32,19 @@ namespace WebAPI
 
             if (WebAPI.Config.Instance.enabled)
             {
+                var webRouteType = typeof(IWebRoute);
+                var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
+                    .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
+                    .ToArray();
+
+                Log("Initializing " + foundTypes.Length + " routes.");
+                foreach (var routeType in foundTypes)
+                {
+                    var instance = (IWebRoute)Activator.CreateInstance(routeType);
+                    _router.AddRoute(instance);
+                }
+                Log("Routes initialized");
+
                 _webServer.Start(OnRequest);
             }
             else
@@ -39,8 +55,18 @@ namespace WebAPI
 
         async Task<bool> OnRequest(IHttpContext context)
         {
-            await Dispatcher.RunOnMainThread(() => Log("I am handling the request at" + context.Request.Path));
-            return await _router.HandleRequest(context);
+            try
+            {
+                return await _router.HandleRequest(context);
+            }
+            catch (Exception e)
+            {
+                await context.SendResponse(HttpStatusCode.InternalServerError, new ErrorPayload()
+                {
+                    message = e.ToString()
+                });
+                return true;
+            }
         }
     }
 }

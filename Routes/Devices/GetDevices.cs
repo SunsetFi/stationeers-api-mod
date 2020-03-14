@@ -16,7 +16,7 @@ namespace WebAPI.Routes.Devices
 
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
-            var payload = Dispatcher.RunOnMainThread(() => Device.AllDevices.Select(x => DevicePayload.FromDevice(x)));
+            var payload = await Dispatcher.RunOnMainThread(() => Device.AllDevices.Select(x => DevicePayload.FromDevice(x)));
             await context.SendResponse(HttpStatusCode.OK, payload);
         }
     }

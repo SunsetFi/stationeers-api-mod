@@ -10,8 +10,6 @@ namespace WebAPI
         string Method { get; }
         string[] Segments { get; }
         Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams);
-
-
     }
 
     public class WebRouter
@@ -40,6 +38,7 @@ namespace WebAPI
                     continue;
                 }
 
+
                 await route.OnRequested(context, pathParams);
                 return true;
             }
@@ -50,6 +49,7 @@ namespace WebAPI
         IDictionary<string, string> MatchRoute(string path, string[] segments)
         {
             var pathSegments = path.Split('/');
+
             if (pathSegments.Length - 1 != segments.Length)
             {
                 return null;
@@ -59,7 +59,7 @@ namespace WebAPI
 
             for (var i = 0; i < segments.Length; i++)
             {
-                var pathSegment = pathSegments[i];
+                var pathSegment = pathSegments[i + 1];
                 var matchSegment = segments[i];
 
                 if (matchSegment.StartsWith(":"))
