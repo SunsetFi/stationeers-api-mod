@@ -7,16 +7,6 @@ namespace WebAPI
 {
     public class Config
     {
-        public Config()
-        {
-            this.enabled = true;
-            this.port = 4444;
-        }
-
-        public bool enabled { get; set; }
-        public string password { get; set; }
-        public int port { get; set; }
-
         public static Config _instance;
         public static Config Instance
         {
@@ -24,6 +14,16 @@ namespace WebAPI
             {
                 return Config._instance;
             }
+        }
+
+        public bool enabled { get; set; }
+        public string password { get; set; }
+        public int port { get; set; }
+
+        public Config()
+        {
+            this.enabled = true;
+            this.port = 4444;
         }
 
         public static void LoadConfig()

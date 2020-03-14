@@ -1,5 +1,10 @@
 ### vNext
 
+- Switch to Ceen http library for future ssl security.
+- Make port configurable.
+
+### 1.2.0
+
 - Show thing prefabHash and prefabName.
 - Show thing reference ids in slots.
 - Show thing health.
