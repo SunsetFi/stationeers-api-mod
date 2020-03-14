@@ -16,14 +16,13 @@ namespace WebAPI.Authentication
 
         private const string ProviderUri = @"https://steamcommunity.com/openid/login";
 
-        public static ApiUser VerifyLogin(Uri requestUri)
+        public static ApiUser VerifyLogin(IDictionary<string, string> queryString)
         {
-            var openIdSpecs = ParseQuery(requestUri.Query);
-            openIdSpecs["openid.mode"] = "check_authentication";
+            queryString["openid.mode"] = "check_authentication";
 
-            var responseString = HttpPost(ProviderUri, GenerateQuery(openIdSpecs));
+            var responseString = HttpPost(ProviderUri, GenerateQuery(queryString));
 
-            var match = SteamIdRegex.Match(openIdSpecs["openid.claimed_id"]);
+            var match = SteamIdRegex.Match(queryString["openid.claimed_id"]);
             ulong steamId = ulong.Parse(match.Groups[1].Value);
 
             match = IsValidRegex.Match(responseString);
@@ -55,31 +54,12 @@ namespace WebAPI.Authentication
             return new StreamReader(response.GetResponseStream()).ReadToEnd();
         }
 
-        private static string GenerateQuery(Dictionary<string, string> collection, bool useAmp = true)
+        private static string GenerateQuery(IDictionary<string, string> collection, bool useAmp = true)
         {
             var parts = (from key in collection.Keys
                          let value = collection[key]
                          select string.Format("{0}={1}", Uri.EscapeDataString(key), Uri.EscapeDataString(value)));
             return string.Join(useAmp ? "&" : "&amp;", parts);
-        }
-
-        private static Dictionary<string, string> ParseQuery(string query)
-        {
-            var queryParameters = new Dictionary<string, string>();
-            string[] querySegments = query.Split('&');
-            foreach (string segment in querySegments)
-            {
-                string[] parts = segment.Split('=');
-                if (parts.Length > 0)
-                {
-                    string key = Uri.UnescapeDataString(parts[0].Trim(new char[] { '?', ' ' }));
-                    string val = Uri.UnescapeDataString(parts[1].Trim());
-
-                    queryParameters.Add(key, val);
-                }
-            }
-
-            return queryParameters;
         }
     }
 }

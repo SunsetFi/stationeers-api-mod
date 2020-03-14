@@ -1,9 +1,11 @@
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Ceen;
 using WebAPI.Authentication;
 using WebAPI.Payloads;
 
-namespace WebAPI.Routes.Devices
+namespace WebAPI.Routes
 {
     class PostLogin : IWebRoute
     {
@@ -11,11 +13,11 @@ namespace WebAPI.Routes.Devices
 
         public string[] Segments => new[] { "login" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
-            if (e.Context.Request.Url.Query.Length == 0)
+            if (context.Request.QueryString.Count == 0)
             {
-                e.Context.SendResponse(400, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.BadRequest, new ErrorPayload()
                 {
                     message = "Login must forward a steam openid authentication response."
                 });
@@ -24,13 +26,13 @@ namespace WebAPI.Routes.Devices
 
             try
             {
-                var user = Authenticator.VerifyLogin(e.Context.Request.Url);
-                e.Context.SendResponse(200, LoginPayload.FromApiUser(user));
+                var user = Authenticator.VerifyLogin(context.Request.QueryString);
+                await context.SendResponse(HttpStatusCode.OK, LoginPayload.FromApiUser(user));
                 return;
             }
             catch (AuthenticationException)
             {
-                e.Context.SendResponse(401, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.Unauthorized, new ErrorPayload()
                 {
                     message = "Unauthorized."
                 });
