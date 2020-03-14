@@ -16,6 +16,15 @@ namespace WebAPI
     // From: https://answers.unity.com/questions/305882/how-do-i-invoke-functions-on-the-main-thread.html
     public class Dispatcher : MonoBehaviour
     {
+        public static Task RunOnMainThread(Action action)
+        {
+            return Dispatcher.RunOnMainThread<object>(() =>
+            {
+                action();
+                return null;
+            });
+        }
+
         public static Task<T> RunOnMainThread<T>(Func<T> function)
         {
             lock (_backlog)

@@ -1,6 +1,8 @@
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Assets.Scripts.Objects.Pipes;
+using Ceen;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices.ById
@@ -11,21 +13,21 @@ namespace WebAPI.Routes.Devices.ById
 
         public string[] Segments => new[] { "devices", ":deviceId" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
             // TODO: Return UNPROCESSABLE_ENTITY if deviceId invalid.
             var referenceId = long.Parse(pathParams["deviceId"]);
-            var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
+            var device = await Dispatcher.RunOnMainThread(() => Device.AllDevices.Find(x => x.ReferenceId == referenceId));
             if (device == null)
             {
-                e.Context.SendResponse(404, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
                 {
                     message = "Device not found."
                 });
                 return;
             }
 
-            e.Context.SendResponse(200, DevicePayload.FromDevice(device));
+            await context.SendResponse(HttpStatusCode.OK, DevicePayload.FromDevice(device));
         }
     }
 }

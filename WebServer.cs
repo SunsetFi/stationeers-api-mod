@@ -8,18 +8,6 @@ using Ceen.Httpd;
 
 namespace WebAPI
 {
-    public class RequestEventArgs : EventArgs
-    {
-        public HttpListenerContext Context { get; private set; }
-
-        public string Body { get; private set; }
-
-        public RequestEventArgs(HttpListenerContext context, string body)
-        {
-            this.Context = context;
-            this.Body = body;
-        }
-    }
     public class WebServer
     {
         static void Log(string message)
@@ -27,9 +15,7 @@ namespace WebAPI
             WebAPIPlugin.Instance.Log("[WebServer]: " + message);
         }
 
-        public event EventHandler<RequestEventArgs> OnRequest;
-
-        public void Start()
+        public void Start(HttpHandlerDelegate handler)
         {
             WebServer.Log("Starting web server");
 
@@ -37,12 +23,7 @@ namespace WebAPI
             var tcs = new CancellationTokenSource();
             var config = new ServerConfig()
                 .AddLogger(OnLogMessage)
-                .AddRoute(
-                    Ceen.MvcExtensionMethods.ToRoute(
-                        typeof(WebAPIPlugin).Assembly,
-                        new Ceen.Mvc.ControllerRouterConfig()
-                    )
-                );
+                .AddRoute(handler);
 
             var task = HttpServer.ListenAsync(
                 new IPEndPoint(IPAddress.Any, 8080),

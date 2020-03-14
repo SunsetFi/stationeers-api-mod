@@ -1,10 +1,11 @@
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Assets.Scripts.Networking;
-using Newtonsoft.Json;
+using Ceen;
 using WebAPI.Payloads;
 
-namespace WebAPI.Routes.Devices
+namespace WebAPI.Routes.Players.BySteamId
 {
     class KickPlayer : IWebRoute
     {
@@ -12,44 +13,49 @@ namespace WebAPI.Routes.Devices
 
         public string[] Segments => new[] { "players", ":steamId", "kick" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
             var steamIdStr = pathParams["steamId"];
             ulong steamId;
             if (!ulong.TryParse(steamIdStr, out steamId))
             {
-                e.Context.SendResponse(404, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
                 {
                     message = "SteamID not found."
                 });
+                return;
             }
 
-            var player = NetworkManagerOverride.PlayerConnections.Find(x => x.SteamId == steamId);
+            var player = await Dispatcher.RunOnMainThread(() => NetworkManagerOverride.PlayerConnections.Find(x => x.SteamId == steamId));
             if (player == null)
             {
-                e.Context.SendResponse(404, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
                 {
                     message = "SteamID not found."
                 });
+                return;
             }
 
             KickPlayerPayload payload = null;
             try
             {
-                payload = JsonConvert.DeserializeObject<KickPlayerPayload>(e.Body);
+                payload = context.ParseBody<KickPlayerPayload>();
             }
             catch
             {
-                e.Context.SendResponse(400, new ErrorPayload()
+                await context.SendResponse(HttpStatusCode.BadRequest, new ErrorPayload()
                 {
                     message = "Expected body to be KickPlayerPayload."
                 });
                 return;
             }
 
-            NetworkManagerHudOverride.Instance.KickPlayer(player.SteamName, payload.reason.Length > 0 ? payload.reason : "");
+            await Dispatcher.RunOnMainThread(() =>
+            {
+                NetworkManagerHudOverride.Instance.KickPlayer(player.SteamName, payload.reason.Length > 0 ? payload.reason : "");
+            });
 
-            e.Context.SendResponse(200, PlayerPayload.FromPlayerConnection(player));
+            await context.SendResponse(HttpStatusCode.OK, PlayerPayload.FromPlayerConnection(player));
         }
     }
 }

@@ -1,5 +1,7 @@
 
+using System.Threading.Tasks;
 using BepInEx;
+using Ceen;
 using UnityEngine;
 
 namespace WebAPI
@@ -27,12 +29,18 @@ namespace WebAPI
 
             if (WebAPI.Config.Instance.enabled)
             {
-                _webServer.Start();
+                _webServer.Start(OnRequest);
             }
             else
             {
                 Log("Not enabled.");
             }
+        }
+
+        async Task<bool> OnRequest(IHttpContext context)
+        {
+            await Dispatcher.RunOnMainThread(() => Log("I am handling the request at" + context.Request.Path));
+            return await _router.HandleRequest(context);
         }
     }
 }
