@@ -38,45 +38,6 @@ To specify the password, send it as the `password` query parameter. eg `GET /dev
 
 ## Supported Requests
 
-### GET /devices
-
-Gets an array of all devices
-
-### GET /devices/:deviceId
-
-Gets a device by reference id.
-
-### POST /devices/:deviceId
-
-Modifies device properties
-
-#### Body
-
-- `customName` (string, optional): Change the labeler-given name of a device.
-- `accessState` (int, optional): Set the bitmask of allowed access card colors.
-
-### GET /devices/:deviceId/logic
-
-Gets all readable logic values for a device.
-
-### GET /devices/:deviceId/logic/:logicType
-
-Gets a readable logic value by logic type.
-
-### POST /devices/:deviceId/logic/:logicType
-
-Writes a writable logic value by logic type.
-
-#### Body
-
-JSON object with the following properties:
-
-- `value` (number): The value to write to the logic type.
-
-### GET /items
-
-Gets a list of all items on the server.
-
 ### GET /server
 
 Gets information about the server.
@@ -118,6 +79,57 @@ steamId should be a valid steamId, but the player does not have to be on the ser
 
 - `duration` (int): The number of hours to ban the player for.
 - `reason` (string, optional): The reason message for the ban. Can be empty.
+
+### GET /bans
+
+Gets an array of all bans.
+
+### GET /bans/:steamId
+
+Gets a ban by steam id.
+
+### DELETE /bans/:steamId
+
+Removes a ban by steam id.
+
+### GET /devices
+
+Gets an array of all devices
+
+### GET /devices/:deviceId
+
+Gets a device by reference id.
+
+### POST /devices/:deviceId
+
+Modifies device properties
+
+#### Body
+
+- `customName` (string, optional): Change the labeler-given name of a device.
+- `accessState` (int, optional): Set the bitmask of allowed access card colors.
+
+### GET /devices/:deviceId/logic
+
+Gets all readable logic values for a device.
+
+### GET /devices/:deviceId/logic/:logicType
+
+Gets a readable logic value by logic type.
+
+### POST /devices/:deviceId/logic/:logicType
+
+Writes a writable logic value by logic type.
+
+#### Body
+
+JSON object with the following properties:
+
+- `value` (number): The value to write to the logic type.
+
+### GET /items
+
+Gets a list of all items on the server.
 
 # TODO
 
