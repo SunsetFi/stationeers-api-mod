@@ -87,11 +87,11 @@ namespace WebAPI
             {
                 return await _router.HandleRequest(context);
             }
-            catch (AuthenticationException)
+            catch (AuthenticationException e)
             {
                 await context.SendResponse(HttpStatusCode.Unauthorized, new ErrorPayload()
                 {
-                    message = "Unauthorized."
+                    message = e.Message
                 });
                 return true;
             }
