@@ -17,15 +17,26 @@ namespace WebAPI
         }
 
         public bool enabled { get; set; }
-        public string password { get; set; }
+        public bool steamAuthentication { get; set; }
+        public string[] allowedSteamIds { get; set; }
+        public string plaintextPassword { get; set; }
         public int port { get; set; }
         public string jwtSecret { get; set; }
+
+        public bool HasAuthentication
+        {
+            get
+            {
+                return this.steamAuthentication || !string.IsNullOrEmpty(this.plaintextPassword);
+            }
+        }
 
         public Config()
         {
             this.enabled = true;
             this.port = 4444;
             this.jwtSecret = Guid.NewGuid().ToString();
+            this.steamAuthentication = false;
         }
 
         public static void LoadConfig()

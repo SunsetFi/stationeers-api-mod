@@ -28,6 +28,7 @@ namespace WebAPI.Authentication
                 .WithAlgorithm(new HMACSHA256Algorithm())
                 .WithSecret(Config.Instance.jwtSecret)
                 .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds())
+                .AddClaim("isSteamUser", true)
                 .AddClaim("steamId", user.steamId.ToString())
                 .Encode();
             return token;
@@ -35,8 +36,47 @@ namespace WebAPI.Authentication
 
         public static ApiUser VerifyAuth(IHttpContext context)
         {
+            if (!Config.Instance.HasAuthentication)
+            {
+                return new ApiUser()
+                {
+                    isRootUser = true
+                };
+            }
+
+            var user = Authenticator.VerifyPlaintextPassword(context);
+            if (user != null)
+            {
+                return user;
+            }
+
+            user = Authenticator.VerifyJWTAuthentication(context);
+            if (user != null)
+            {
+                return user;
+            }
+
+            throw new AuthenticationException("Unauthorized.");
+        }
+
+        private static ApiUser VerifyJWTAuthentication(IHttpContext context)
+        {
+            if (!Config.Instance.steamAuthentication)
+            {
+                return null;
+            }
+
+            if (!context.Request.Headers.ContainsKey("Authorization"))
+            {
+                return null;
+            }
+
             var authHeader = context.Request.Headers["Authorization"];
             var match = BearerRegex.Match(authHeader);
+            if (!match.Success)
+            {
+                throw new AuthenticationException("Malformed Authorization Header.");
+            }
             var token = match.Groups[1].Value;
 
             try
@@ -47,6 +87,16 @@ namespace WebAPI.Authentication
                     .MustVerifySignature()
                     .Decode(token);
                 var apiUser = JsonConvert.DeserializeObject<ApiUser>(json);
+
+                if (apiUser.isSteamUser)
+                {
+                    var allowedSteamIds = Config.Instance.allowedSteamIds;
+                    if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(apiUser.steamId))
+                    {
+                        throw new AuthenticationException("Unauthorized.");
+                    }
+                }
+
                 return apiUser;
             }
             catch (TokenExpiredException)
@@ -57,6 +107,27 @@ namespace WebAPI.Authentication
             {
                 throw new AuthenticationException("Invalid Signature.");
             }
+        }
+
+        private static ApiUser VerifyPlaintextPassword(IHttpContext context)
+        {
+            // This is temporary, should be replaced with steam login and jwt.
+            var password = WebAPI.Config.Instance.plaintextPassword;
+            if (string.IsNullOrEmpty(password))
+            {
+                return null;
+            }
+
+            var suppliedPassword = context.Request.QueryString["password"];
+            if (suppliedPassword != password)
+            {
+                throw new AuthenticationException("Unauthorized.");
+            }
+
+            return new ApiUser()
+            {
+                isRootUser = true
+            };
         }
 
         public static ApiUser VerifyLogin(IDictionary<string, string> queryString)
@@ -75,7 +146,13 @@ namespace WebAPI.Authentication
                 throw new AuthenticationException("Invalid Credentials.");
             }
 
-            var user = new ApiUser() { steamId = steamId.ToString() };
+            var allowedSteamIds = Config.Instance.allowedSteamIds;
+            if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamId.ToString()))
+            {
+                throw new AuthenticationException("Unauthorized.");
+            }
+
+            var user = new ApiUser() { isSteamUser = true, steamId = steamId.ToString() };
             return user;
         }
 

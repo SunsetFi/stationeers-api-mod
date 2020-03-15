@@ -4,6 +4,8 @@
 - Make port configurable.
 - Add steam openid authentication.
 - Fix crashes when dealing with server name and password.
+- Fix kick/ban being GET requests, should be POST.
+- Add player ping / score / playtime to player payload.
 
 ### 1.2.0
 

@@ -9,7 +9,7 @@ namespace WebAPI.Routes.Players.BySteamId
 {
     class BanPlayer : IWebRoute
     {
-        public string Method => "GET";
+        public string Method => "POST";
 
         public string[] Segments => new[] { "players", ":steamId", "ban" };
 

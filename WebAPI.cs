@@ -56,21 +56,6 @@ namespace WebAPI
 
         async Task<bool> OnRequest(IHttpContext context)
         {
-            // This is temporary, should be replaced with steam login and jwt.
-            var password = WebAPI.Config.Instance.password;
-            if (!string.IsNullOrEmpty(password))
-            {
-                var suppliedPassword = context.Request.QueryString["password"];
-                if (suppliedPassword != password)
-                {
-                    await context.SendResponse(HttpStatusCode.Unauthorized, new ErrorPayload()
-                    {
-                        message = "Unauthorized."
-                    });
-                    return true;
-                }
-            }
-
             // Does this need to be outside of OPTIONS / apply to all requests?
             context.Response.AddHeader("Access-Control-Allow-Origin", "*");
 
