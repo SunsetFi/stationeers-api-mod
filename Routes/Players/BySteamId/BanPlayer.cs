@@ -21,7 +21,7 @@ namespace WebAPI.Routes.Players.BySteamId
             {
                 await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
                 {
-                    message = "SteamID not found."
+                    message = "Invalid SteamID."
                 });
                 return;
             }
