@@ -19,11 +19,13 @@ namespace WebAPI
         public bool enabled { get; set; }
         public string password { get; set; }
         public int port { get; set; }
+        public string jwtSecret { get; set; }
 
         public Config()
         {
             this.enabled = true;
             this.port = 4444;
+            this.jwtSecret = Guid.NewGuid().ToString();
         }
 
         public static void LoadConfig()

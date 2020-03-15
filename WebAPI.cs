@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BepInEx;
 using Ceen;
 using UnityEngine;
+using WebAPI.Authentication;
 using WebAPI.Payloads;
 
 namespace WebAPI
@@ -70,20 +71,29 @@ namespace WebAPI
                 }
             }
 
+            // Does this need to be outside of OPTIONS / apply to all requests?
+            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+
             if (context.Request.Method == "OPTIONS")
             {
-                context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
+                context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization");
                 context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST");
                 context.Response.AddHeader("Access-Control-Max-Age", "1728000");
                 context.Response.StatusCode = HttpStatusCode.OK;
                 return true;
             }
 
-            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-
             try
             {
                 return await _router.HandleRequest(context);
+            }
+            catch (AuthenticationException)
+            {
+                await context.SendResponse(HttpStatusCode.Unauthorized, new ErrorPayload()
+                {
+                    message = "Unauthorized."
+                });
+                return true;
             }
             catch (Exception e)
             {
@@ -94,6 +104,5 @@ namespace WebAPI
                 return true;
             }
         }
-
     }
 }

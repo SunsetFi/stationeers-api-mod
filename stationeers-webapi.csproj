@@ -36,6 +36,7 @@
   <ItemGroup>
     <PackageReference Include="Ceen.Httpd" Version="0.9.8" />
     <PackageReference Include="Ceen.Mvc" Version="0.9.8" />
+    <PackageReference Include="JWT" Version="6.1.0" />
   </ItemGroup>
 
   <PropertyGroup>
