@@ -2,6 +2,8 @@
 
 - Switch to Ceen http library for future ssl security.
 - Make port configurable.
+- Add steam openid authentication.
+- Fix crashes when dealing with server name and password.
 
 ### 1.2.0
 
