@@ -14,10 +14,10 @@ namespace WebAPI.Payloads
         {
             var payload = new ServerPayload()
             {
-                name = server.ServerName.text,
+                name = Reflection.GetPrivateField<string>(server, "ServerNameText"),
                 mapName = WorldManager.CurrentWorldName, // server.MapName.value
-                maxPlayers = int.Parse(server.MaxPlayer.text),
-                password = server.Password.text
+                maxPlayers = int.Parse(Reflection.GetPrivateField<string>(server, "MaxPlayerText")),
+                password = Reflection.GetPrivateField<string>(server, "PasswordText")
             };
             return payload;
         }

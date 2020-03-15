@@ -35,17 +35,21 @@ namespace WebAPI.Routes.Server
                 var serverInstance = SteamServer.Instance;
                 if (payload.name != null && payload.name.Length > 0)
                 {
-                    serverInstance.ServerName.text = payload.name;
-                    var prop = serverInstance.GetType().GetField("ServerNameText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    prop.SetValue(serverInstance, payload.name);
+                    if (serverInstance.ServerName)
+                    {
+                        serverInstance.ServerName.text = payload.name;
+                    }
+                    Reflection.SetPrivateField(serverInstance, "ServerNameText", payload.name);
                     SteamGameServer.SetServerName(payload.name);
                 }
 
                 if (payload.password != null)
                 {
-                    serverInstance.Password.text = payload.password;
-                    var prop = serverInstance.GetType().GetField("PasswordText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    prop.SetValue(serverInstance, payload.password);
+                    if (serverInstance.Password)
+                    {
+                        serverInstance.Password.text = payload.password;
+                    }
+                    Reflection.SetPrivateField(serverInstance, "PasswordText", payload.name);
                     SteamGameServer.SetPasswordProtected(payload.password.Length > 0);
                 }
 
