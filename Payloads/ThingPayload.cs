@@ -23,8 +23,6 @@ namespace WebAPI.Payloads
 
         public Dictionary<int, string> slotReferenceIds { get; set; }
 
-        public Vector3Payload position { get; set; }
-
         public static ThingPayload FromThing(Thing thing)
         {
             var payload = new ThingPayload();
@@ -40,7 +38,6 @@ namespace WebAPI.Payloads
             payload.customName = thing.IsCustomName ? thing.CustomName : null;
             payload.accessState = thing.AccessState;
             payload.slotReferenceIds = ThingPayload.GetSlotReferenceIds(thing);
-            payload.position = Vector3Payload.FromVector3(thing.Position);
         }
 
         private static Dictionary<int, string> GetSlotReferenceIds(Thing thing)
