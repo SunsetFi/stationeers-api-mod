@@ -9,7 +9,7 @@ namespace WebAPI.Routes.Players.BySteamId
 {
     class KickPlayer : IWebRoute
     {
-        public string Method => "GET";
+        public string Method => "POST";
 
         public string[] Segments => new[] { "players", ":steamId", "kick" };
 
