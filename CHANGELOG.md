@@ -7,6 +7,7 @@
 - Fix kick/ban being GET requests, should be POST.
 - Add player ping / score / playtime to player payload.
 - Add GET bans and DELETE ban
+- Fix duplicate items in Devices and Items
 
 ### 1.2.0
 
