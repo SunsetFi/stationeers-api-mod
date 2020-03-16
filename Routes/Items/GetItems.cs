@@ -16,7 +16,16 @@ namespace WebAPI.Routes.Items
 
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
-            var payload = await Dispatcher.RunOnMainThread(() => Item.AllItems.Select(x => ItemPayload.FromItem(x)));
+            var payload = await Dispatcher.RunOnMainThread(() =>
+            {
+                // AllDevices has duplicates, so filtering this to be safe.
+                var set = new HashSet<Item>();
+                foreach (var item in Item.AllItems)
+                {
+                    set.Add(item);
+                }
+                return set.Select(x => ItemPayload.FromItem(x));
+            });
             await context.SendResponse(HttpStatusCode.OK, payload);
         }
     }
