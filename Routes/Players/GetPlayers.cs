@@ -16,7 +16,7 @@ namespace WebAPI.Routes.Players
 
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
-            var players = await Dispatcher.RunOnMainThread(() => NetworkManagerOverride.PlayerConnections.Select(x => PlayerPayload.FromPlayerConnection(x)));
+            var players = await Dispatcher.RunOnMainThread(() => NetworkManagerOverride.PlayerConnections.Select(x => PlayerPayload.FromPlayerConnection(x)).ToArray());
             await context.SendResponse(HttpStatusCode.OK, players);
         }
     }

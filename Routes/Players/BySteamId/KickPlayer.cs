@@ -50,12 +50,14 @@ namespace WebAPI.Routes.Players.BySteamId
                 return;
             }
 
-            await Dispatcher.RunOnMainThread(() =>
+            var result = await Dispatcher.RunOnMainThread(() =>
             {
+                var playerPayload = PlayerPayload.FromPlayerConnection(player);
                 NetworkManagerHudOverride.Instance.KickPlayer(player.SteamName, payload.reason.Length > 0 ? payload.reason : "");
+                return payload;
             });
 
-            await context.SendResponse(HttpStatusCode.OK, PlayerPayload.FromPlayerConnection(player));
+            await context.SendResponse(HttpStatusCode.OK, result);
         }
     }
 }
