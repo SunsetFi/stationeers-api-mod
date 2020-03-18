@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Assets.Scripts.Networking;
 using Ceen;
+using WebAPI.Authentication;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Players
@@ -16,6 +17,8 @@ namespace WebAPI.Routes.Players
 
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
+            Authenticator.VerifyAuth(context);
+
             var players = await Dispatcher.RunOnMainThread(() => NetworkManagerOverride.PlayerConnections.Select(x => PlayerPayload.FromPlayerConnection(x)).ToArray());
             await context.SendResponse(HttpStatusCode.OK, players);
         }

@@ -16,6 +16,8 @@ namespace WebAPI.Routes.Server
 
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
+            Authenticator.VerifyAuth(context);
+
             ServerPayload payload = null;
             try
             {

@@ -16,6 +16,7 @@ namespace WebAPI.Routes.Chat
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
             Authenticator.VerifyAuth(context);
+
             var text = await Dispatcher.RunOnMainThread(() =>
             {
                 // Chat panel just contains text.  If we want the real display name, we should record the chat network messages.
