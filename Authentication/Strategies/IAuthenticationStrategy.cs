@@ -13,13 +13,12 @@ namespace WebAPI.Authentication
 
     public class AuthenticationResult
     {
-        public ApiUser User { get; private set; }
         public bool Handled { get; private set; }
-
+        public ApiUser User { get; private set; }
         public AuthenticationResult(bool handled, ApiUser user)
         {
-            this.User = user;
             this.Handled = handled;
+            this.User = user;
         }
     }
 }

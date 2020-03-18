@@ -32,23 +32,13 @@ namespace WebAPI.Authentication
         public static async Task<ApiUser> Authenticate(IHttpContext context)
         {
             var result = await AuthenticationStrategies.TryAuthenticate(context);
-            if (result.Handled)
+            if (!result.Handled)
             {
-                return result.User;
+                await context.SendResponse(HttpStatusCode.Unauthorized, "Unauthorized.");
+                return null;
             }
 
-            await context.SendResponse(HttpStatusCode.Unauthorized, "Unauthorized.");
-            return null;
-        }
-
-        public static string GenerateToken(ApiUser user)
-        {
-            var builder = new JwtBuilder()
-                .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(Config.JWTSecret)
-                .AddClaim("exp", new DateTimeOffset(Authenticator.TokenExpireTime).ToUnixTimeSeconds());
-            user.SerializeToJwt(builder);
-            return builder.Encode();
+            return result.User;
         }
 
         public static ApiUser VerifyAuth(IHttpContext context)
@@ -68,6 +58,17 @@ namespace WebAPI.Authentication
             }
 
             return user;
+        }
+
+
+        public static string GenerateToken(ApiUser user)
+        {
+            var builder = new JwtBuilder()
+                .WithAlgorithm(new HMACSHA256Algorithm())
+                .WithSecret(Config.JWTSecret)
+                .AddClaim("exp", new DateTimeOffset(Authenticator.TokenExpireTime).ToUnixTimeSeconds());
+            user.SerializeToJwt(builder);
+            return builder.Encode();
         }
 
         public static void SetUserToken(IHttpContext context, ApiUser user)
