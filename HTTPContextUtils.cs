@@ -18,19 +18,26 @@ namespace WebAPI
         public static Task SendResponse(this IHttpContext context, HttpStatusCode statusCode, object jsonBody)
         {
             var jsonText = JsonConvert.SerializeObject(jsonBody, Formatting.Indented);
-            return HTTPContextUtils.SendResponse(context, statusCode, jsonText);
+            return HTTPContextUtils.SendResponse(context, statusCode, "application/json", jsonText);
         }
 
-        public static async Task SendResponse(this IHttpContext context, HttpStatusCode statusCode, string jsonBody = null)
+        public static async Task SendResponse(this IHttpContext context, HttpStatusCode statusCode, string contentType = null, string body = null)
         {
             var response = context.Response;
 
             response.StatusCode = statusCode;
 
-            response.Headers.Add("Content-Type", "application/json");
-            if (jsonBody != null)
+            if (contentType != null)
             {
-                await response.WriteAllJsonAsync(jsonBody);
+                response.Headers.Add("Content-Type", contentType);
+            }
+
+            if (body != null)
+            {
+                var stream = new MemoryStream();
+                var writer = new StreamWriter(stream, System.Text.Encoding.UTF8);
+                writer.Write(body);
+                await response.WriteAllAsync(stream, contentType);
             }
         }
     }

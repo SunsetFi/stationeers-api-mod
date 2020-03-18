@@ -1,47 +1,54 @@
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Text;
-using System.Net;
-using System.IO;
-using System.Text.RegularExpressions;
-using Ceen;
 using JWT.Builder;
-using JWT;
-using Newtonsoft.Json;
 using JWT.Algorithms;
+using Ceen;
+using WebAPI.Authentication.Strategies;
+using System.Threading.Tasks;
+using Ceen.Httpd;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using JWT;
+using System.Linq;
 
 namespace WebAPI.Authentication
 {
     public static class Authenticator
     {
         private static readonly Regex BearerRegex = new Regex(@"Bearer\s+([^$]+)", RegexOptions.Compiled);
-        private static readonly Regex SteamIdRegex = new Regex(@"openid\/id\/([0-9]{17,25})", RegexOptions.Compiled);
-        private static readonly Regex IsValidRegex = new Regex(@"(is_valid\s*:\s*true)", RegexOptions.Compiled);
 
-        private const string ProviderUri = @"https://steamcommunity.com/openid/login";
+        private static DateTime TokenExpireTime
+        {
+            get
+            {
+                return DateTime.UtcNow.AddHours(1);
+            }
+        }
+
+        // TODO: Set from config
+        private static readonly IAuthenticationStrategy AuthenticationStrategies = new SteamAuthenticationStrategy();
+
+        public static async Task<ApiUser> Authenticate(IHttpContext context)
+        {
+            var result = await AuthenticationStrategies.TryAuthenticate(context);
+            if (result.Handled)
+            {
+                return result.User;
+            }
+
+            await context.SendResponse(HttpStatusCode.Unauthorized, "Unauthorized.");
+            return null;
+        }
 
         public static string GenerateToken(ApiUser user)
         {
-            var token = new JwtBuilder()
+            var builder = new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
                 .WithSecret(Config.JWTSecret)
-                .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds());
-            if (user.isRootUser)
-            {
-                token.AddClaim("isRootUser", true);
-            }
-            if (user.isSteamUser)
-            {
-                token.AddClaim("isSteamUser", true);
-                token.AddClaim("steamId", user.steamId.ToString());
-            }
-            if (user.endpoint != null)
-            {
-                token.AddClaim("endpoint", user.endpoint);
-            }
-            return token.Encode();
+                .AddClaim("exp", new DateTimeOffset(Authenticator.TokenExpireTime).ToUnixTimeSeconds());
+            user.SerializeToJwt(builder);
+            return builder.Encode();
         }
 
         public static ApiUser VerifyAuth(IHttpContext context)
@@ -54,40 +61,47 @@ namespace WebAPI.Authentication
                 };
             }
 
-            var user = Authenticator.VerifyPlaintextPassword(context);
-            if (user != null)
+            ApiUser user;
+            if (!AuthenticationStrategies.TryVerify(context, out user))
             {
-                return user;
+                throw new AuthenticationException(HttpStatusCode.Unauthorized, "Unauthorized.");
             }
 
-            user = Authenticator.VerifyJWTAuthentication(context);
-            if (user != null)
-            {
-                return user;
-            }
-
-            throw new AuthenticationException("Unauthorized.");
+            return user;
         }
 
-        private static ApiUser VerifyJWTAuthentication(IHttpContext context)
+        public static void SetUserToken(IHttpContext context, ApiUser user)
         {
-            if (!Config.SteamAuthentication)
+            var token = Authenticator.GenerateToken(user);
+            context.Response.Cookies.Add(new ResponseCookie("Authorization", token)
             {
-                return null;
+                Expires = Authenticator.TokenExpireTime,
+                HttpOnly = true,
+                Secure = Config.Protocol == "https"
+            });
+        }
+
+        public static ApiUser GetUserFromToken(IHttpContext context)
+        {
+            string token = null;
+            if (context.Request.Cookies.ContainsKey("Authorization"))
+            {
+                token = context.Request.Cookies["Authorization"];
+            }
+            else if (context.Request.Headers.ContainsKey("Authorization"))
+            {
+                var authHeader = context.Request.Headers["Authorization"];
+                var match = BearerRegex.Match(authHeader);
+                if (match.Success)
+                {
+                    token = match.Groups[1].Value;
+                }
             }
 
-            if (!context.Request.Headers.ContainsKey("Authorization"))
+            if (token == null)
             {
-                return null;
+                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "Unauthorized.");
             }
-
-            var authHeader = context.Request.Headers["Authorization"];
-            var match = BearerRegex.Match(authHeader);
-            if (!match.Success)
-            {
-                throw new AuthenticationException("Malformed Authorization Header.");
-            }
-            var token = match.Groups[1].Value;
 
             try
             {
@@ -98,130 +112,58 @@ namespace WebAPI.Authentication
                     .Decode(token);
                 var apiUser = JsonConvert.DeserializeObject<ApiUser>(json);
 
-                if (apiUser.isSteamUser)
-                {
-                    var allowedSteamIds = Config.AllowedSteamIds;
-                    if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(apiUser.steamId))
-                    {
-                        Logging.Log(
-                            new Dictionary<string, string>() {
-                                { "SteamID", apiUser.steamId }
-                            },
-                            "JWT login request contained unauthenticated SteamID."
-                        );
-                        throw new AuthenticationException("Unauthorized.");
-                    }
-                }
-
-                var endpoint = context.Request.RemoteEndPoint.ToPortlessString();
-                if (apiUser.endpoint != null && apiUser.endpoint != endpoint)
-                {
-                    Logging.Log(
-                        new Dictionary<string, string>() {
-                            { "RequestEndpoint", endpoint },
-                            { "JWTEndpoint", apiUser.endpoint }
-                        },
-                        "JWT login request does not match the source endpoint."
-                    );
-                    throw new AuthenticationException("IP Changed.");
-                }
+                VerifySteamUser(apiUser);
+                VerifyEndpoint(context, apiUser);
 
                 return apiUser;
             }
+            catch (JsonException)
+            {
+                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "Malformed Token.");
+            }
             catch (TokenExpiredException)
             {
-                throw new AuthenticationException("Token Expired.");
+                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "Token Expired.");
             }
             catch (SignatureVerificationException)
             {
-                throw new AuthenticationException("Invalid Signature.");
+                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "Invalid Signature.");
             }
         }
 
-        private static ApiUser VerifyPlaintextPassword(IHttpContext context)
+
+        private static void VerifyEndpoint(IHttpContext context, ApiUser apiUser)
         {
-            // This is temporary, should be replaced with steam login and jwt.
-            var password = WebAPI.Config.PlaintextPassword;
-            if (string.IsNullOrEmpty(password))
-            {
-                return null;
-            }
-
-            var suppliedPassword = context.Request.QueryString["password"];
-            if (suppliedPassword != password)
-            {
-                throw new AuthenticationException("Unauthorized.");
-            }
-
-            return new ApiUser()
-            {
-                isRootUser = true
-            };
-        }
-
-        public static ApiUser VerifyLogin(IHttpContext context)
-        {
-            var queryString = context.Request.QueryString;
-            queryString["openid.mode"] = "check_authentication";
-
-            var responseString = HttpPost(ProviderUri, GenerateQuery(queryString));
-
-            var match = SteamIdRegex.Match(queryString["openid.claimed_id"]);
-            ulong steamId = ulong.Parse(match.Groups[1].Value);
-
-            match = IsValidRegex.Match(responseString);
-            var isValid = match.Success;
-            if (!isValid)
+            var endpoint = context.Request.RemoteEndPoint.ToPortlessString();
+            if (apiUser.endpoint != null && apiUser.endpoint != endpoint)
             {
                 Logging.Log(
                     new Dictionary<string, string>() {
-                        { "SteamID", steamId.ToString() }
+                            { "RequestEndpoint", endpoint },
+                            { "JWTEndpoint", apiUser.endpoint }
                     },
-                    "Steam rejected the provided openid credentials."
+                    "JWT login request does not match the source endpoint."
                 );
-                throw new AuthenticationException("Invalid Credentials.");
+                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "IP Changed.");
             }
-
-            var allowedSteamIds = Config.AllowedSteamIds;
-            if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamId.ToString()))
-            {
-                Logging.Log(
-                    new Dictionary<string, string>() {
-                        { "SteamID", steamId.ToString() }
-                    },
-                    "Attempted login by a SteamID not in the allow list."
-                );
-                throw new AuthenticationException("Unauthorized.");
-            }
-
-            var user = new ApiUser() { isSteamUser = true, steamId = steamId.ToString(), endpoint = context.Request.RemoteEndPoint.ToPortlessString() };
-            return user;
         }
 
-        private static string HttpPost(string uri, string content)
+        private static void VerifySteamUser(ApiUser apiUser)
         {
-            var data = Encoding.ASCII.GetBytes(content);
-            var request = WebRequest.Create(ProviderUri);
-            request.Method = "POST";
-            request.Headers.Add("Accept-language", "en");
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = content.Length;
-            request.Timeout = 6000;
-            using (var stream = request.GetRequestStream())
+            if (apiUser.isSteamUser)
             {
-                stream.Write(data, 0, data.Length);
+                var allowedSteamIds = Config.AllowedSteamIds;
+                if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(apiUser.steamId))
+                {
+                    Logging.Log(
+                        new Dictionary<string, string>() {
+                                { "SteamID", apiUser.steamId }
+                        },
+                        "JWT login request contained unauthenticated SteamID."
+                    );
+                    throw new AuthenticationException(Ceen.HttpStatusCode.Forbidden, "Forbidden.");
+                }
             }
-
-            var response = (HttpWebResponse)request.GetResponse();
-            return new StreamReader(response.GetResponseStream()).ReadToEnd();
-        }
-
-        private static string GenerateQuery(IDictionary<string, string> collection, bool useAmp = true)
-        {
-            var parts = (from key in collection.Keys
-                         let value = collection[key]
-                         select string.Format("{0}={1}", Uri.EscapeDataString(key), Uri.EscapeDataString(value)));
-            return string.Join(useAmp ? "&" : "&amp;", parts);
         }
     }
 }

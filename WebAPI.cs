@@ -88,7 +88,7 @@ namespace WebAPI
                 context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
                 context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
                 context.Response.AddHeader("Access-Control-Max-Age", "1728000");
-                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
+                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization, Location");
                 context.Response.StatusCode = HttpStatusCode.NoContent;
                 context.Response.Headers["Content-Length"] = "0";
                 return true;
@@ -105,7 +105,7 @@ namespace WebAPI
             }
             catch (AuthenticationException e)
             {
-                await context.SendResponse(HttpStatusCode.Unauthorized, new ErrorPayload()
+                await context.SendResponse(e.StatusCode, new ErrorPayload()
                 {
                     message = e.Message
                 });
