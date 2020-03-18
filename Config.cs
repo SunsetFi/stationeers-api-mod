@@ -41,8 +41,7 @@ namespace WebAPI
 
         public static void LoadConfig()
         {
-            var assemblyLocation = typeof(Config).Assembly.Location;
-            var assemblyDir = Path.GetDirectoryName(assemblyLocation);
+            var assemblyDir = WebAPIPlugin.AssemblyDirectory;
             var path = Path.Combine(assemblyDir, "config.json");
             WebAPIPlugin.Instance.Log("Loading config at: " + path);
 

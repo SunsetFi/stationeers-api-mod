@@ -1,5 +1,6 @@
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BepInEx;
@@ -17,6 +18,16 @@ namespace WebAPI
 
         private readonly WebServer _webServer = new WebServer();
         private readonly WebRouter _router = new WebRouter();
+
+        public static string AssemblyDirectory
+        {
+            get
+            {
+                var assemblyLocation = typeof(WebAPIPlugin).Assembly.Location;
+                var assemblyDir = Path.GetDirectoryName(assemblyLocation);
+                return assemblyDir;
+            }
+        }
 
         public void Log(string line)
         {

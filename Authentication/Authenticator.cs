@@ -103,12 +103,26 @@ namespace WebAPI.Authentication
                     var allowedSteamIds = Config.Instance.allowedSteamIds;
                     if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(apiUser.steamId))
                     {
+                        Logging.Log(
+                            new Dictionary<string, string>() {
+                                { "SteamID", apiUser.steamId }
+                            },
+                            "JWT login request contained unauthenticated SteamID."
+                        );
                         throw new AuthenticationException("Unauthorized.");
                     }
                 }
 
-                if (apiUser.endpoint != null && apiUser.endpoint != context.Request.RemoteEndPoint.ToString())
+                var endpoint = context.Request.RemoteEndPoint.ToPortlessString();
+                if (apiUser.endpoint != null && apiUser.endpoint != endpoint)
                 {
+                    Logging.Log(
+                        new Dictionary<string, string>() {
+                            { "RequestEndpoint", endpoint },
+                            { "JWTEndpoint", apiUser.endpoint }
+                        },
+                        "JWT login request does not match the source endpoint."
+                    );
                     throw new AuthenticationException("IP Changed.");
                 }
 
@@ -159,16 +173,28 @@ namespace WebAPI.Authentication
             var isValid = match.Success;
             if (!isValid)
             {
+                Logging.Log(
+                    new Dictionary<string, string>() {
+                        { "SteamID", steamId.ToString() }
+                    },
+                    "Steam rejected the provided openid credentials."
+                );
                 throw new AuthenticationException("Invalid Credentials.");
             }
 
             var allowedSteamIds = Config.Instance.allowedSteamIds;
             if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamId.ToString()))
             {
+                Logging.Log(
+                    new Dictionary<string, string>() {
+                        { "SteamID", steamId.ToString() }
+                    },
+                    "Attempted login by a SteamID not in the allow list."
+                );
                 throw new AuthenticationException("Unauthorized.");
             }
 
-            var user = new ApiUser() { isSteamUser = true, steamId = steamId.ToString(), endpoint = context.Request.RemoteEndPoint.ToString() };
+            var user = new ApiUser() { isSteamUser = true, steamId = steamId.ToString(), endpoint = context.Request.RemoteEndPoint.ToPortlessString() };
             return user;
         }
 
