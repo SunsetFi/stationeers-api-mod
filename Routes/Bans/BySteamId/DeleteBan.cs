@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Payloads;
 
-namespace WebAPI.Routes.Players.BySteamId
+namespace WebAPI.Routes.Bans.BySteamId
 {
     class DeleteBan : IWebRoute
     {

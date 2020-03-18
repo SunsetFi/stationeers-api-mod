@@ -27,11 +27,21 @@ namespace WebAPI.Authentication
             var token = new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
                 .WithSecret(Config.Instance.jwtSecret)
-                .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds())
-                .AddClaim("isSteamUser", true)
-                .AddClaim("steamId", user.steamId.ToString())
-                .Encode();
-            return token;
+                .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds());
+            if (user.isRootUser)
+            {
+                token.AddClaim("isRootUser", true);
+            }
+            if (user.isSteamUser)
+            {
+                token.AddClaim("isSteamUser", true);
+                token.AddClaim("steamId", user.steamId.ToString());
+            }
+            if (user.endpoint != null)
+            {
+                token.AddClaim("endpoint", user.endpoint);
+            }
+            return token.Encode();
         }
 
         public static ApiUser VerifyAuth(IHttpContext context)
@@ -97,6 +107,11 @@ namespace WebAPI.Authentication
                     }
                 }
 
+                if (apiUser.endpoint != null && apiUser.endpoint != context.Request.RemoteEndPoint.ToString())
+                {
+                    throw new AuthenticationException("IP Changed.");
+                }
+
                 return apiUser;
             }
             catch (TokenExpiredException)
@@ -130,8 +145,9 @@ namespace WebAPI.Authentication
             };
         }
 
-        public static ApiUser VerifyLogin(IDictionary<string, string> queryString)
+        public static ApiUser VerifyLogin(IHttpContext context)
         {
+            var queryString = context.Request.QueryString;
             queryString["openid.mode"] = "check_authentication";
 
             var responseString = HttpPost(ProviderUri, GenerateQuery(queryString));
@@ -152,7 +168,7 @@ namespace WebAPI.Authentication
                 throw new AuthenticationException("Unauthorized.");
             }
 
-            var user = new ApiUser() { isSteamUser = true, steamId = steamId.ToString() };
+            var user = new ApiUser() { isSteamUser = true, steamId = steamId.ToString(), endpoint = context.Request.RemoteEndPoint.ToString() };
             return user;
         }
 

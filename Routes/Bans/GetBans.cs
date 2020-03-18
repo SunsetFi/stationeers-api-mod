@@ -1,13 +1,11 @@
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Assets.Scripts.Objects.Pipes;
 using Ceen;
 using WebAPI.Authentication;
 using WebAPI.Payloads;
 
-namespace WebAPI.Routes.Devices
+namespace WebAPI.Routes.Bans
 {
     class GetBans : IWebRoute
     {

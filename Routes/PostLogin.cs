@@ -29,7 +29,7 @@ namespace WebAPI.Routes
 
             try
             {
-                var user = Authenticator.VerifyLogin(context.Request.QueryString);
+                var user = Authenticator.VerifyLogin(context);
 
                 var token = Authenticator.GenerateToken(user);
 

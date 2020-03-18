@@ -7,5 +7,7 @@ namespace WebAPI.Authentication
         public string steamId { get; set; }
 
         public bool isRootUser { get; set; }
+
+        public string endpoint { get; set; }
     }
 }

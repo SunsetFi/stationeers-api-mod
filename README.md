@@ -92,6 +92,10 @@ Gets a ban by steam id.
 
 Removes a ban by steam id.
 
+### GET /chat
+
+Gets an array of chat messages currently known to the server.
+
 ### GET /devices
 
 Gets an array of all devices
@@ -133,12 +137,11 @@ Gets a list of all items on the server.
 
 # TODO
 
-- Make port configurable
 - More endpoints
   - Endpoints for Things in general?
     - Things derived from Things
       - DynamicThing ( => Item)
       - Structure ( => Device)
   - Endpoint for transmitters (special class of ILogicable seperate from devices)
-  - Endpoint for getting chat log
-- Real endpoint security. https and authentication.
+  - Endpoint for fabricators / manufacturing
+- Test chat endpoint on dedicated servers
