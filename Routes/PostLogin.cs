@@ -20,6 +20,7 @@ namespace WebAPI.Routes
         {
             if (context.Request.QueryString.Count == 0)
             {
+                // TODO: Send a redirect to steam openid page, consume and execute it from the client
                 await context.SendResponse(HttpStatusCode.BadRequest, new ErrorPayload()
                 {
                     message = "Login must forward a steam openid authentication response."

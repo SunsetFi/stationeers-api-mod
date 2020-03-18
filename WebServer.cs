@@ -1,4 +1,5 @@
 
+
 using System;
 using System.Net;
 using System.Threading;
@@ -25,7 +26,7 @@ namespace WebAPI
                 .AddRoute(handler);
 
             var task = HttpServer.ListenAsync(
-                new IPEndPoint(IPAddress.Any, Config.Instance.port),
+                new IPEndPoint(IPAddress.Any, Config.Port),
                 false,
                 config,
                 tcs.Token

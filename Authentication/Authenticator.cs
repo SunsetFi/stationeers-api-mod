@@ -26,7 +26,7 @@ namespace WebAPI.Authentication
         {
             var token = new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(Config.Instance.jwtSecret)
+                .WithSecret(Config.JWTSecret)
                 .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds());
             if (user.isRootUser)
             {
@@ -46,7 +46,7 @@ namespace WebAPI.Authentication
 
         public static ApiUser VerifyAuth(IHttpContext context)
         {
-            if (!Config.Instance.HasAuthentication)
+            if (!Config.HasAuthentication)
             {
                 return new ApiUser()
                 {
@@ -71,7 +71,7 @@ namespace WebAPI.Authentication
 
         private static ApiUser VerifyJWTAuthentication(IHttpContext context)
         {
-            if (!Config.Instance.steamAuthentication)
+            if (!Config.SteamAuthentication)
             {
                 return null;
             }
@@ -93,14 +93,14 @@ namespace WebAPI.Authentication
             {
                 var json = new JwtBuilder()
                     .WithAlgorithm(new HMACSHA256Algorithm())
-                    .WithSecret(Config.Instance.jwtSecret)
+                    .WithSecret(Config.JWTSecret)
                     .MustVerifySignature()
                     .Decode(token);
                 var apiUser = JsonConvert.DeserializeObject<ApiUser>(json);
 
                 if (apiUser.isSteamUser)
                 {
-                    var allowedSteamIds = Config.Instance.allowedSteamIds;
+                    var allowedSteamIds = Config.AllowedSteamIds;
                     if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(apiUser.steamId))
                     {
                         Logging.Log(
@@ -141,7 +141,7 @@ namespace WebAPI.Authentication
         private static ApiUser VerifyPlaintextPassword(IHttpContext context)
         {
             // This is temporary, should be replaced with steam login and jwt.
-            var password = WebAPI.Config.Instance.plaintextPassword;
+            var password = WebAPI.Config.PlaintextPassword;
             if (string.IsNullOrEmpty(password))
             {
                 return null;
@@ -182,7 +182,7 @@ namespace WebAPI.Authentication
                 throw new AuthenticationException("Invalid Credentials.");
             }
 
-            var allowedSteamIds = Config.Instance.allowedSteamIds;
+            var allowedSteamIds = Config.AllowedSteamIds;
             if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamId.ToString()))
             {
                 Logging.Log(

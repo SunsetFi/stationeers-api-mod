@@ -43,52 +43,60 @@ namespace WebAPI
             WebAPI.Config.LoadConfig();
             Dispatcher.Initialize();
 
-            if (WebAPI.Config.Instance.enabled)
+            if (WebAPI.Config.Enabled)
             {
                 var webRouteType = typeof(IWebRoute);
                 var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
                     .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
                     .ToArray();
 
-                Log("Initializing " + foundTypes.Length + " routes.");
                 foreach (var routeType in foundTypes)
                 {
                     var instance = (IWebRoute)Activator.CreateInstance(routeType);
                     _router.AddRoute(instance);
                 }
-                Log("Routes initialized");
 
                 _webServer.Start(OnRequest);
 
                 Logging.Log(
                     new Dictionary<string, string>() {
-                        {"DateTime", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")}
+                        {"DateTime", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")},
+                        {"RouteCount", foundTypes.Length.ToString()}
                     },
-                    "Server started"
+                    "API Server started"
                 );
             }
             else
             {
-                Log("Not enabled.");
+                Logging.Log(
+                    new Dictionary<string, string>() {
+                        {"DateTime", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")},
+                    },
+                    "API Server not started as it has been disabled."
+                );
             }
         }
 
         async Task<bool> OnRequest(IHttpContext context)
         {
-            // TODO: Properly implement cors
-            // See https://github.com/expressjs/cors/blob/master/lib/index.js#L159
-
-            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-            context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-            context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
-            context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
-            context.Response.AddHeader("Access-Control-Max-Age", "1728000");
+            // For a proper implementation of CORS, see https://github.com/expressjs/cors/blob/master/lib/index.js#L159
 
             if (context.Request.Method == "OPTIONS")
             {
+                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+                // TODO: Choose based on available routes at this path
+                context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
+                context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                context.Response.AddHeader("Access-Control-Max-Age", "1728000");
+                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
                 context.Response.StatusCode = HttpStatusCode.NoContent;
                 context.Response.Headers["Content-Length"] = "0";
                 return true;
+            }
+            else
+            {
+                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
             }
 
             try
