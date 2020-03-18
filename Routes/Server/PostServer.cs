@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Assets.Scripts.Networking;
 using Ceen;
 using Steamworks;
+using WebAPI.Authentication;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Server
@@ -16,6 +17,8 @@ namespace WebAPI.Routes.Server
 
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
+            Authenticator.VerifyAuth(context);
+
             ServerPayload payload = null;
             try
             {

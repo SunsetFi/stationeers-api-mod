@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Assets.Scripts.Objects.Pipes;
 using Ceen;
+using WebAPI.Authentication;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices.ById
@@ -15,6 +16,8 @@ namespace WebAPI.Routes.Devices.ById
 
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
+            Authenticator.VerifyAuth(context);
+
             // TODO: Return UNPROCESSABLE_ENTITY if deviceId invalid.
             var referenceId = long.Parse(pathParams["deviceId"]);
             var device = await Dispatcher.RunOnMainThread(() => Device.AllDevices.Find(x => x.ReferenceId == referenceId));
