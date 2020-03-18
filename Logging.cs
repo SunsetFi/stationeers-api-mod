@@ -24,8 +24,10 @@ namespace WebAPI
             }
             sb.Append("\n");
             sb.AppendFormat(message, args);
-            sb.Append("\n\n");
 
+            UnityEngine.Debug.Log("[WebAPI]: " + sb.ToString().Replace("\n", "\n\t"));
+
+            sb.Append("\n\n");
             File.AppendAllText(Logging.LogFilePath, sb.ToString());
         }
     }
