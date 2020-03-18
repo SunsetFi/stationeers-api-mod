@@ -1,6 +1,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +38,14 @@ namespace WebAPI
 
         Task OnLogMessage(IHttpContext context, Exception exception, DateTime started, TimeSpan duration)
         {
-            WebServer.Log(exception.ToString());
+            Logging.Log(
+                new Dictionary<string, string>() {
+                    {"RequestMethod", context.Request.Method},
+                    {"RequestPath", context.Request.Path},
+                    {"RemoteEndpoint", context.Request.RemoteEndPoint.ToString()}
+                },
+                exception.ToString()
+            );
             return Task.CompletedTask;
         }
     }

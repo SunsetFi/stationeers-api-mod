@@ -60,7 +60,6 @@ namespace WebAPI
 
                 Logging.Log(
                     new Dictionary<string, string>() {
-                        {"DateTime", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")},
                         {"RouteCount", foundTypes.Length.ToString()}
                     },
                     "API Server started"
@@ -68,12 +67,7 @@ namespace WebAPI
             }
             else
             {
-                Logging.Log(
-                    new Dictionary<string, string>() {
-                        {"DateTime", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")},
-                    },
-                    "API Server not started as it has been disabled."
-                );
+                Logging.Log("API Server not started as it has been disabled.");
             }
         }
 
@@ -88,7 +82,7 @@ namespace WebAPI
                 context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
                 context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
                 context.Response.AddHeader("Access-Control-Max-Age", "1728000");
-                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization, Location");
+                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
                 context.Response.StatusCode = HttpStatusCode.NoContent;
                 context.Response.Headers["Content-Length"] = "0";
                 return true;
@@ -113,6 +107,7 @@ namespace WebAPI
             }
             catch (Exception e)
             {
+                Logging.Log(e.ToString());
                 await context.SendResponse(HttpStatusCode.InternalServerError, new ErrorPayload()
                 {
                     message = e.ToString()
