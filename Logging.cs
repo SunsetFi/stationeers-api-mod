@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -15,9 +16,16 @@ namespace WebAPI
                 return path;
             }
         }
+
+        public static void Log(string message, params object[] args)
+        {
+            Logging.Log(new Dictionary<string, string>(), message, args);
+        }
+
         public static void Log(IDictionary<string, string> values, string message, params object[] args)
         {
             var sb = new StringBuilder();
+            sb.AppendFormat("DateTime={1} ", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"));
             foreach (var key in values.Keys)
             {
                 sb.AppendFormat("{0}={1} ", key, values[key]);
