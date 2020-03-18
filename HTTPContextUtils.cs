@@ -32,13 +32,24 @@ namespace WebAPI
                 response.Headers.Add("Content-Type", contentType);
             }
 
-            if (body != null)
+            if (contentType == "application/json")
             {
-                var stream = new MemoryStream();
-                var writer = new StreamWriter(stream, System.Text.Encoding.UTF8);
-                writer.Write(body);
-                await response.WriteAllAsync(stream, contentType);
+                await response.WriteAllJsonAsync(body);
             }
+            else
+            {
+                // Why the fuck isnt this working
+                // if (body != null)
+                // {
+                //     var stream = new MemoryStream();
+                //     var writer = new StreamWriter(stream, System.Text.Encoding.UTF8);
+                //     writer.Write(body);
+                //     await response.WriteAllAsync(stream, contentType);
+                // }
+                await response.WriteAllJsonAsync(body);
+            }
+
+
         }
     }
 }

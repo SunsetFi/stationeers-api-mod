@@ -38,14 +38,17 @@ namespace WebAPI
 
         Task OnLogMessage(IHttpContext context, Exception exception, DateTime started, TimeSpan duration)
         {
-            Logging.Log(
-                new Dictionary<string, string>() {
+            if (exception != null)
+            {
+                Logging.Log(
+                    new Dictionary<string, string>() {
                     {"RequestMethod", context.Request.Method},
                     {"RequestPath", context.Request.Path},
                     {"RemoteEndpoint", context.Request.RemoteEndPoint.ToString()}
-                },
-                exception.ToString()
-            );
+                    },
+                    exception.ToString()
+                );
+            }
             return Task.CompletedTask;
         }
     }

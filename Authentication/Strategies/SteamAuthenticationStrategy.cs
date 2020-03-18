@@ -20,13 +20,13 @@ namespace WebAPI.Authentication.Strategies
         private static readonly Regex SteamIdRegex = new Regex(@"openid\/id\/([0-9]{17,25})", RegexOptions.Compiled);
         private static readonly Regex IsValidRegex = new Regex(@"(is_valid\s*:\s*true)", RegexOptions.Compiled);
 
-        public async Task<ApiUser> TryAuthenticate(IHttpContext context)
+        public async Task<AuthenticationResult> TryAuthenticate(IHttpContext context)
         {
             if (context.Request.Method != "GET")
             {
                 // openid requests use GET
-                await context.SendResponse(Ceen.HttpStatusCode.MethodNotAllowed);
-                return null;
+                // await context.SendResponse(Ceen.HttpStatusCode.MethodNotAllowed);
+                return new AuthenticationResult(false, null);
             }
 
             var queryString = context.Request.QueryString;
@@ -53,11 +53,12 @@ namespace WebAPI.Authentication.Strategies
                 // Would be nice to use TemporarilyMoved here, but thats auto handled by browsers
                 //  and there is no way for the client to receive the location being redirected.
                 // context.Response.Headers.Add("Location", string.Format("{0}?{1}", ProviderUri, query));
+                Logging.Log("DEBUG sending response of " + string.Format("{0}?{1}", ProviderUri, query));
                 await context.SendResponse(Ceen.HttpStatusCode.OK, new AuthenticateWithSteamPayload()
                 {
                     location = string.Format("{0}?{1}", ProviderUri, query)
                 });
-                return null;
+                return new AuthenticationResult(true, null);
             }
 
             queryString["openid.mode"] = "check_authentication";
@@ -94,7 +95,7 @@ namespace WebAPI.Authentication.Strategies
 
             var user = new ApiUser() { isSteamUser = true, steamId = steamId.ToString(), endpoint = context.Request.RemoteEndPoint.ToPortlessString() };
             Authenticator.SetUserToken(context, user);
-            return user;
+            return new AuthenticationResult(true, user);
         }
 
         public bool TryVerify(IHttpContext context, out ApiUser user)
@@ -127,11 +128,6 @@ namespace WebAPI.Authentication.Strategies
                          let value = collection[key]
                          select string.Format("{0}={1}", Uri.EscapeDataString(key), Uri.EscapeDataString(value)));
             return string.Join(useAmp ? "&" : "&amp;", parts);
-        }
-
-        Task<AuthenticationResult> IAuthenticationStrategy.TryAuthenticate(IHttpContext context)
-        {
-            throw new NotImplementedException();
         }
     }
 }
