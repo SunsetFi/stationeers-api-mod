@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -58,6 +59,13 @@ namespace WebAPI
                 Log("Routes initialized");
 
                 _webServer.Start(OnRequest);
+
+                Logging.Log(
+                    new Dictionary<string, string>() {
+                        {"DateTime", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")}
+                    },
+                    "Server started"
+                );
             }
             else
             {
@@ -67,15 +75,19 @@ namespace WebAPI
 
         async Task<bool> OnRequest(IHttpContext context)
         {
-            // Does this need to be outside of OPTIONS / apply to all requests?
+            // TODO: Properly implement cors
+            // See https://github.com/expressjs/cors/blob/master/lib/index.js#L159
+
             context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+            context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
+            context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
+            context.Response.AddHeader("Access-Control-Max-Age", "1728000");
 
             if (context.Request.Method == "OPTIONS")
             {
-                context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization");
-                context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST");
-                context.Response.AddHeader("Access-Control-Max-Age", "1728000");
-                context.Response.StatusCode = HttpStatusCode.OK;
+                context.Response.StatusCode = HttpStatusCode.NoContent;
+                context.Response.Headers["Content-Length"] = "0";
                 return true;
             }
 
