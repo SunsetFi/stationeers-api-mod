@@ -1,12 +1,15 @@
 
 using System;
+using Ceen;
 
 namespace WebAPI.Authentication
 {
     public class AuthenticationException : Exception
     {
-        public AuthenticationException(string message) : base(message)
+        public HttpStatusCode StatusCode { get; }
+        public AuthenticationException(HttpStatusCode statusCode, string message) : base(message)
         {
+            this.StatusCode = statusCode;
         }
     }
 }

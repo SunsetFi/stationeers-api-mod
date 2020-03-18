@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ceen;
-using Ceen.Httpd;
 using WebAPI.Authentication;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes
 {
-    class PostLogin : IWebRoute
+    // We need a GET version of login for openid support
+    class GetLogin : IWebRoute
     {
-        public string Method => "POST";
+        public string Method => "GET";
 
         public string[] Segments => new[] { "login" };
 
