@@ -25,7 +25,7 @@ namespace WebAPI
         public static void Log(IDictionary<string, string> values, string message, params object[] args)
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("DateTime={1} ", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+            sb.AppendFormat("DateTime={0} ", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"));
             foreach (var key in values.Keys)
             {
                 sb.AppendFormat("{0}={1} ", key, values[key]);
