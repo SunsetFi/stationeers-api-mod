@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Assets.Scripts.Objects;
 using Ceen;
+using WebAPI.Authentication;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Items
@@ -16,6 +17,8 @@ namespace WebAPI.Routes.Items
 
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
+            Authenticator.VerifyAuth(context);
+
             var payload = await Dispatcher.RunOnMainThread(() =>
             {
                 // AllDevices has duplicates, so filtering this to be safe.
