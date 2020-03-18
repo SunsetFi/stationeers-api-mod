@@ -18,6 +18,7 @@ namespace WebAPI.Routes.Devices
         public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {
             Authenticator.VerifyAuth(context);
+
             var payload = await Dispatcher.RunOnMainThread(() =>
             {
                 // Devices can have duplicates in this list.
