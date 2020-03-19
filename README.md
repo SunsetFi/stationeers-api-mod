@@ -77,7 +77,7 @@ steamId should be a valid steamId, but the player does not have to be on the ser
 
 #### Body
 
-- `duration` (int): The number of hours to ban the player for.
+- `hours` (int): The number of hours to ban the player for.
 - `reason` (string, optional): The reason message for the ban. Can be empty.
 
 ### GET /bans
