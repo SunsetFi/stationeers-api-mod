@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Assets.Scripts.Networking;
 using Ceen;
 using WebAPI.Authentication;
+using WebAPI.Models;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Players.BySteamId
@@ -48,12 +49,7 @@ namespace WebAPI.Routes.Players.BySteamId
 
             await Dispatcher.RunOnMainThread(() =>
             {
-                if (player != null)
-                {
-                    NetworkManagerHudOverride.Instance.KickPlayer(player.SteamName, payload.reason);
-                }
-
-                BlockedPlayerManager.Instance.SetBanPlayer(steamId, payload.hours, payload.reason.Length > 0 ? payload.reason : "");
+                BansModel.AddBan(steamId, payload.hours, payload.reason);
             });
 
             await context.SendResponse(HttpStatusCode.OK);

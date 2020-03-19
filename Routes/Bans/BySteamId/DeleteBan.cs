@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ceen;
+using WebAPI.Models;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Bans.BySteamId
@@ -25,7 +26,7 @@ namespace WebAPI.Routes.Bans.BySteamId
                 return;
             }
 
-            var removedBan = await Dispatcher.RunOnMainThread(() => BlockedPlayerManager.Instance.RemoveBanPlayer(steamId));
+            var removedBan = await Dispatcher.RunOnMainThread(() => BansModel.RemoveBan(steamId));
 
             if (!removedBan)
             {

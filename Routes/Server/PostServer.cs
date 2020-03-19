@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Assets.Scripts.Networking;
 using Ceen;
-using Steamworks;
 using WebAPI.Authentication;
+using WebAPI.Models;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Server
@@ -37,12 +37,12 @@ namespace WebAPI.Routes.Server
             {
                 if (payload.name != null && payload.name.Length != 0)
                 {
-                    Models.Server.Name = payload.name;
+                    ServerModel.Name = payload.name;
                 }
 
                 if (payload.password != null)
                 {
-                    Models.Server.Password = payload.password;
+                    ServerModel.Password = payload.password;
                 }
 
                 return ServerPayload.FromSteamServer(SteamServer.Instance);

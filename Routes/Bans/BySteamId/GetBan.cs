@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ceen;
+using WebAPI.Models;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Bans.BySteamId
@@ -25,13 +26,7 @@ namespace WebAPI.Routes.Bans.BySteamId
                 return;
             }
 
-            var ban = await Dispatcher.RunOnMainThread(() =>
-            {
-                string banTimeout = null;
-                var blocks = Reflection.GetPrivateField<Dictionary<ulong, string>>(BlockedPlayerManager.Instance, "Blocked");
-                blocks.TryGetValue(steamId, out banTimeout);
-                return banTimeout;
-            });
+            var ban = await Dispatcher.RunOnMainThread(() => BansModel.GetBan(steamId));
 
             if (ban == null)
             {
@@ -42,13 +37,7 @@ namespace WebAPI.Routes.Bans.BySteamId
                 return;
             }
 
-            BanPayload payload = new BanPayload()
-            {
-                steamId = steamId.ToString(),
-                endTimestamp = long.Parse(ban)
-            };
-
-            await context.SendResponse(HttpStatusCode.OK, payload);
+            await context.SendResponse(HttpStatusCode.OK, ban);
         }
     }
 }

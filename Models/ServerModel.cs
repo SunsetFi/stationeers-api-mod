@@ -4,7 +4,7 @@ using Steamworks;
 
 namespace WebAPI.Models
 {
-    public static class Server
+    public static class ServerModel
     {
         public static string IP
         {
