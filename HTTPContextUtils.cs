@@ -38,7 +38,8 @@ namespace WebAPI
             }
             else if (body != null)
             {
-                // Why the fuck isnt this working
+                // This is resulting in no data sent.
+                //  What is WriteAllJsonAsync actually doing that makes it json specific?
                 // var stream = new MemoryStream();
                 // var writer = new StreamWriter(stream, System.Text.Encoding.UTF8);
                 // writer.Write(body);
