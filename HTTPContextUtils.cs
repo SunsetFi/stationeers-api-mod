@@ -36,20 +36,15 @@ namespace WebAPI
             {
                 await response.WriteAllJsonAsync(body);
             }
-            else
+            else if (body != null)
             {
                 // Why the fuck isnt this working
-                // if (body != null)
-                // {
-                //     var stream = new MemoryStream();
-                //     var writer = new StreamWriter(stream, System.Text.Encoding.UTF8);
-                //     writer.Write(body);
-                //     await response.WriteAllAsync(stream, contentType);
-                // }
+                // var stream = new MemoryStream();
+                // var writer = new StreamWriter(stream, System.Text.Encoding.UTF8);
+                // writer.Write(body);
+                // await response.WriteAllAsync(stream, contentType);
                 await response.WriteAllJsonAsync(body);
             }
-
-
         }
     }
 }
