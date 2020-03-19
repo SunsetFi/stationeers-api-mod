@@ -1,4 +1,3 @@
-using System;
 
 namespace WebAPI.Payloads
 {
@@ -11,8 +10,8 @@ namespace WebAPI.Payloads
         {
             // BanManager stores strings, and stores the raw string of the value if the numberized version is <= 0
             // We just return 0 in that case, as it is essentially a forever ban.
-            double ticks = 0;
-            double.TryParse(length, out ticks);
+            long ticks = 0;
+            long.TryParse(length, out ticks);
 
             // From .Net Docs:
             //  A single tick represents one hundred nanoseconds or one ten-millionth of a second.
@@ -20,7 +19,7 @@ namespace WebAPI.Payloads
             return new BanPayload()
             {
                 steamId = steamId.ToString(),
-                endTimestamp = (long)Math.Round(ticks / 10000)
+                endTimestamp = DateTimeUtils.TicksToJavascriptTimestamp(ticks)
             };
         }
     }
