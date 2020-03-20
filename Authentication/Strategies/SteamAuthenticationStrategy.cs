@@ -93,7 +93,7 @@ namespace WebAPI.Authentication.Strategies
                 throw new AuthenticationException(Ceen.HttpStatusCode.Forbidden, "Forbidden.");
             }
 
-            var user = new ApiUser() { isSteamUser = true, steamId = steamId.ToString(), endpoint = context.Request.RemoteEndPoint.ToPortlessString() };
+            var user = ApiUser.MakeSteamUser(context, steamId);
             Authenticator.SetUserToken(context, user);
             return new AuthenticationResult(true, user);
         }

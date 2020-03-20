@@ -1,5 +1,6 @@
 
 using System;
+using Ceen;
 using JWT.Builder;
 
 namespace WebAPI.Authentication
@@ -33,6 +34,25 @@ namespace WebAPI.Authentication
             {
                 builder.AddClaim("endpoint", this.endpoint);
             }
+        }
+
+        public static ApiUser MakeRootUser(IHttpContext context)
+        {
+            return new ApiUser()
+            {
+                isRootUser = true,
+                endpoint = context.Request.RemoteEndPoint.ToPortlessString()
+            };
+        }
+
+        public static ApiUser MakeSteamUser(IHttpContext context, ulong steamId)
+        {
+            return new ApiUser()
+            {
+                isSteamUser = true,
+                steamId = steamId.ToString(),
+                endpoint = context.Request.RemoteEndPoint.ToPortlessString()
+            };
         }
     }
 }
