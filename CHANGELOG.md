@@ -9,6 +9,9 @@
 - Add GET bans and DELETE ban
 - Fix duplicate items in Devices and Items
 - Change device logicValues to logicTypes; value is now `{value, writable}`
+- `authenticationMode` config option:
+  - `none`: No authentication.
+  - `steam`: Users most authenticate through steam.
 
 ### 1.2.0
 

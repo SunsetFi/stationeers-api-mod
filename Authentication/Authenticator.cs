@@ -27,11 +27,29 @@ namespace WebAPI.Authentication
         }
 
         // TODO: Set from config
-        private static readonly IAuthenticationStrategy AuthenticationStrategies = new SteamAuthenticationStrategy();
+        private static IAuthenticationStrategy _authenticationStrategy;
+        private static IAuthenticationStrategy GetAuthenticationStrategy()
+        {
+            if (_authenticationStrategy == null)
+            {
+                switch (Config.AuthenticationMode)
+                {
+                    case AuthenticationMode.None:
+                        _authenticationStrategy = new NoneAuthenticationStrategy();
+                        break;
+                    case AuthenticationMode.Steam:
+                        _authenticationStrategy = new SteamAuthenticationStrategy();
+                        break;
+                }
+                throw new Exception("No authentication mode configured.");
+            }
+            return _authenticationStrategy;
+        }
 
         public static async Task<ApiUser> Authenticate(IHttpContext context)
         {
-            var result = await AuthenticationStrategies.TryAuthenticate(context);
+            var authenticationStrategy = GetAuthenticationStrategy();
+            var result = await authenticationStrategy.TryAuthenticate(context);
             if (!result.Handled)
             {
                 await context.SendResponse(HttpStatusCode.Unauthorized, "Unauthorized.");
@@ -43,16 +61,10 @@ namespace WebAPI.Authentication
 
         public static ApiUser VerifyAuth(IHttpContext context)
         {
-            if (!Config.HasAuthentication)
-            {
-                return new ApiUser()
-                {
-                    isRootUser = true
-                };
-            }
+            var authenticationStrategy = GetAuthenticationStrategy();
 
             ApiUser user;
-            if (!AuthenticationStrategies.TryVerify(context, out user))
+            if (!authenticationStrategy.TryVerify(context, out user))
             {
                 throw new AuthenticationException(HttpStatusCode.Unauthorized, "Unauthorized.");
             }
