@@ -9,7 +9,7 @@ namespace WebAPI.Payloads
     public interface ILogicablePayload
     {
         string displayName { get; set; }
-        Dictionary<string, double> logicValues { get; set; }
+        Dictionary<string, LogicValuePayload> logicTypes { get; set; }
 
         Dictionary<int, Dictionary<string, double>> slotValues { get; set; }
     }
@@ -19,7 +19,7 @@ namespace WebAPI.Payloads
         public static void CopyFromLogicable(ILogicablePayload item, ILogicable logicable)
         {
             item.displayName = logicable.DisplayName;
-            item.logicValues = LogicableItemUtils.GetLogicValues(logicable);
+            item.logicTypes = LogicableItemUtils.GetLogicValues(logicable);
             item.slotValues = LogicableItemUtils.GetSlotValues(logicable);
         }
 
@@ -42,19 +42,29 @@ namespace WebAPI.Payloads
             return slots;
         }
 
-        public static Dictionary<string, double> GetLogicValues(ILogicable logicable)
+        public static Dictionary<string, LogicValuePayload> GetLogicValues(ILogicable logicable)
         {
-            var logicValues = new Dictionary<string, double>();
+            var logicValues = new Dictionary<string, LogicValuePayload>();
             foreach (LogicType logicType in Enum.GetValues(typeof(LogicType)))
             {
                 if (logicable.CanLogicRead(logicType))
                 {
-                    var value = logicable.GetLogicValue(logicType);
-                    logicValues.Add(logicType.ToString(), value);
+                    logicValues.Add(logicType.ToString(), LogicableItemUtils.GetLogicValue(logicable, logicType));
                 }
             }
 
             return logicValues;
+        }
+
+        public static LogicValuePayload GetLogicValue(ILogicable logicable, LogicType logicType)
+        {
+            var value = logicable.GetLogicValue(logicType);
+            var writable = logicable.CanLogicWrite(logicType);
+            return new LogicValuePayload()
+            {
+                value = value,
+                writable = writable
+            };
         }
     }
 }

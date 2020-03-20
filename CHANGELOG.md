@@ -8,6 +8,7 @@
 - Add player ping / score / playtime to player payload.
 - Add GET bans and DELETE ban
 - Fix duplicate items in Devices and Items
+- Change device logicValues to logicTypes; value is now `{value, writable}`
 
 ### 1.2.0
 
