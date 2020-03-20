@@ -145,3 +145,4 @@ Gets a list of all items on the server.
   - Endpoint for transmitters (special class of ILogicable seperate from devices)
   - Endpoint for fabricators / manufacturing
 - Test chat endpoint on dedicated servers
+- Strip colors from chat name. Probably still include them in message.
