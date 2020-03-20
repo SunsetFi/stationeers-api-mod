@@ -7,7 +7,7 @@ namespace WebAPI.Payloads
     public class DevicePayload : ThingPayload, ILogicablePayload
     {
         public string displayName { get; set; }
-        public Dictionary<string, double> logicValues { get; set; }
+        public Dictionary<string, LogicValuePayload> logicTypes { get; set; }
         public Dictionary<int, Dictionary<string, double>> slotValues { get; set; }
 
         public static DevicePayload FromDevice(Device device)

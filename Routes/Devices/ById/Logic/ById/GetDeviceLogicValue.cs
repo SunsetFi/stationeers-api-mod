@@ -43,9 +43,9 @@ namespace WebAPI.Routes.Devices.ById.Logic
                 return;
             }
 
-            var value = await Dispatcher.RunOnMainThread(() => device.GetLogicValue(type));
+            var payload = await Dispatcher.RunOnMainThread(() => LogicableItemUtils.GetLogicValue(device, type));
 
-            await context.SendResponse(HttpStatusCode.OK, new LogicValuePayload() { value = value });
+            await context.SendResponse(HttpStatusCode.OK, payload);
         }
     }
 }
