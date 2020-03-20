@@ -11,7 +11,7 @@ namespace WebAPI
         public bool enabled { get; set; }
         public int port { get; set; }
         public string protocol { get; set; }
-        public bool steamAuthentication { get; set; }
+        public string authenticationMode { get; set; }
         public string[] allowedSteamIds { get; set; }
         public string plaintextPassword { get; set; }
         public string jwtSecret { get; set; }
@@ -22,7 +22,7 @@ namespace WebAPI
             this.port = 4444;
             this.protocol = "http";
             this.jwtSecret = Guid.NewGuid().ToString();
-            this.steamAuthentication = false;
+            this.authenticationMode = AuthenticationMode.None;
         }
 
         public void Validate()
@@ -35,6 +35,28 @@ namespace WebAPI
             {
                 throw new Exception("Invalid Protocol.");
             }
+            if (!AuthenticationMode.isValid(this.authenticationMode))
+            {
+                throw new Exception("Invalid authentication mode.");
+            }
+        }
+    }
+
+    public static class AuthenticationMode
+    {
+        public const string None = "none";
+        public const string Steam = "steam";
+
+        public static bool isValid(string mode)
+        {
+            switch (mode)
+            {
+                case AuthenticationMode.None:
+                case AuthenticationMode.Steam:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 
@@ -45,21 +67,10 @@ namespace WebAPI
         public static bool Enabled { get { return Config._instance.enabled; } }
         public static int Port { get { return Config._instance.port; } }
         public static string Protocol { get { return Config._instance.protocol; } }
-        public static bool SteamAuthentication { get { return Config._instance.steamAuthentication; } }
+        public static string AuthenticationMode { get { return Config._instance.authenticationMode; } }
         public static string[] AllowedSteamIds { get { return Config._instance.allowedSteamIds; } }
         public static string PlaintextPassword { get { return Config._instance.plaintextPassword; } }
         public static string JWTSecret { get { return Config._instance.jwtSecret; } }
-
-
-        public static bool HasAuthentication
-        {
-            get
-            {
-                return Config._instance.steamAuthentication || !string.IsNullOrEmpty(Config._instance.plaintextPassword);
-            }
-        }
-
-
 
         public static void LoadConfig()
         {
