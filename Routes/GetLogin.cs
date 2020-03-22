@@ -25,7 +25,7 @@ namespace WebAPI.Routes
 
             var token = Authenticator.GenerateToken(user);
             context.Response.Headers.Add("Authorization", string.Format("Bearer {0}", token));
-            await context.SendResponse(HttpStatusCode.OK, LoginPayload.FromApiUser(user, token));
+            await context.SendResponse(HttpStatusCode.OK, LoginPayload.FromToken(token));
         }
     }
 }
