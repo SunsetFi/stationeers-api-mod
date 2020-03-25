@@ -6,6 +6,11 @@ namespace WebAPI.Payloads
 {
     public class DevicePayload : ThingPayload, ILogicablePayload
     {
+        public DevicePayload()
+        {
+            this.type = "device";
+        }
+
         public string displayName { get; set; }
         public Dictionary<string, LogicValuePayload> logicTypes { get; set; }
         public Dictionary<int, Dictionary<string, double>> slotValues { get; set; }

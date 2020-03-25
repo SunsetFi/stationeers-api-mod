@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Assets.Scripts.Objects.Pipes;
 using Ceen;
 using WebAPI.Authentication;
+using WebAPI.Models;
 using WebAPI.Payloads;
 
 namespace WebAPI.Routes.Devices.ById
@@ -47,16 +48,7 @@ namespace WebAPI.Routes.Devices.ById
 
             await Dispatcher.RunOnMainThread(() =>
             {
-                if (payload.customName != null && payload.customName.Length > 0)
-                {
-                    device.CustomName = payload.customName;
-                    device.IsCustomName = true;
-                }
-
-                if (payload.accessState.HasValue)
-                {
-                    device.AccessState = payload.accessState.Value;
-                }
+                ThingModel.HandlePost(device, payload);
             });
 
             await context.SendResponse(HttpStatusCode.OK, DevicePayload.FromDevice(device));
