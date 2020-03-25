@@ -2,11 +2,14 @@
 
 using System.Collections.Generic;
 using Assets.Scripts.Objects;
+using Assets.Scripts.Objects.Pipes;
 
 namespace WebAPI.Payloads
 {
     public class ThingPayload
     {
+        public string type { get; set; } = "thing";
+
         public string referenceId { get; set; }
 
         public int prefabHash { get; set; }
@@ -29,6 +32,20 @@ namespace WebAPI.Payloads
             ThingPayload.CopyFromThing(payload, thing);
             return payload;
         }
+
+        public static ThingPayload FromThingByType(Thing thing)
+        {
+            if (thing is Device)
+            {
+                return DevicePayload.FromDevice((Device)thing);
+            }
+            if (thing is Item)
+            {
+                return ItemPayload.FromItem((Item)thing);
+            }
+            return ThingPayload.FromThing(thing);
+        }
+
         public static void CopyFromThing(ThingPayload payload, Thing thing)
         {
             payload.referenceId = thing.ReferenceId.ToString();

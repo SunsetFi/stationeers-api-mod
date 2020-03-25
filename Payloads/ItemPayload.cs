@@ -7,6 +7,11 @@ namespace WebAPI.Payloads
     // We want to read/write things like battery charge, item quantity, and so on.
     public class ItemPayload : ThingPayload
     {
+        public ItemPayload()
+        {
+            this.type = "item";
+        }
+
         public string parentSlotReferenceId { get; set; }
         public int parentSlotId { get; set; }
 

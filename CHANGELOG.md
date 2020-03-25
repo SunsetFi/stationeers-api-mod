@@ -6,12 +6,13 @@
 - Fix crashes when dealing with server name and password.
 - Fix kick/ban being GET requests, should be POST.
 - Add player ping / score / playtime to player payload.
-- Add GET bans and DELETE ban
-- Fix duplicate items in Devices and Items
-- Change device logicValues to logicTypes; value is now `{value, writable}`
+- Add GET bans and DELETE ban.
+- Fix duplicate items in Devices and Items.
+- Change device logicValues to logicTypes; value is now `{value, writable}`.
+- GET /thing and GET/POST /thing/:thingId endpoints.
 - `authenticationMode` config option:
   - `none`: No authentication.
-  - `steam`: Users most authenticate through steam.
+  - `steam`: Users must authenticate through steam.
 
 ### 1.2.0
 

@@ -96,9 +96,26 @@ Removes a ban by steam id.
 
 Gets an array of chat messages currently known to the server.
 
+### GET /things
+
+Gets an array of all things.
+
+### GET /things/:thingId
+
+Gets a thing by its id.
+
+### POST /things/:thingId
+
+Change properties of a thing.
+
+#### Body
+
+- `customName` (string, optional): Change the labeler-given name of a device.
+- `accessState` (int, optional): Set the bitmask of allowed access card colors.
+
 ### GET /devices
 
-Gets an array of all devices
+Gets an array of all device things.
 
 ### GET /devices/:deviceId
 
@@ -106,7 +123,7 @@ Gets a device by reference id.
 
 ### POST /devices/:deviceId
 
-Modifies device properties
+Change properties of a device.
 
 #### Body
 
@@ -127,18 +144,18 @@ Writes a writable logic value by logic type.
 
 #### Body
 
-JSON object with the following properties:
-
 - `value` (number): The value to write to the logic type.
 
 ### GET /items
 
-Gets a list of all items on the server.
+Gets an array of all item things.
 
 # TODO
 
 - More endpoints
   - Endpoints for Things in general?
+    - XmlSaveLoad.Referencables dict from referenceId to Thing
+      - Assigned by GridManager.AssignReference, so should be current.
     - Things derived from Things
       - DynamicThing ( => Item)
       - Structure ( => Device)
