@@ -1,5 +1,5 @@
 
-using Assets.Scripts.Networking;
+using WebAPI.Models;
 
 namespace WebAPI.Payloads
 {
@@ -7,17 +7,21 @@ namespace WebAPI.Payloads
     {
         public string name { get; set; }
         public string mapName { get; set; }
-        public int maxPlayers { get; set; }
+        public int? maxPlayers { get; set; }
         public string password { get; set; }
+        public string startingCondition { get; set; }
+        public string respawnCondition { get; set; }
 
-        public static ServerPayload FromSteamServer(SteamServer server)
+        public static ServerPayload FromServer()
         {
             var payload = new ServerPayload()
             {
-                name = Reflection.GetPrivateField<string>(server, "ServerNameText"),
-                mapName = WorldManager.CurrentWorldName, // server.MapName.value
-                maxPlayers = int.Parse(Reflection.GetPrivateField<string>(server, "MaxPlayerText")),
-                password = Reflection.GetPrivateField<string>(server, "PasswordText")
+                name = ServerModel.Name,
+                mapName = ServerModel.MapName,
+                maxPlayers = ServerModel.MaxPlayers,
+                password = ServerModel.Password,
+                startingCondition = ServerModel.StartingCondition,
+                respawnCondition = ServerModel.RespawnCondition
             };
             return payload;
         }

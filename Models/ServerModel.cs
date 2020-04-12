@@ -1,6 +1,7 @@
 
 using Assets.Scripts.Networking;
 using Steamworks;
+using System.Linq;
 
 namespace WebAPI.Models
 {
@@ -47,6 +48,73 @@ namespace WebAPI.Models
                 }
                 Reflection.SetPrivateField(serverInstance, "PasswordText", value);
                 SteamGameServer.SetPasswordProtected(value.Length > 0);
+            }
+        }
+
+        public static int MaxPlayers
+        {
+            get
+            {
+                return int.Parse(Reflection.GetPrivateField<string>(SteamServer.Instance, "MaxPlayerText"));
+            }
+            set
+            {
+                var serverInstance = SteamServer.Instance;
+                if (serverInstance.MaxPlayer)
+                {
+                    serverInstance.MaxPlayer.text = value.ToString();
+                }
+                Reflection.SetPrivateField(serverInstance, "MaxPlayerText", value.ToString());
+            }
+        }
+
+        public static string MapName
+        {
+            get
+            {
+                return WorldManager.CurrentWorldName;
+            }
+        }
+
+        public static string StartingCondition
+        {
+            get
+            {
+                return WorldManager.CurrentStartCondition.Key;
+            }
+            set
+            {
+                // Validates the condition and does a no-op if invalid.
+                WorldManager.SetStartCondition(value);
+            }
+        }
+
+        public static string[] AllStartingConditions
+        {
+            get
+            {
+                return WorldManager.StartingConditions.Select(x => x.Key).ToArray();
+            }
+        }
+
+        public static string RespawnCondition
+        {
+            get
+            {
+                return WorldManager.CurrentRespawnCondition.Key;
+            }
+            set
+            {
+                // Validates the condition and does a no-op if invalid.
+                WorldManager.SetRespawnCondition(value);
+            }
+        }
+
+        public static string[] AllRespawnConditions
+        {
+            get
+            {
+                return WorldManager.RespawnConditions.Select(x => x.Key).ToArray();
             }
         }
     }
