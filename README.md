@@ -46,8 +46,19 @@ Gets information about the server.
 
 #### Body
 
-- `password` (string, optional): Sets the server password
 - `name` (string, optional): Sets the server name.
+- `password` (string, optional): Sets the server password
+- `maxPlayers` (int, optional): Sets the max players allowed on the server.
+- `startingCondition` (string, optional): Sets the starting condition for new players.
+- `respawnCondition` (string, optional): Sets the respawn condition for new players.
+
+### GET /server/starting-conditions
+
+Gets an array of valid starting conditions on this server.
+
+### GET /server/respawn-conditions
+
+Gets an array of valid respawn conditions on this server.
 
 ### POST /server/message
 

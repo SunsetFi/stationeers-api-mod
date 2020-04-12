@@ -40,12 +40,27 @@ namespace WebAPI.Routes.Server
                     ServerModel.Name = payload.name;
                 }
 
+                if (payload.maxPlayers.HasValue)
+                {
+                    ServerModel.MaxPlayers = payload.maxPlayers.Value;
+                }
+
                 if (payload.password != null)
                 {
                     ServerModel.Password = payload.password;
                 }
 
-                return ServerPayload.FromSteamServer(SteamServer.Instance);
+                if (payload.startingCondition != null)
+                {
+                    ServerModel.StartingCondition = payload.startingCondition;
+                }
+
+                if (payload.respawnCondition != null)
+                {
+                    ServerModel.RespawnCondition = payload.respawnCondition;
+                }
+
+                return ServerPayload.FromServer();
             });
 
             await context.SendResponse(HttpStatusCode.OK, response);

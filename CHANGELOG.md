@@ -13,6 +13,12 @@
 - `authenticationMode` config option:
   - `none`: No authentication.
   - `steam`: Users must authenticate through steam.
+- Added more properties to /server
+  - maxPlayers
+  - startingCondition
+  - respawnCondition
+- Added /server/starting-conditions to get all starting conditions for the server.
+- Added /server/respawn-conditions to get all respawn conditions for the server.
 
 ### 1.2.0
 
