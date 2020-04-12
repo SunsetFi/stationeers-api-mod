@@ -21,7 +21,7 @@ namespace WebAPI.Routes.Things
 
             var payload = await Dispatcher.RunOnMainThread(() =>
             {
-                return XmlSaveLoad.Referencables.Values.Select(x => ThingPayload.FromThingByType(x));
+                return XmlSaveLoad.Referencables.Values.Select(x => ThingPayload.FromThingByType(x)).ToArray();
             });
             await context.SendResponse(HttpStatusCode.OK, payload);
         }
