@@ -164,13 +164,12 @@ Gets an array of all item things.
 # TODO
 
 - More endpoints
-  - Endpoints for Things in general?
-    - XmlSaveLoad.Referencables dict from referenceId to Thing
-      - Assigned by GridManager.AssignReference, so should be current.
-    - Things derived from Things
-      - DynamicThing ( => Item)
-      - Structure ( => Device)
+  - Endpoints for derived from Things
+    - DynamicThing ( => Item)
+    - Structure ( => Device)
   - Endpoint for transmitters (special class of ILogicable seperate from devices)
   - Endpoint for fabricators / manufacturing
+    - Get recipes
+    - post recipe to facbicator
 - Test chat endpoint on dedicated servers
 - Strip colors from chat name. Probably still include them in message.
