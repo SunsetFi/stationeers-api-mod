@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using Ceen;
+using WebAPI.Authentication;
 using WebAPI.Payloads;
+using System.Threading.Tasks;
 
 namespace WebAPI.Routes.Stationpedia.Logic.IC
 {
@@ -9,9 +12,10 @@ namespace WebAPI.Routes.Stationpedia.Logic.IC
 
         public string[] Segments => new[] { "stationpedia", "logic", "ic", "instructions" };
 
-        public void OnRequested(RequestEventArgs e, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
         {            
-            e.Context.SendResponse(200, ICInstructionPayload.FromGame());
+            Authenticator.VerifyAuth(context);
+            await context.SendResponse(HttpStatusCode.OK, ICInstructionPayload.FromGame());
         }
     }
 }
