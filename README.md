@@ -161,6 +161,31 @@ Writes a writable logic value by logic type.
 
 Gets an array of all item things.
 
+# Compiling from source
+
+This mod can be compiled using the .net SDK tools. Visual studio will do nicely, but any text editor will do as long as the .net sdk is installed.
+
+## Dependencies
+
+As this mod references many game dlls, you need to give it copies of these dlls for it to compile properly. The project is set up to expect these in the `/externals` folder
+
+Copy the following files from `Stationeers/rocketstation_Data/Managed` to a folder called `/externals` in the root of the source directory:
+
+- `Assembly-CSharp.dll`
+- `Assembly-CSharp-firstpass.dll`
+- `UnityEngine.dll`
+- `UnityEngine.CoreModule.dll`
+- `UnityEngine.UI.dll`
+- `com.unity.multiplayer-hlapi.Runtime.dll`
+
+Copy `BepInEx.dll` from your BepInEx install to the `/externals` folder.
+
+Download JSON.net from [here](https://github.com/JamesNK/Newtonsoft.Json/releases) (version 12 is recommended). In the zip file, copy `/Bin/netstandard2.0/Newtonsoft.Json.dll` to the `/externals` folder.
+
+## Compiling
+
+Assuming you have installed the .net sdk properly, the project can be built with `dotnet build` from the command line.
+
 # TODO
 
 - More endpoints
