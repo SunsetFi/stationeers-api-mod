@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Objects.Entities;
 using Assets.Scripts.Objects;
 using Assets.Scripts.Objects.Items;
 using Assets.Scripts.Objects.Motherboards;
 using Assets.Scripts.Objects.Pipes;
+using Assets.Scripts.Objects.Clothing;
 using Assets.Scripts.Util;
 using Reagents;
 using Newtonsoft.Json;
@@ -52,6 +54,7 @@ namespace WebAPI.Payloads
             public List<String> modes { get; set; }
             [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
             public List<String> constructs { get; set; }
+            public List<String> flags { get; set; }
 
             public static ThingPayload FromThing(Thing prefab)
             {
@@ -108,8 +111,82 @@ namespace WebAPI.Payloads
                 {
                     item.constructs = ConstructsFromKit(kit);
                 }
+
+                item.flags = FlagsFromThing(prefab);
                 
                 return item;
+            }
+
+            public static List<string> FlagsFromThing(Thing thing) 
+            {
+                var flags = new List<string>();
+
+                if (thing.PaintableMaterial != null)
+                {
+                    flags.Add("paintable");
+                }
+                
+                if (thing is Item)
+                {
+                    flags.Add("item");
+                }
+
+                if (thing is IConstructionKit)
+                {
+                    flags.Add("constructor");
+                }
+
+                if (thing is Tool)
+                {
+                    flags.Add("tool");
+                }
+
+                if (thing is Plant)
+                {
+                    flags.Add("plant");
+                }
+
+                if (thing is INutrition)
+                {
+                    flags.Add("edible");
+                }
+
+                if (thing is Structure)
+                {
+                    flags.Add("structure");
+                }
+
+                if (thing is SmallGrid)
+                {
+                    flags.Add("smallgrid");
+                }
+
+                if (thing is ILogicable)
+                {
+                    flags.Add("logicable");
+                }
+
+                if (thing is Entity)
+                {
+                    flags.Add("entity");
+                }
+
+                if (thing is Npc)
+                {
+                    flags.Add("npc");
+                }
+
+                if (thing is Pipe || thing is DeviceAtmospherics)
+                {
+                    flags.Add("atmospherics");
+                }
+
+                if (thing is IWearable)
+                {
+                    flags.Add("wearable");
+                }
+
+                return flags;
             }
 
             public static Dictionary<string, double> SpawnedGasFromOre(Ore ore)
