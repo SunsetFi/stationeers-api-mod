@@ -167,7 +167,18 @@ This mod can be compiled using the .net SDK tools. Visual studio will do nicely,
 
 ## Dependencies
 
+This mod makes use of both nuget dependencies, and takes dependencies on game files. For copyright reasons, the game files must be taken from your own game and cannot be redistributed,
+
+### Local dependencies
+
+This library uses nuget to install most local dependencies. You can get these dependencies by running `dotnet restore` in the source directory.
+
+However, we also need to set up JSON.net as an external dependency manually.
+Download JSON.net from [here](https://github.com/JamesNK/Newtonsoft.Json/releases) (version 12 is recommended). In the zip file, copy `/Bin/netstandard2.0/Newtonsoft.Json.dll` to the `externals` folder.
+
 As this mod references many game dlls, you need to give it copies of these dlls for it to compile properly. The project is set up to expect these in the `/externals` folder
+
+### Game dependencies
 
 Copy the following files from `Stationeers/rocketstation_Data/Managed` to a folder called `/externals` in the root of the source directory:
 
@@ -179,8 +190,6 @@ Copy the following files from `Stationeers/rocketstation_Data/Managed` to a fold
 - `com.unity.multiplayer-hlapi.Runtime.dll`
 
 Copy `BepInEx.dll` from your BepInEx install to the `/externals` folder.
-
-Download JSON.net from [here](https://github.com/JamesNK/Newtonsoft.Json/releases) (version 12 is recommended). In the zip file, copy `/Bin/netstandard2.0/Newtonsoft.Json.dll` to the `/externals` folder.
 
 ## Compiling
 
