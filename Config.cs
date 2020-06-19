@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Assets.Scripts.Networking;
 using Newtonsoft.Json;
 
 namespace WebAPI
@@ -19,7 +20,7 @@ namespace WebAPI
         public ConfigBody()
         {
             this.enabled = true;
-            this.port = 4444;
+            this.port = SteamServer.Instance.GetGamePort();
             this.protocol = "http";
             this.jwtSecret = Guid.NewGuid().ToString();
             this.authenticationMode = AuthenticationMode.None;

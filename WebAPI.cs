@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BepInEx;
 using Ceen;
+using HarmonyLib;
 using UnityEngine;
 using WebAPI.Authentication;
 using WebAPI.Payloads;
@@ -45,6 +46,10 @@ namespace WebAPI
 
             if (WebAPI.Config.Enabled)
             {
+                var harmony = new Harmony("net.robophreddev.stationeers.WebAPI");
+                harmony.PatchAll();
+                Log("Patch succeeded");
+
                 var webRouteType = typeof(IWebRoute);
                 var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
                     .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
