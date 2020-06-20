@@ -28,6 +28,13 @@
       <HintPath>.\externals\Newtonsoft.Json.dll</HintPath>
     </Reference>
 
+    <Reference Include="BepInEx.Harmony">
+      <HintPath>.\externals\BepInEx.Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>.\externals\0Harmony.dll</HintPath>
+    </Reference>
+
     <Reference Include="com.unity.multiplayer-hlapi.Runtime" CopyToPublishDirectory="Never">
       <HintPath>.\externals\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
     </Reference>
