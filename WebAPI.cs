@@ -4,13 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using BepInEx;
-using Ceen;
 using HarmonyLib;
 using UnityEngine;
-using WebAPI.Authentication;
-using WebAPI.Payloads;
 using WebAPI.Router.Attributes;
 using WebAPI.Server;
 
@@ -22,7 +18,6 @@ namespace WebAPI
         public static WebAPIPlugin Instance;
 
         private readonly WebServer _webServer = new WebServer();
-        private readonly WebRouter _router = new WebRouter();
 
         public static string AssemblyDirectory
         {
@@ -41,7 +36,7 @@ namespace WebAPI
 
         public void AddRoute(IWebRoute route)
         {
-            this._router.AddRoute(route);
+            this._webServer.AddRoute(route);
         }
 
         public void RegisterControllers(Assembly assembly)
@@ -55,7 +50,7 @@ namespace WebAPI
 
             foreach (var route in controllerRoutes)
             {
-                this._router.AddRoute(route);
+                this._webServer.AddRoute(route);
             }
         }
 
@@ -75,11 +70,11 @@ namespace WebAPI
                 this.RegisterControllers(typeof(WebAPIPlugin).Assembly);
 
 
-                _webServer.Start(OnRequest);
+                _webServer.Start();
 
                 Logging.Log(
                     new Dictionary<string, string>() {
-                        {"RouteCount", _router.Count.ToString()}
+                        {"RouteCount", this._webServer.RouteCount.ToString()}
                     },
                     "API Server started"
                 );
@@ -107,52 +102,7 @@ namespace WebAPI
             foreach (var routeType in foundTypes)
             {
                 var instance = (IWebRoute)Activator.CreateInstance(routeType);
-                _router.AddRoute(instance);
-            }
-        }
-
-        private async Task<bool> OnRequest(IHttpContext context)
-        {
-            // For a proper implementation of CORS, see https://github.com/expressjs/cors/blob/master/lib/index.js#L159
-
-            if (context.Request.Method == "OPTIONS")
-            {
-                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-                // TODO: Choose based on available routes at this path
-                context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
-                context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-                context.Response.AddHeader("Access-Control-Max-Age", "1728000");
-                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
-                context.Response.StatusCode = HttpStatusCode.NoContent;
-                context.Response.Headers["Content-Length"] = "0";
-                return true;
-            }
-            else
-            {
-                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
-            }
-
-            try
-            {
-                return await _router.HandleRequest(context);
-            }
-            catch (AuthenticationException e)
-            {
-                await context.SendResponse(e.StatusCode, new ErrorPayload()
-                {
-                    message = e.Message
-                });
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logging.Log(e.ToString());
-                await context.SendResponse(HttpStatusCode.InternalServerError, new ErrorPayload()
-                {
-                    message = e.ToString()
-                });
-                return true;
+                this._webServer.AddRoute(instance);
             }
         }
     }
