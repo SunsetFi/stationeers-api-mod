@@ -10,7 +10,7 @@ using Ceen.Httpd;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using JWT;
-using System.Linq;
+using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Authentication
 {
@@ -26,7 +26,6 @@ namespace WebAPI.Authentication
             }
         }
 
-        // TODO: Set from config
         private static IAuthenticationStrategy _authenticationStrategy;
         private static IAuthenticationStrategy GetAuthenticationStrategy()
         {
@@ -50,14 +49,8 @@ namespace WebAPI.Authentication
         public static async Task<ApiUser> Authenticate(IHttpContext context)
         {
             var authenticationStrategy = GetAuthenticationStrategy();
-            var result = await authenticationStrategy.TryAuthenticate(context);
-            if (!result.Handled)
-            {
-                await context.SendResponse(HttpStatusCode.Unauthorized, "Unauthorized.");
-                return null;
-            }
-
-            return result.User;
+            var user = await authenticationStrategy.TryAuthenticate(context);
+            return user;
         }
 
         public static ApiUser VerifyAuth(IHttpContext context)
@@ -65,10 +58,7 @@ namespace WebAPI.Authentication
             var authenticationStrategy = GetAuthenticationStrategy();
 
             ApiUser user;
-            if (!authenticationStrategy.TryVerify(context, out user))
-            {
-                throw new AuthenticationException(HttpStatusCode.Unauthorized, "Unauthorized.");
-            }
+            authenticationStrategy.Verify(context, out user);
 
             return user;
         }
@@ -114,7 +104,7 @@ namespace WebAPI.Authentication
 
             if (token == null)
             {
-                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "Unauthorized.");
+                throw new UnauthorizedException();
             }
 
             try
@@ -126,22 +116,21 @@ namespace WebAPI.Authentication
                     .Decode(token);
                 var apiUser = JsonConvert.DeserializeObject<ApiUser>(json);
 
-                VerifySteamUser(apiUser);
                 VerifyEndpoint(context, apiUser);
 
                 return apiUser;
             }
             catch (JsonException)
             {
-                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "Malformed Token.");
+                throw new UnauthorizedException("Malformed Token.");
             }
             catch (TokenExpiredException)
             {
-                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "Token Expired.");
+                throw new UnauthorizedException("Token Expired.");
             }
             catch (SignatureVerificationException)
             {
-                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "Invalid Signature.");
+                throw new UnauthorizedException("Invalid Signature.");
             }
         }
 
@@ -158,25 +147,7 @@ namespace WebAPI.Authentication
                     },
                     "JWT login request does not match the source endpoint."
                 );
-                throw new AuthenticationException(Ceen.HttpStatusCode.Unauthorized, "IP Changed.");
-            }
-        }
-
-        private static void VerifySteamUser(ApiUser apiUser)
-        {
-            if (apiUser.isSteamUser)
-            {
-                var allowedSteamIds = Config.AllowedSteamIds;
-                if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(apiUser.steamId))
-                {
-                    Logging.Log(
-                        new Dictionary<string, string>() {
-                                { "SteamID", apiUser.steamId }
-                        },
-                        "JWT login request contained unauthenticated SteamID."
-                    );
-                    throw new AuthenticationException(Ceen.HttpStatusCode.Forbidden, "Forbidden.");
-                }
+                throw new UnauthorizedException("IP Changed.");
             }
         }
     }

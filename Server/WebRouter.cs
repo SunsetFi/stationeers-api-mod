@@ -79,7 +79,7 @@ namespace WebAPI.Server
         }
     }
 
-    class WebRouteContext : IWebRouteContext
+    class WebRouteContext : IWebAPIContext
     {
         private IHttpContext httpContext;
         private IDictionary<string, string> pathParameters;

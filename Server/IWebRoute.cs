@@ -8,7 +8,7 @@ namespace WebAPI.Server
 
         string Path { get; }
 
-        Task OnRequested(IWebRouteContext context);
+        Task OnRequested(IWebAPIContext context);
     }
 
 }

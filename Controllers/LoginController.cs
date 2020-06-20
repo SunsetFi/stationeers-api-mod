@@ -11,22 +11,8 @@ namespace WebAPI.Controllers
     class LoginController
     {
         [WebRouteMethod(Method = "GET")]
-        public async Task GetLogin(IHttpContext context)
-        {
-            var user = await Authenticator.Authenticate(context);
-            if (user == null)
-            {
-                // Authenticate is responsible for sending the response.
-                return;
-            }
-
-            var token = Authenticator.GenerateToken(user);
-            context.Response.Headers.Add("Authorization", string.Format("Bearer {0}", token));
-            await context.SendResponse(HttpStatusCode.OK, LoginPayload.FromToken(token));
-        }
-
         [WebRouteMethod(Method = "POST")]
-        public async Task PostLogin(IHttpContext context)
+        public async Task GetLogin(IHttpContext context)
         {
             var user = await Authenticator.Authenticate(context);
             if (user == null)

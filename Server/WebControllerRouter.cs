@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using WebAPI.Router.Attributes;
+using WebAPI.Server.Attributes;
 using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Server
@@ -12,15 +12,13 @@ namespace WebAPI.Server
     {
         private object instance;
         private MethodBase handler;
+        private Func<IWebAPIContext, Task<bool>>[] middleware;
 
-        public WebControllerRouter(object instance, MethodBase method, string rootPath)
+        public WebControllerRouter(object instance, MethodBase method, WebRouteMethodAttribute attr, string rootPath)
         {
-            var attr = method.GetCustomAttribute(typeof(WebRouteMethodAttribute)) as WebRouteMethodAttribute;
-            if (attr == null)
-            {
-                throw new ArgumentException("Expected method to have WebRouteMethodAttribute.");
-            }
-
+            var middleware = from middlewareAttr in method.GetCustomAttributes(typeof(WebMiddlewareAttribute)) as WebMiddlewareAttribute[]
+                             select middlewareAttr.Handler;
+            this.middleware = middleware.ToArray();
             this.handler = method;
             this.Method = attr.Method;
             this.Path = System.IO.Path.Combine(rootPath, attr.Path).Replace("\\", "/");
@@ -30,15 +28,24 @@ namespace WebAPI.Server
 
         public string Path { get; private set; }
 
-        public async Task OnRequested(IWebRouteContext context)
+        public async Task OnRequested(IWebAPIContext context)
         {
+
+            foreach (var middleware in this.middleware)
+            {
+                if (await middleware(context) == false)
+                {
+                    return;
+                }
+            }
+
             var paramInfos = this.handler.GetParameters();
             var paramValues = paramInfos.Select(paramInfo => this.GetParameterValue(paramInfo, context)).ToArray();
 
             await (Task)this.handler.Invoke(instance, paramValues);
         }
 
-        private object GetParameterValue(ParameterInfo parameterInfo, IWebRouteContext context)
+        private object GetParameterValue(ParameterInfo parameterInfo, IWebAPIContext context)
         {
             switch (parameterInfo.Name)
             {

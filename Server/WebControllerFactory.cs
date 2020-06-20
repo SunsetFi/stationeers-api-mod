@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using WebAPI.Router.Attributes;
+using WebAPI.Server.Attributes;
 
 namespace WebAPI.Server
 {
@@ -18,13 +18,14 @@ namespace WebAPI.Server
                 throw new Exception("Object of type " + type.FullName + " does not have a WebControllerAttribute");
             }
 
-            var routeableMethods = from method in type.GetMethods(BindingFlags.Public)
-                                   where method.GetCustomAttribute(typeof(WebRouteMethodAttribute)) != null
-                                   select method;
+            var routeables = from method in type.GetMethods(BindingFlags.Public)
+                             let attrs = method.GetCustomAttributes(typeof(WebRouteMethodAttribute)) as WebRouteMethodAttribute[]
+                             from attr in attrs
+                             select new { Method = method, Attribute = attr };
 
-            foreach (var method in routeableMethods)
+            foreach (var routeable in routeables)
             {
-                yield return new WebControllerRouter(instance, method, controllerAttribute.Path);
+                yield return new WebControllerRouter(instance, routeable.Method, routeable.Attribute, controllerAttribute.Path);
             }
         }
     }
