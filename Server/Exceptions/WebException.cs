@@ -2,7 +2,7 @@
 using System;
 using Ceen;
 
-namespace WebAPI.Server
+namespace WebAPI.Server.Exceptions
 {
     public class WebException : Exception
     {

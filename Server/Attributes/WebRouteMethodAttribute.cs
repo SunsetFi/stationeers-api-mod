@@ -1,5 +1,5 @@
 
-namespace WebAPI.Router.Attributes
+namespace WebAPI.Server.Attributes
 {
 
     [System.AttributeUsage(System.AttributeTargets.Method)

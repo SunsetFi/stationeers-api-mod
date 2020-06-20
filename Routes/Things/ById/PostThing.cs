@@ -58,7 +58,7 @@ namespace WebAPI.Routes.Things.ById
 
             await Dispatcher.RunOnMainThread(() =>
             {
-                ThingModel.HandlePost(thing, payload);
+                ThingModel.WriteThingProperties(thing, payload);
             });
 
             await context.SendResponse(HttpStatusCode.OK, ThingPayload.FromThingByType(thing));

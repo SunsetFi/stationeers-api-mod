@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Authentication;
 using WebAPI.Models;
-using WebAPI.Router.Attributes;
+using WebAPI.Server.Attributes;
 
 namespace WebAPI.Controllers
 {
