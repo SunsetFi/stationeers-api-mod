@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using WebAPI.Router.Attributes;
+using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Server
 {
@@ -47,6 +48,17 @@ namespace WebAPI.Server
                     return context.Request;
                 case "response":
                     return context.Response;
+                case "body":
+                    {
+                        try
+                        {
+                            return context.ParseBody(parameterInfo.ParameterType);
+                        }
+                        catch (Exception)
+                        {
+                            throw new BadRequestException(string.Format("Expected body to be in the format of {0}.", parameterInfo.ParameterType.Name));
+                        }
+                    }
             }
 
             if (context.PathParameters.ContainsKey(parameterInfo.Name))
@@ -66,11 +78,15 @@ namespace WebAPI.Server
 
             try
             {
+                if (targetType.IsEnum)
+                {
+                    return Enum.Parse(targetType, value);
+                }
+
                 if (targetType == typeof(bool))
                 {
                     return Convert.ToBoolean(value);
                 }
-
                 if (targetType == typeof(Int16))
                 {
                     return Convert.ToInt16(value);
@@ -95,7 +111,6 @@ namespace WebAPI.Server
                 {
                     return Convert.ToUInt64(value);
                 }
-
                 if (targetType == typeof(float))
                 {
                     return (float)Convert.ToDouble(value);

@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Authentication;
 using WebAPI.Models;
-using WebAPI.Payloads;
-using WebAPI.Router.Attributes;
+using WebAPI.Server.Attributes;
+using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Controllers
 {
@@ -20,54 +20,26 @@ namespace WebAPI.Controllers
         }
 
         [WebRouteMethod(Method = "GET", Path = ":steamId")]
-        public async Task GetBan(IHttpContext context, string steamId)
+        public async Task GetBan(IHttpContext context, ulong steamId)
         {
-            ulong uSteamId;
-            if (!ulong.TryParse(steamId, out uSteamId))
-            {
-                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
-                {
-                    message = "Invalid SteamID."
-                });
-                return;
-            }
-
-            var ban = await Dispatcher.RunOnMainThread(() => BansModel.GetBan(uSteamId));
+            var ban = await Dispatcher.RunOnMainThread(() => BansModel.GetBan(steamId));
 
             if (ban == null)
             {
-                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
-                {
-                    message = "No ban exists by that SteamID."
-                });
-                return;
+                throw new NotFoundException("No ban exists by the given SteamID.");
             }
 
             await context.SendResponse(HttpStatusCode.OK, ban);
         }
 
         [WebRouteMethod(Method = "DELETE", Path = ":steamId")]
-        public async Task DeleteBan(IHttpContext context, string steamId)
+        public async Task DeleteBan(IHttpContext context, ulong steamId)
         {
-            ulong uSteamId;
-            if (!ulong.TryParse(steamId, out uSteamId))
-            {
-                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
-                {
-                    message = "Invalid SteamID."
-                });
-                return;
-            }
-
-            var removedBan = await Dispatcher.RunOnMainThread(() => BansModel.RemoveBan(uSteamId));
+            var removedBan = await Dispatcher.RunOnMainThread(() => BansModel.RemoveBan(steamId));
 
             if (!removedBan)
             {
-                await context.SendResponse(HttpStatusCode.NotFound, new ErrorPayload()
-                {
-                    message = "No ban exists by that SteamID."
-                });
-                return;
+                throw new NotFoundException("No ban exists by the given SteamID.");
             }
 
             await context.SendResponse(HttpStatusCode.OK);

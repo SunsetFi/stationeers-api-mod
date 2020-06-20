@@ -6,7 +6,7 @@ namespace WebAPI.Models
 {
     public static class ThingModel
     {
-        public static void HandlePost(Thing thing, ThingPayload payload)
+        public static void WriteThingProperties(Thing thing, ThingPayload payload)
         {
             if (payload.customName != null && payload.customName.Length > 0)
             {

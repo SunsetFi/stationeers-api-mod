@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Ceen;
@@ -13,8 +14,16 @@ namespace WebAPI
             var reader = new StreamReader(body, System.Text.Encoding.UTF8);
             var text = reader.ReadToEnd();
             return JsonConvert.DeserializeObject<T>(text);
-
         }
+
+        public static object ParseBody(this IHttpContext context, Type type)
+        {
+            var body = context.Request.Body;
+            var reader = new StreamReader(body, System.Text.Encoding.UTF8);
+            var text = reader.ReadToEnd();
+            return JsonConvert.DeserializeObject(text, type);
+        }
+
         public static Task SendResponse(this IHttpContext context, HttpStatusCode statusCode, object jsonBody)
         {
             var jsonText = JsonConvert.SerializeObject(jsonBody, Formatting.Indented);

@@ -1,19 +1,18 @@
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Authentication;
 using WebAPI.Models;
+using WebAPI.Server.Attributes;
 
-namespace WebAPI.Routes.PipeNetworks
+namespace WebAPI.Controllers
 {
-    class GetPipeNetworks : IWebRoute
+    [WebController(Path = "pipe-networks")]
+    class PipeNetworksController
     {
-        public string Method => "GET";
 
-        public string[] Segments => new[] { "pipe-networks" };
-
-        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
+        [WebRouteMethod(Method = "GET")]
+        public async Task GetPipeNetworks(IHttpContext context)
         {
             Authenticator.VerifyAuth(context);
             var networks = await Dispatcher.RunOnMainThread(() => PipeNetworkModel.GetPipeNetworks());

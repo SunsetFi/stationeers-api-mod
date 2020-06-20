@@ -161,6 +161,14 @@ Writes a writable logic value by logic type.
 
 Gets an array of all item things.
 
+### GET /atmospheres
+
+Gets an array of all atmosphere cells.
+
+### GET /pipe-networks
+
+Gets an array of all pipe networks.
+
 # Compiling from source
 
 This mod can be compiled using the .net SDK tools. Visual studio will do nicely, but any text editor will do as long as the .net sdk is installed.
