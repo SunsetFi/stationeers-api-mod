@@ -1,19 +1,18 @@
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Authentication;
 using WebAPI.Models;
+using WebAPI.Router.Attributes;
 
-namespace WebAPI.Routes.Atmospheres
+namespace WebAPI.Controllers
 {
-    class GetAtmospheres : IWebRoute
+    [WebController(Path = "atmospheres")]
+    class AtmospheresController
     {
-        public string Method => "GET";
 
-        public string[] Segments => new[] { "atmospheres" };
-
-        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
+        [WebRouteMethod(Method = "GET")]
+        public async Task GetAtmospheres(IHttpContext context)
         {
             Authenticator.VerifyAuth(context);
             var atmos = await Dispatcher.RunOnMainThread(() => AtmospheresModel.GetAtmospheres());

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using BepInEx;
 using Ceen;
@@ -10,6 +11,8 @@ using HarmonyLib;
 using UnityEngine;
 using WebAPI.Authentication;
 using WebAPI.Payloads;
+using WebAPI.Router.Attributes;
+using WebAPI.Server;
 
 namespace WebAPI
 {
@@ -36,6 +39,26 @@ namespace WebAPI
             Debug.Log("[WebAPI]: " + line);
         }
 
+        public void AddRoute(IWebRoute route)
+        {
+            this._router.AddRoute(route);
+        }
+
+        public void RegisterControllers(Assembly assembly)
+        {
+            var controllerRoutes = from type in assembly.GetTypes()
+                                   where type.GetCustomAttribute(typeof(WebControllerAttribute)) != null
+                                   let controller = Activator.CreateInstance(type)
+                                   let routes = WebControllerFactory.CreateRoutesFromController(controller)
+                                   from route in routes
+                                   select route;
+
+            foreach (var route in controllerRoutes)
+            {
+                this._router.AddRoute(route);
+            }
+        }
+
         void Awake()
         {
             WebAPIPlugin.Instance = this;
@@ -46,26 +69,17 @@ namespace WebAPI
 
             if (WebAPI.Config.Enabled)
             {
-                var harmony = new Harmony("net.robophreddev.stationeers.WebAPI");
-                harmony.PatchAll();
-                Log("Patch succeeded");
 
-                var webRouteType = typeof(IWebRoute);
-                var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
-                    .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
-                    .ToArray();
+                this.ApplyPatches();
+                this.RegisterRoutes();
+                this.RegisterControllers(typeof(WebAPIPlugin).Assembly);
 
-                foreach (var routeType in foundTypes)
-                {
-                    var instance = (IWebRoute)Activator.CreateInstance(routeType);
-                    _router.AddRoute(instance);
-                }
 
                 _webServer.Start(OnRequest);
 
                 Logging.Log(
                     new Dictionary<string, string>() {
-                        {"RouteCount", foundTypes.Length.ToString()}
+                        {"RouteCount", _router.Count.ToString()}
                     },
                     "API Server started"
                 );
@@ -76,7 +90,28 @@ namespace WebAPI
             }
         }
 
-        async Task<bool> OnRequest(IHttpContext context)
+        private void ApplyPatches()
+        {
+            var harmony = new Harmony("net.robophreddev.stationeers.WebAPI");
+            harmony.PatchAll();
+            Log("Patch succeeded");
+        }
+
+        private void RegisterRoutes()
+        {
+            var webRouteType = typeof(IWebRoute);
+            var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
+                .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
+                .ToArray();
+
+            foreach (var routeType in foundTypes)
+            {
+                var instance = (IWebRoute)Activator.CreateInstance(routeType);
+                _router.AddRoute(instance);
+            }
+        }
+
+        private async Task<bool> OnRequest(IHttpContext context)
         {
             // For a proper implementation of CORS, see https://github.com/expressjs/cors/blob/master/lib/index.js#L159
 
