@@ -4,7 +4,7 @@ using Ceen;
 
 namespace WebAPI.Server
 {
-    public interface IWebRouteContext : IHttpContext
+    public interface IWebAPIContext : IHttpContext
     {
         IDictionary<string, string> PathParameters { get; set; }
     }
