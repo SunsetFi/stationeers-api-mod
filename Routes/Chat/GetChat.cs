@@ -1,9 +1,9 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Authentication;
 using WebAPI.Payloads;
+using WebAPI.Server;
 
 namespace WebAPI.Routes.Chat
 {
@@ -11,9 +11,9 @@ namespace WebAPI.Routes.Chat
     {
         public string Method => "GET";
 
-        public string[] Segments => new[] { "chat" };
+        public string Path => "chat";
 
-        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IWebRouteContext context)
         {
             Authenticator.VerifyAuth(context);
 

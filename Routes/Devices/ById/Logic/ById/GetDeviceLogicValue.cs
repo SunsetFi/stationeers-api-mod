@@ -7,6 +7,7 @@ using Assets.Scripts.Objects.Pipes;
 using Ceen;
 using WebAPI.Authentication;
 using WebAPI.Payloads;
+using WebAPI.Server;
 
 namespace WebAPI.Routes.Devices.ById.Logic
 {
@@ -14,11 +15,13 @@ namespace WebAPI.Routes.Devices.ById.Logic
     {
         public string Method => "GET";
 
-        public string[] Segments => new[] { "devices", ":deviceId", "logic", ":logicType" };
+        public string Path => "devices/:deviceId/logic/:logicType";
 
-        public async Task OnRequested(IHttpContext context, IDictionary<string, string> pathParams)
+        public async Task OnRequested(IWebRouteContext context)
         {
             Authenticator.VerifyAuth(context);
+
+            var pathParams = context.PathParameters;
 
             // TODO: Return UNPROCESSABLE_ENTITY if deviceId invalid.
             var referenceId = long.Parse(pathParams["deviceId"]);
