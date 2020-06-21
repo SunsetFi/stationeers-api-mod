@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Ceen;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace WebAPI
 {
@@ -21,7 +22,16 @@ namespace WebAPI
             var body = context.Request.Body;
             var reader = new StreamReader(body, System.Text.Encoding.UTF8);
             var text = reader.ReadToEnd();
+
             return JsonConvert.DeserializeObject(text, type);
+        }
+
+        public static JToken ParseJson(this IHttpContext context)
+        {
+            var body = context.Request.Body;
+            var reader = new StreamReader(body, System.Text.Encoding.UTF8);
+            var text = reader.ReadToEnd();
+            return JToken.Parse(text);
         }
 
         public static Task SendResponse(this IHttpContext context, HttpStatusCode statusCode, object jsonBody)

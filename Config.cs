@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Assets.Scripts.Networking;
 using Newtonsoft.Json;
 
 namespace WebAPI
@@ -10,7 +9,7 @@ namespace WebAPI
     class ConfigBody
     {
         public bool enabled { get; set; }
-        public int port { get; set; }
+        public int? port { get; set; }
         public string protocol { get; set; }
         public string authenticationMode { get; set; }
         public string[] allowedSteamIds { get; set; }
@@ -20,7 +19,7 @@ namespace WebAPI
         public ConfigBody()
         {
             this.enabled = true;
-            this.port = SteamServer.Instance.GetGamePort();
+            this.port = null;
             this.protocol = "http";
             this.jwtSecret = Guid.NewGuid().ToString();
             this.authenticationMode = AuthenticationMode.None;
@@ -66,7 +65,7 @@ namespace WebAPI
         private static ConfigBody _instance;
 
         public static bool Enabled { get { return Config._instance.enabled; } }
-        public static int Port { get { return Config._instance.port; } }
+        public static int? Port { get { return Config._instance.port; } }
         public static string Protocol { get { return Config._instance.protocol; } }
         public static string AuthenticationMode { get { return Config._instance.authenticationMode; } }
         public static string[] AllowedSteamIds { get { return Config._instance.allowedSteamIds; } }
@@ -77,7 +76,7 @@ namespace WebAPI
         {
             var assemblyDir = WebAPIPlugin.AssemblyDirectory;
             var path = Path.Combine(assemblyDir, "config.json");
-            WebAPIPlugin.Instance.Log("Loading config at: " + path);
+            Logging.Log("Loading config at: " + path);
 
             string configText;
             try
@@ -86,7 +85,7 @@ namespace WebAPI
             }
             catch (FileNotFoundException)
             {
-                WebAPIPlugin.Instance.Log("No config file present.");
+                Logging.Log("No config file present.");
                 _instance = new ConfigBody();
                 return;
             }
@@ -94,7 +93,7 @@ namespace WebAPI
             try
             {
                 Config._instance = JsonConvert.DeserializeObject<ConfigBody>(configText);
-                WebAPIPlugin.Instance.Log("Config loaded successfully.");
+                Logging.Log("Config loaded successfully.");
             }
             catch (Exception e)
             {

@@ -4,13 +4,14 @@ using System.Linq;
 using Assets.Scripts;
 using Assets.Scripts.Objects;
 using Assets.Scripts.Serialization;
+using Newtonsoft.Json.Linq;
 using WebAPI.Payloads;
 
 namespace WebAPI.Models
 {
     public static class ThingsModel
     {
-        public static IList<ThingPayload> GetThings()
+        public static IList<JObject> GetThings()
         {
             // Dedup thing list
             var uniqueThings = new HashSet<Thing>();
@@ -19,7 +20,8 @@ namespace WebAPI.Models
                 uniqueThings.Add(thing);
             }
 
-            return uniqueThings.Select(thing => ThingPayload.FromThing(thing)).ToList();
+            //return uniqueThings.Select(thing => ThingPayload.FromThing(thing)).ToList();
+            return uniqueThings.Select(thing => JsonPayloadSerializer.ObjectToPayload(thing)).ToList();
         }
 
         public static ThingPayload GetThing(long referenceId)

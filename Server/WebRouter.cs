@@ -50,20 +50,20 @@ namespace WebAPI.Server
 
         IDictionary<string, string> MatchRoute(string requestPath, string routePath)
         {
-            var pathSegments = requestPath.Split('/');
-            var segments = routePath.Split('/');
+            var requestSegments = requestPath.Split('/');
+            var routeSegments = routePath.Split('/');
 
-            if (pathSegments.Length - 1 != segments.Length)
+            if (requestSegments.Length - 1 != routeSegments.Length)
             {
                 return null;
             }
 
             var pathParams = new Dictionary<string, string>();
 
-            for (var i = 0; i < segments.Length; i++)
+            for (var i = 0; i < routeSegments.Length; i++)
             {
-                var pathSegment = pathSegments[i + 1];
-                var matchSegment = segments[i];
+                var pathSegment = requestSegments[i + 1];
+                var matchSegment = routeSegments[i];
 
                 if (matchSegment.StartsWith(":"))
                 {
