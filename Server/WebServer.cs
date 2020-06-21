@@ -7,94 +7,43 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ceen;
 using Ceen.Httpd;
-using WebAPI.Payloads;
 
 namespace WebAPI.Server
 {
-    public class WebServer
+    public class WebServer : IDisposable
     {
-        private WebRouter _router;
+        private readonly HttpHandlerDelegate requestHandler;
+        private CancellationTokenSource _cancellationTokenSource;
 
-        static void Log(string message)
+        public WebServer(HttpHandlerDelegate requestHandler)
         {
-            WebAPIPlugin.Instance.Log("[WebServer]: " + message);
+            this.requestHandler = requestHandler;
         }
 
-        public int RouteCount
+        public void Start(int port)
         {
-            get
-            {
-                return this._router.Count;
-            }
-        }
-
-        public void AddRoute(IWebRoute route)
-        {
-            this._router.AddRoute(route);
-        }
-
-        public void Start()
-        {
-            WebServer.Log("Starting web server");
+            Logging.Log("Starting web server");
 
             var tcs = new CancellationTokenSource();
             var config = new ServerConfig()
                 .AddLogger(OnLogMessage)
-                .AddRoute(this.OnRequest);
+                .AddRoute(this.requestHandler);
 
-            var task = HttpServer.ListenAsync(
-                new IPEndPoint(IPAddress.Any, Config.Port),
+            this._cancellationTokenSource = new CancellationTokenSource();
+            HttpServer.ListenAsync(
+                new IPEndPoint(IPAddress.Any, port),
                 false,
                 config,
-                tcs.Token
+                _cancellationTokenSource.Token
             );
 
-            WebServer.Log("Server started");
+            Logging.Log(string.Format("Server started on port {0}", port));
         }
 
-        private async Task<bool> OnRequest(IHttpContext context)
+        public void Dispose()
         {
-            // For a proper implementation of CORS, see https://github.com/expressjs/cors/blob/master/lib/index.js#L159
-
-            if (context.Request.Method == "OPTIONS")
-            {
-                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-                // TODO: Choose based on available routes at this path
-                context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
-                context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-                context.Response.AddHeader("Access-Control-Max-Age", "1728000");
-                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
-                context.Response.StatusCode = Ceen.HttpStatusCode.NoContent;
-                context.Response.Headers["Content-Length"] = "0";
-                return true;
-            }
-            else
-            {
-                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
-            }
-
-            try
-            {
-                return await _router.HandleRequest(context);
-            }
-            catch (Exceptions.WebException e)
-            {
-                await context.SendResponse(e.StatusCode, new ErrorPayload
-                {
-                    message = e.Message
-                });
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logging.Log(e.ToString());
-                await context.SendResponse(Ceen.HttpStatusCode.InternalServerError, new ErrorPayload
-                {
-                    message = e.Message
-                });
-                return true;
-            }
+            this._cancellationTokenSource.Cancel();
+            Logging.Log("Server stopped");
         }
 
         private Task OnLogMessage(IHttpContext context, Exception exception, DateTime started, TimeSpan duration)

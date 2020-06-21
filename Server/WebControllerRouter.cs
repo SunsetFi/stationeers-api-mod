@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using WebAPI.Server.Attributes;
 using WebAPI.Server.Exceptions;
 
@@ -16,12 +17,19 @@ namespace WebAPI.Server
 
         public WebControllerRouter(object instance, MethodBase method, WebRouteMethodAttribute attr, string rootPath)
         {
+            this.instance = instance;
+
             var middleware = from middlewareAttr in method.GetCustomAttributes(typeof(WebMiddlewareAttribute)) as WebMiddlewareAttribute[]
                              select middlewareAttr.Handler;
             this.middleware = middleware.ToArray();
             this.handler = method;
             this.Method = attr.Method;
-            this.Path = System.IO.Path.Combine(rootPath, attr.Path).Replace("\\", "/");
+
+            this.Path = rootPath;
+            if (attr.Path != null)
+            {
+                this.Path = System.IO.Path.Combine(this.Path, attr.Path).Replace("\\", "/");
+            }
         }
 
         public string Method { get; private set; }
@@ -59,6 +67,11 @@ namespace WebAPI.Server
                     {
                         try
                         {
+                            if (typeof(JToken).IsAssignableFrom(parameterInfo.ParameterType))
+                            {
+                                return context.ParseJson();
+                            }
+
                             return context.ParseBody(parameterInfo.ParameterType);
                         }
                         catch (Exception)

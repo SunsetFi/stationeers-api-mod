@@ -18,7 +18,7 @@ namespace WebAPI.Server
                 throw new Exception("Object of type " + type.FullName + " does not have a WebControllerAttribute");
             }
 
-            var routeables = from method in type.GetMethods(BindingFlags.Public)
+            var routeables = from method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance)
                              let attrs = method.GetCustomAttributes(typeof(WebRouteMethodAttribute)) as WebRouteMethodAttribute[]
                              from attr in attrs
                              select new { Method = method, Attribute = attr };

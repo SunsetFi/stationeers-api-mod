@@ -9,6 +9,11 @@ using HarmonyLib;
 using UnityEngine;
 using WebAPI.Server.Attributes;
 using WebAPI.Server;
+using Assets.Scripts.Networking;
+using System.Threading.Tasks;
+using Ceen;
+using WebAPI.Server.Exceptions;
+using WebAPI.Payloads;
 
 namespace WebAPI
 {
@@ -17,7 +22,8 @@ namespace WebAPI
     {
         public static WebAPIPlugin Instance;
 
-        private readonly WebServer _webServer = new WebServer();
+        private WebServer _webServer;
+        private WebRouter _router = new WebRouter();
 
         public static string AssemblyDirectory
         {
@@ -29,49 +35,59 @@ namespace WebAPI
             }
         }
 
-        public void Log(string line)
-        {
-            Debug.Log("[WebAPI]: " + line);
-        }
-
         public void AddRoute(IWebRoute route)
         {
-            this._webServer.AddRoute(route);
+            this._router.AddRoute(route);
         }
 
         public void RegisterControllers(Assembly assembly)
         {
-            var controllerRoutes = from type in assembly.GetTypes()
+            var controllerTypes = (from type in assembly.GetTypes()
                                    where type.GetCustomAttribute(typeof(WebControllerAttribute)) != null
-                                   let controller = Activator.CreateInstance(type)
-                                   let routes = WebControllerFactory.CreateRoutesFromController(controller)
-                                   from route in routes
-                                   select route;
+                                   select type).ToArray();
+
+            var controllerRoutes = (from type in controllerTypes
+                                    let controller = Activator.CreateInstance(type)
+                                    let routes = WebControllerFactory.CreateRoutesFromController(controller)
+                                    from route in routes
+                                    select route).ToArray();
 
             foreach (var route in controllerRoutes)
             {
-                this._webServer.AddRoute(route);
+                this._router.AddRoute(route);
             }
+
+            Logging.Log("Loaded {0} routes from {1} controllers in {2}", controllerRoutes.Length, controllerTypes.Length, assembly.FullName);
         }
 
-        public void RegisterRoutes(Assembly assembly)
+        public void StartServer()
         {
-            var webRouteType = typeof(IWebRoute);
-            var routeTypes = from type in assembly.GetTypes()
-                             where type.IsClass && type.GetInterfaces().Contains(webRouteType)
-                             select type;
-
-            foreach (var routeType in routeTypes)
+            if (!WebAPI.Config.Enabled)
             {
-                var instance = (IWebRoute)Activator.CreateInstance(routeType);
-                this._webServer.AddRoute(instance);
+                return;
+            }
+
+            if (this._webServer != null)
+            {
+                return;
+            }
+
+            this._webServer = new WebServer(this.OnRequest);
+            this._webServer.Start(WebAPI.Config.Port ?? SteamServer.Instance.GetGamePort());
+        }
+
+        public void StopServer()
+        {
+            if (this._webServer != null)
+            {
+                this._webServer.Dispose();
+                this._webServer = null;
             }
         }
 
         void Awake()
         {
             WebAPIPlugin.Instance = this;
-            Log("Hello World");
 
             WebAPI.Config.LoadConfig();
             Dispatcher.Initialize();
@@ -82,22 +98,11 @@ namespace WebAPI
                 this.ApplyPatches();
 
                 var ownAssembly = typeof(WebAPIPlugin).Assembly;
-                this.RegisterRoutes(ownAssembly);
                 this.RegisterControllers(ownAssembly);
-
-
-                _webServer.Start();
-
-                Logging.Log(
-                    new Dictionary<string, string>() {
-                        {"RouteCount", this._webServer.RouteCount.ToString()}
-                    },
-                    "API Server started"
-                );
             }
             else
             {
-                Logging.Log("API Server not started as it has been disabled.");
+                Logging.Log("WebAPI is disabled.");
             }
         }
 
@@ -105,7 +110,52 @@ namespace WebAPI
         {
             var harmony = new Harmony("net.robophreddev.stationeers.WebAPI");
             harmony.PatchAll();
-            Log("Patch succeeded");
+            Logging.Log("Patch succeeded");
+        }
+
+        private async Task<bool> OnRequest(IHttpContext context)
+        {
+            // For a proper implementation of CORS, see https://github.com/expressjs/cors/blob/master/lib/index.js#L159
+
+            if (context.Request.Method == "OPTIONS")
+            {
+                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+                // TODO: Choose based on available routes at this path
+                context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
+                context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                context.Response.AddHeader("Access-Control-Max-Age", "1728000");
+                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
+                context.Response.StatusCode = Ceen.HttpStatusCode.NoContent;
+                context.Response.Headers["Content-Length"] = "0";
+                return true;
+            }
+            else
+            {
+                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
+            }
+
+            try
+            {
+                return await _router.HandleRequest(context);
+            }
+            catch (WebException e)
+            {
+                await context.SendResponse(e.StatusCode, new ErrorPayload
+                {
+                    message = e.Message
+                });
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Log(e.ToString());
+                await context.SendResponse(Ceen.HttpStatusCode.InternalServerError, new ErrorPayload
+                {
+                    message = e.Message
+                });
+                return true;
+            }
         }
     }
 }
