@@ -5,6 +5,7 @@ using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Payloads.JsonSerializerStrategies
 {
+    [JsonPayloadStrategy]
     public sealed class ThingJsonSerializerStrategy : ObjectPropertyJsonPayloadStrategy<Thing>
     {
         private IDictionary<string, IObjectPropertyGetterSetter<Thing>> properties = new Dictionary<string, IObjectPropertyGetterSetter<Thing>>

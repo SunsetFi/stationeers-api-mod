@@ -30,12 +30,19 @@ namespace WebAPI.Payloads
 
         public JToken GetProperty(TTarget target)
         {
-            return JToken.FromObject(this.getter(target));
+            var value = this.getter(target);
+            return value == null ? null : JToken.FromObject(value);
         }
 
         public void SetProperty(TTarget target, JToken value)
         {
-            this.setter(target, value.ToObject<TValueType>());
+            if (value == null && this.PropertyType.IsValueType)
+            {
+                // TODO: Should pass this on as nullable to the setter, so the setter can throw a proper error message.
+                return;
+            }
+
+            this.setter(target, value == null ? default(TValueType) : value.ToObject<TValueType>());
         }
     }
 
