@@ -8,7 +8,7 @@ using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Payloads
 {
-
+    public class JsonPayloadStrategyAttribute : Attribute { }
 
     public static class JsonPayloadSerializer
     {
@@ -22,9 +22,10 @@ namespace WebAPI.Payloads
 
         public static void LoadJsonPayloadStrategies(Assembly assembly)
         {
-            var strategyType = typeof(IJsonPayloadStrategy);
+            var payloadStrategyInterface = typeof(IJsonPayloadStrategy);
+            var payloadStrategyAttribute = typeof(JsonPayloadStrategyAttribute);
             var strategies = from type in assembly.GetTypes()
-                             where type.IsClass && type.GetInterfaces().Contains(strategyType)
+                             where type.IsClass && type.GetInterfaces().Contains(payloadStrategyInterface) && type.GetCustomAttribute(payloadStrategyAttribute) != null
                              let strategy = (IJsonPayloadStrategy)Activator.CreateInstance(type)
                              select strategy;
             JsonPayloadSerializer.strategies.AddRange(strategies);

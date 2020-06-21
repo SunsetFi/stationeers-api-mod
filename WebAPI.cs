@@ -147,15 +147,6 @@ namespace WebAPI
                 });
                 return true;
             }
-            catch (Exception e)
-            {
-                Logging.Log(e.ToString());
-                await context.SendResponse(Ceen.HttpStatusCode.InternalServerError, new ErrorPayload
-                {
-                    message = e.Message
-                });
-                return true;
-            }
         }
     }
 }

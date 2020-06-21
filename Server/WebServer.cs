@@ -50,16 +50,35 @@ namespace WebAPI.Server
         {
             if (exception != null)
             {
-                Logging.Log(
-                    new Dictionary<string, string>() {
+                Dispatcher.RunOnMainThread(() =>
+                {
+                    var aggregateException = exception as AggregateException;
+                    if (aggregateException != null)
+                    {
+                        foreach (var ex in aggregateException.InnerExceptions)
+                        {
+                            this.LogException(ex, context);
+                        }
+                    }
+                    else
+                    {
+                        this.LogException(exception, context);
+                    }
+                });
+            }
+            return Task.CompletedTask;
+        }
+
+        private void LogException(Exception exception, IHttpContext context)
+        {
+            Logging.Log(
+                new Dictionary<string, string>() {
                     {"RequestMethod", context.Request.Method},
                     {"RequestPath", context.Request.Path},
                     {"RemoteEndpoint", context.Request.RemoteEndPoint.ToString()}
-                    },
-                    exception.ToString()
-                );
-            }
-            return Task.CompletedTask;
+                },
+                exception.ToString()
+            );
         }
     }
 }
