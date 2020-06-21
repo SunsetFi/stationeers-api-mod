@@ -7,7 +7,7 @@ using WebAPI.Server.Attributes;
 
 namespace WebAPI.Controllers
 {
-    [WebController(Path = "atmospheres")]
+    [WebController(Path = "api/atmospheres")]
     class AtmospheresController
     {
 

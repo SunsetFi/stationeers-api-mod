@@ -38,11 +38,11 @@ To specify the password, send it as the `password` query parameter. eg `GET /dev
 
 ## Supported Requests
 
-### GET /server
+### GET /api/settings
 
-Gets information about the server.
+Gets game and server settings.
 
-### POST /server
+### POST /api/settings
 
 #### Body
 
@@ -52,27 +52,19 @@ Gets information about the server.
 - `startingCondition` (string, optional): Sets the starting condition for new players.
 - `respawnCondition` (string, optional): Sets the respawn condition for new players.
 
-### GET /server/starting-conditions
+### GET /api/settings/starting-conditions
 
 Gets an array of valid starting conditions on this server.
 
-### GET /server/respawn-conditions
+### GET /api/settings/respawn-conditions
 
 Gets an array of valid respawn conditions on this server.
 
-### POST /server/message
-
-Sends a chat message to the server
-
-#### Body
-
-- `message` (string): The message to send to the server.
-
-### GET /players
+### GET /api/players
 
 Gets a list of all players on the server
 
-### POST /players/:steamId/kick
+### POST /api/players/:steamId/kick
 
 Kick a player from the server.
 steamId must be a steamId of a player on the server.
@@ -81,7 +73,7 @@ steamId must be a steamId of a player on the server.
 
 - `reason` (string, optional): The reason message for the kick. Can be empty.
 
-### POST /players/:steamId/ban
+### POST /api/players/:steamId/ban
 
 Bans a player from the server.
 steamId should be a valid steamId, but the player does not have to be on the server. If they are on the server, they will be kicked.
@@ -91,31 +83,39 @@ steamId should be a valid steamId, but the player does not have to be on the ser
 - `hours` (int): The number of hours to ban the player for.
 - `reason` (string, optional): The reason message for the ban. Can be empty.
 
-### GET /bans
+### GET /api/bans
 
 Gets an array of all bans.
 
-### GET /bans/:steamId
+### GET /api/bans/:steamId
 
 Gets a ban by steam id.
 
-### DELETE /bans/:steamId
+### DELETE /api/bans/:steamId
 
 Removes a ban by steam id.
 
-### GET /chat
+### GET /api/chat
 
 Gets an array of chat messages currently known to the server.
 
-### GET /things
+### POST /api/chat
+
+Sends a chat message to the server
+
+#### Body
+
+- `message` (string): The message to send to the server.
+
+### GET /api/things
 
 Gets an array of all things.
 
-### GET /things/:thingId
+### GET /api/things/:thingId
 
 Gets a thing by its id.
 
-### POST /things/:thingId
+### POST /api/things/:thingId
 
 Change properties of a thing.
 
@@ -124,15 +124,15 @@ Change properties of a thing.
 - `customName` (string, optional): Change the labeler-given name of a device.
 - `accessState` (int, optional): Set the bitmask of allowed access card colors.
 
-### GET /devices
+### GET /api/devices
 
 Gets an array of all device things.
 
-### GET /devices/:deviceId
+### GET /api/devices/:deviceId
 
 Gets a device by reference id.
 
-### POST /devices/:deviceId
+### POST /api/devices/:deviceId
 
 Change properties of a device.
 
@@ -141,15 +141,15 @@ Change properties of a device.
 - `customName` (string, optional): Change the labeler-given name of a device.
 - `accessState` (int, optional): Set the bitmask of allowed access card colors.
 
-### GET /devices/:deviceId/logic
+### GET /api/devices/:deviceId/logic
 
 Gets all readable logic values for a device.
 
-### GET /devices/:deviceId/logic/:logicType
+### GET /api/devices/:deviceId/logic/:logicType
 
 Gets a readable logic value by logic type.
 
-### POST /devices/:deviceId/logic/:logicType
+### POST /api/devices/:deviceId/logic/:logicType
 
 Writes a writable logic value by logic type.
 
@@ -157,15 +157,15 @@ Writes a writable logic value by logic type.
 
 - `value` (number): The value to write to the logic type.
 
-### GET /items
+### GET /api/items
 
 Gets an array of all item things.
 
-### GET /atmospheres
+### GET /api/atmospheres
 
 Gets an array of all atmosphere cells.
 
-### GET /pipe-networks
+### GET /api/pipe-networks
 
 Gets an array of all pipe networks.
 
@@ -213,5 +213,7 @@ Assuming you have installed the .net sdk properly, the project can be built with
   - Endpoint for fabricators / manufacturing
     - Get recipes
     - post recipe to facbicator
+  - There is a classification system in logic. Make endpoints per classification?
+    - Scrap all thing-derived endpoints and allow the thing endpoint to return dynamic payloads based on type?
 - Test chat endpoint on dedicated servers
 - Strip colors from chat name. Probably still include them in message.

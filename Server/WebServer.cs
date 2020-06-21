@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ceen;
 using Ceen.Httpd;
-using WebAPI.Authentication;
 using WebAPI.Payloads;
 
 namespace WebAPI.Server
@@ -79,15 +78,7 @@ namespace WebAPI.Server
             {
                 return await _router.HandleRequest(context);
             }
-            catch (AuthenticationException e)
-            {
-                await context.SendResponse(e.StatusCode, new ErrorPayload()
-                {
-                    message = e.Message
-                });
-                return true;
-            }
-            catch (WebException e)
+            catch (Exceptions.WebException e)
             {
                 await context.SendResponse(e.StatusCode, new ErrorPayload
                 {

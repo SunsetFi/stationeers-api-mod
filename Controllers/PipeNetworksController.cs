@@ -7,7 +7,7 @@ using WebAPI.Server.Attributes;
 
 namespace WebAPI.Controllers
 {
-    [WebController(Path = "pipe-networks")]
+    [WebController(Path = "api/pipe-networks")]
     class PipeNetworksController
     {
 

@@ -7,7 +7,7 @@ using WebAPI.Server.Attributes;
 
 namespace WebAPI.Controllers
 {
-    [WebController(Path = "items")]
+    [WebController(Path = "api/items")]
     class ItemsController
     {
 
