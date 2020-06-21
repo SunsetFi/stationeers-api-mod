@@ -7,12 +7,12 @@ using System.Reflection;
 using BepInEx;
 using HarmonyLib;
 using UnityEngine;
-using WebAPI.Router.Attributes;
+using WebAPI.Server.Attributes;
 using WebAPI.Server;
 
 namespace WebAPI
 {
-    [BepInPlugin("net.robophreddev.stationeers.WebAPI", "Web API for Stationeers", "1.0.0.0")]
+    [BepInPlugin("net.robophreddev.stationeers.WebAPI", "Web API for Stationeers", "2.0.0.0")]
     public class WebAPIPlugin : BaseUnityPlugin
     {
         public static WebAPIPlugin Instance;
@@ -54,6 +54,20 @@ namespace WebAPI
             }
         }
 
+        public void RegisterRoutes(Assembly assembly)
+        {
+            var webRouteType = typeof(IWebRoute);
+            var routeTypes = from type in assembly.GetTypes()
+                             where type.IsClass && type.GetInterfaces().Contains(webRouteType)
+                             select type;
+
+            foreach (var routeType in routeTypes)
+            {
+                var instance = (IWebRoute)Activator.CreateInstance(routeType);
+                this._webServer.AddRoute(instance);
+            }
+        }
+
         void Awake()
         {
             WebAPIPlugin.Instance = this;
@@ -66,8 +80,10 @@ namespace WebAPI
             {
 
                 this.ApplyPatches();
-                this.RegisterRoutes();
-                this.RegisterControllers(typeof(WebAPIPlugin).Assembly);
+
+                var ownAssembly = typeof(WebAPIPlugin).Assembly;
+                this.RegisterRoutes(ownAssembly);
+                this.RegisterControllers(ownAssembly);
 
 
                 _webServer.Start();
@@ -90,20 +106,6 @@ namespace WebAPI
             var harmony = new Harmony("net.robophreddev.stationeers.WebAPI");
             harmony.PatchAll();
             Log("Patch succeeded");
-        }
-
-        private void RegisterRoutes()
-        {
-            var webRouteType = typeof(IWebRoute);
-            var foundTypes = typeof(IWebRoute).Assembly.GetTypes()
-                .Where(p => p.IsClass && p.GetInterfaces().Contains(webRouteType))
-                .ToArray();
-
-            foreach (var routeType in foundTypes)
-            {
-                var instance = (IWebRoute)Activator.CreateInstance(routeType);
-                this._webServer.AddRoute(instance);
-            }
         }
     }
 }

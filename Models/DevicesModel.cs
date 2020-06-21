@@ -37,7 +37,7 @@ namespace WebAPI.Models
                 return null;
             }
 
-            ThingModel.WriteThingProperties(device, updates);
+            ThingsModel.WriteThingProperties(device, updates);
             return DevicePayload.FromDevice(device);
         }
     }

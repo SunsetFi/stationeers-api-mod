@@ -7,7 +7,7 @@ using WebAPI.Server.Attributes;
 
 namespace WebAPI.Controllers
 {
-    [WebController(Path = "login")]
+    [WebController(Path = "api/login")]
     class LoginController
     {
         [WebRouteMethod(Method = "GET")]

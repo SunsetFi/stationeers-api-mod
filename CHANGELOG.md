@@ -1,24 +1,31 @@
 ### vNext
 
-- Switch to Ceen http library for future ssl security.
+- Switch to Ceen http library to allow for ssl security.
+- Disable builtin rcon server; default to the rcon server port.
 - Make port configurable.
+- Nest all endpoints under /api
 - Add steam openid authentication.
+- `authenticationMode` config option:
+  - `none`: No authentication.
+  - `steam`: Users must authenticate through steam.
 - Fix crashes when dealing with server name and password.
 - Fix kick/ban being GET requests, should be POST.
-- Add player ping / score / playtime to player payload.
+- Add ping, score, and playtime to player payload.
 - Add GET bans and DELETE ban.
 - Fix duplicate items in Devices and Items.
 - Change device logicValues to logicTypes; value is now `{value, writable}`.
 - GET /thing and GET/POST /thing/:thingId endpoints.
-- `authenticationMode` config option:
-  - `none`: No authentication.
-  - `steam`: Users must authenticate through steam.
-- Added more properties to /server
+- Rename /server endpoint to /settings
+- Added /settings properties
   - maxPlayers
   - startingCondition
   - respawnCondition
-- Added /server/starting-conditions to get all starting conditions for the server.
-- Added /server/respawn-conditions to get all respawn conditions for the server.
+- Added /settings/starting-conditions to get all starting conditions.
+- Added /settings/respawn-conditions to get all respawn conditions.
+- Added /atmospheres endpoint for reading atmospheric data.
+- Added /pipe-networks endpoint for reading pipe networks.
+- Rework endpoint server to support attribute based controllers
+- Make route and controller API public to allow other mods to add their own endpoints.
 
 ### 1.2.0
 

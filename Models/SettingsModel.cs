@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace WebAPI.Models
 {
-    public static class ServerModel
+    public static class SettingsModel
     {
         public static string IP
         {

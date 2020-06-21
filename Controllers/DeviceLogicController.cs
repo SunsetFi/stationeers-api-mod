@@ -10,7 +10,7 @@ using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Controllers
 {
-    [WebController(Path = "devices/:referenceId/logic")]
+    [WebController(Path = "api/devices/:referenceId/logic")]
     public class DeviceLogicController
     {
         [WebRouteMethod(Method = "GET")]

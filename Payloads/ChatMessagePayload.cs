@@ -1,7 +1,7 @@
 
 namespace WebAPI.Payloads
 {
-    public class ServerMessagePayload
+    public class ChatMessagePayload
     {
         public string message { get; set; }
     }

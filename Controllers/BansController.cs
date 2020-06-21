@@ -8,7 +8,7 @@ using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Controllers
 {
-    [WebController(Path = "bans")]
+    [WebController(Path = "api/bans")]
     class BansController
     {
         [WebRouteMethod(Method = "GET")]
