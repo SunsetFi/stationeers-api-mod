@@ -8,7 +8,7 @@ using WebAPI.Server.Exceptions;
 namespace WebAPI.Payloads.JsonSerializerStrategies
 {
     [JsonPayloadStrategy]
-    public sealed class SlotSerializerStrategy : IJsonPayloadStrategy
+    public sealed class ThingSlotsSerializerStrategy : IJsonPayloadStrategy
     {
         public Type TargetType => typeof(Thing);
 

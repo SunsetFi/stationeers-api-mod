@@ -6,7 +6,7 @@ using WebAPI.Server.Exceptions;
 namespace WebAPI.Payloads.JsonSerializerStrategies
 {
     [JsonPayloadStrategy]
-    public sealed class ThingJsonSerializerStrategy : ObjectPropertyJsonPayloadStrategy<Thing>
+    public sealed class ThingSerializerStrategy : ObjectPropertyJsonPayloadStrategy<Thing>
     {
         private IDictionary<string, IObjectPropertyGetterSetter<Thing>> properties = new Dictionary<string, IObjectPropertyGetterSetter<Thing>>
                 {
@@ -18,6 +18,12 @@ namespace WebAPI.Payloads.JsonSerializerStrategies
                         thing => thing.PrefabHash,
                         (thing, prefabHash) => throw new BadRequestException("The prefabHash of a thing cannot be changed.")
                     )},
+                    {
+                        "prefabName", new ObjectPropertyGetterSetter<Thing, string>(
+                            thing => thing.PrefabName,
+                            (thing, prefabName) => throw new BadRequestException("The prefabName of a thing cannot be changed.")
+                        )
+                    },
                     {"health", new ObjectPropertyGetterSetter<Thing, float>(
                         thing => thing.ThingHealth,
                         (thing, health) => thing.ThingHealth = health
