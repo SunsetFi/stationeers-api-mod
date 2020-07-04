@@ -36,6 +36,9 @@ namespace WebAPI.Authentication
                     case AuthenticationMode.None:
                         _authenticationStrategy = new NoneAuthenticationStrategy();
                         break;
+                    case AuthenticationMode.Password:
+                        _authenticationStrategy = new PasswordAuthenticationStrategy();
+                        break;
                     case AuthenticationMode.Steam:
                         _authenticationStrategy = new SteamAuthenticationStrategy();
                         break;

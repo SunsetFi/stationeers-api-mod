@@ -27,14 +27,76 @@ Create a file called `config.json` inside the `stationeers-webapi` folder under 
 This file should be a json object with the following properties.
 
 - `enabled` (bool): Specify whether the mod should be enabled or disabled. Set to `true` to enable.
-- `password` (string, optional): The password to invoke endpoints. Sent as a `password` query parameter.
 - `port` (number): The port to use. Defaults to your server's game port.
+- `protocol` (`http` or `https`, optional): Sets the protocol to use for the api.
+  - Note: https prevents malacious networks from stealing login credentials, and is required for the `steam` authentication mode.
+- `authenticationMode` (`none`, `password`, or `steam`, optional): Sets the authentication mode for the server.
+  - Note: `steam` is a work in progress and requires an https certificate.
+- `plaintextPassword` (string, optional): Sets the password to require on login. Only supported if `authenticationMode` is `password`.
+- `allowedSteamIds` (array of strings, optional): Sets the steam ids allowed to use the api. Only supported if `authenticationMode` is `steam`.
+- `jwtSecret` (string, optional): The encryption key to encode the user's login token. If unset, a random key will be used.
+  - Note: Set this if you want to remember logins across server restarts.
 
 # Security
 
-A password can be configured to protect all endpoints. However, the password and requests are currently sent http / plaintext.
+There are two factors to the security of any RCON mod: Connection and authentication
 
-To specify the password, send it as the `password` query parameter. eg `GET /devices?password=mypassword`
+## Connection security
+
+The security of the connection between you and the server determines if any outside party can intercept your connection to steal passwords and login tokens.
+The connection mode is determined by the `protocol` configuration parameter.
+
+Connection security comes in two forms:
+
+## http
+
+HTTP mode is insecure, as malacious networks can intercept packets and find passwords and login tokens.
+Despite this, the origional built-in rcon server also runs in http mode, and has the same security problems. Running in http mode will not make you any less
+secure than the game already is.
+
+HTTP mode cannot be used with steam authentication, as steam refuses to authenticate unless the connection uses https.
+
+## https
+
+HTTPS adds encryption to the http connection, preventing malacious networks from stealing passwords and login tokens.
+
+HTTPS mode is a work in progress, and currently cannot be used.
+
+## Authentication
+
+Authentication controls how the mod determines who is and is not allowed to execute commands on the server.
+The authentication mode is chosen by setting the `authenticationMode` configuration parameter.
+
+### None
+
+No authentication will be used. Any command sent to the api will be executed.
+
+### Password
+
+To execute a command, you must first log in to the api by sending a request to `/api/login` containing a `password` query parameter. This query parameter must be set to the same
+password as the `plaintextPassword` configuration parameter. Once a valid login token is returned, this login token can be used for all future requests.
+
+### Steam
+
+Steam authentication involves using the Steam OpenID servers to require the user to log in with their steam account. The mod never receives their steam password, only their username, id, and a session key. This is used to verify
+with steam that the user did indeed log in on behalf of the mod. This can be used to allow steam id logins without risking the user's credentials being leaked, and provides the best security for the api.
+
+Steam authentication is still a work in progress. A functional prototype is available, but due to a requirement imposed by steam, it requires the use of https connection security. More details about implementing
+steam authentication will be provided once https is fully implemented.
+
+## Login Tokens
+
+For all authentication methods that require a login, the user must log in using the `/api/login` endpoint. On a successful login, the mod will return a login token under the `authorization` property.
+This token must be sent with all requests in one of two ways:
+
+- In an `Authorization` cookie.
+- In an `Authorization` header, in the form `Bearer <token>`.
+
+Failure to send this token, or sending an invalid token, will result in the command being rejected.
+
+These tokens uniquely identify your user to the system, and connect your login with your future requests. They are valid for 1 hour, after which you must log in again.
+These tokens are encrypted. By default, the encryption key is randomly generated each time the server starts up. You may choose to use a persistent key by specifying the `jwtSecret` configuration property. However,
+if a third party obtains this key, they will be able to generate forged login requests and bypass security. It is recommended that this parameter remains empty so a random encrpytion key will be used every server restart.
 
 ## Supported Requests
 
