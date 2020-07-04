@@ -169,6 +169,14 @@ Gets an array of all atmosphere cells.
 
 Gets an array of all pipe networks.
 
+### POST /api/saves
+
+Save the game
+
+#### Body
+
+- `fileName` (string): The name of the file to save.
+
 # Compiling from source
 
 This mod can be compiled using the .net SDK tools. Visual studio will do nicely, but any text editor will do as long as the .net sdk is installed.

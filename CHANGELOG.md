@@ -24,6 +24,7 @@
 - Added /settings/respawn-conditions to get all respawn conditions.
 - Added /atmospheres endpoint for reading atmospheric data.
 - Added /pipe-networks endpoint for reading pipe networks.
+- Added /saves endpoint for creating new saves.
 - Rework endpoint server to support attribute based controllers
 - Make route and controller API public to allow other mods to add their own endpoints.
 
