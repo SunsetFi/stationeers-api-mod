@@ -15,7 +15,7 @@ using WebAPI.Payloads;
 
 namespace WebAPI
 {
-    [BepInPlugin("net.robophreddev.stationeers.WebAPI", "Web API for Stationeers", "2.0.0.0")]
+    [BepInPlugin("net.robophreddev.stationeers.WebAPI", "Web API for Stationeers", "2.1.0.0")]
     public class WebAPIPlugin : BaseUnityPlugin
     {
         public static WebAPIPlugin Instance;

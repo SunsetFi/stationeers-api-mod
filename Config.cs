@@ -45,6 +45,7 @@ namespace WebAPI
     public static class AuthenticationMode
     {
         public const string None = "none";
+        public const string Password = "password";
         public const string Steam = "steam";
 
         public static bool isValid(string mode)
@@ -52,6 +53,7 @@ namespace WebAPI
             switch (mode)
             {
                 case AuthenticationMode.None:
+                case AuthenticationMode.Password:
                 case AuthenticationMode.Steam:
                     return true;
                 default:

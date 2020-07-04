@@ -1,3 +1,7 @@
+### 2.1.0
+
+- Re-introduce `password` `authenticationMode`
+
 ### 2.0.0
 
 - Switch to Ceen http library to allow for ssl security.
