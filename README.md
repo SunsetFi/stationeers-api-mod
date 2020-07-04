@@ -18,7 +18,7 @@ This mod should be compatible with both standard Stationeers game installs and t
 
 # Usage
 
-Make HTTP requests to `localhost:4444`.
+Make HTTP requests to your server's port.
 Expect responses to be `application/json`
 
 # Configuration
@@ -28,7 +28,7 @@ This file should be a json object with the following properties.
 
 - `enabled` (bool): Specify whether the mod should be enabled or disabled. Set to `true` to enable.
 - `password` (string, optional): The password to invoke endpoints. Sent as a `password` query parameter.
-- `port` (number): The port to use.
+- `port` (number): The port to use. Defaults to your server's game port.
 
 # Security
 
