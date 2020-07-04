@@ -1,4 +1,4 @@
-### vNext
+### 2.0.0
 
 - Switch to Ceen http library to allow for ssl security.
 - Disable builtin rcon server; default to the rcon server port.
