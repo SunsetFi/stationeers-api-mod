@@ -11,6 +11,7 @@ namespace WebAPI.Payloads
         public string password { get; set; }
         public string startingCondition { get; set; }
         public string respawnCondition { get; set; }
+        public string lastSave { get; set; }
 
         public static SettingsPayload FromServer()
         {
@@ -21,7 +22,8 @@ namespace WebAPI.Payloads
                 maxPlayers = SettingsModel.MaxPlayers,
                 password = SettingsModel.Password,
                 startingCondition = SettingsModel.StartingCondition,
-                respawnCondition = SettingsModel.RespawnCondition
+                respawnCondition = SettingsModel.RespawnCondition,
+                lastSave = SettingsModel.LastSave?.ToString("s", System.Globalization.CultureInfo.InvariantCulture)
             };
             return payload;
         }
