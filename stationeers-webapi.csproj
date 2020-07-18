@@ -24,9 +24,6 @@
         <Reference Include="UnityEngine.UI" CopyToPublishDirectory="Never">
       <HintPath>.\externals\UnityEngine.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>.\externals\Newtonsoft.Json.dll</HintPath>
-    </Reference>
 
     <Reference Include="BepInEx.Harmony">
       <HintPath>.\externals\BepInEx.Harmony.dll</HintPath>
@@ -44,6 +41,7 @@
     <PackageReference Include="Ceen.Httpd" Version="0.9.8" />
     <PackageReference Include="Ceen.Mvc" Version="0.9.8" />
     <PackageReference Include="JWT" Version="6.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <PropertyGroup>
