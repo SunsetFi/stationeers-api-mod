@@ -100,6 +100,10 @@ if a third party obtains this key, they will be able to generate forged login re
 
 ## Supported Requests
 
+### GET /api/status
+
+Gets the general server status.
+
 ### GET /api/settings
 
 Gets game and server settings.
@@ -230,6 +234,10 @@ Gets an array of all atmosphere cells.
 ### GET /api/pipe-networks
 
 Gets an array of all pipe networks.
+
+### GET /api/saves
+
+Gets the time the game last saved this session.
 
 ### POST /api/saves
 
