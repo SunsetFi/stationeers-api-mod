@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Server.Exceptions;
 using WebAPI.Payloads;
+using WebAPI.Models;
 
 namespace WebAPI
 {
@@ -69,6 +70,8 @@ namespace WebAPI
             {
                 return;
             }
+
+            SettingsModel.ClearLastSave();
 
             this._webServer = new WebServer(this.OnRequest);
             this._webServer.Start(WebAPI.Config.Port ?? SteamServer.Instance.GetGamePort());

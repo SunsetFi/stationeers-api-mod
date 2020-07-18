@@ -14,6 +14,12 @@ namespace WebAPI.Controllers
     [WebController(Path = "api/saves")]
     public class SavesController
     {
+        [WebRouteMethod(Method = "GET")]
+        public async Task GetSave(IHttpContext context)
+        {
+            await context.SendResponse(HttpStatusCode.OK, SavePayload.FromServer());
+        }
+
         [WebRouteMethod(Method = "POST")]
         public async Task PostSave(IHttpContext context, PostSavePayload body)
         {
