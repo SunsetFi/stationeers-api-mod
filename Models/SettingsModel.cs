@@ -1,12 +1,26 @@
 
 using Assets.Scripts.Networking;
+using Assets.Scripts.Serialization;
 using Steamworks;
+using System;
 using System.Linq;
 
 namespace WebAPI.Models
 {
     public static class SettingsModel
     {
+        private static DateTime? lastSave;
+
+        static SettingsModel()
+        {
+            XmlSaveLoad.OnSaveLoadFinished += OnSaveLoadFinished;
+        }
+
+        static void OnSaveLoadFinished()
+        {
+            SettingsModel.lastSave = DateTime.Now;
+        }
+
         public static string IP
         {
             get
@@ -116,6 +130,19 @@ namespace WebAPI.Models
             {
                 return WorldManager.RespawnConditions.Select(x => x.Key).ToArray();
             }
+        }
+
+        public static DateTime? LastSave
+        {
+            get
+            {
+                return SettingsModel.lastSave;
+            }
+        }
+
+        public static void ClearLastSave()
+        {
+            SettingsModel.lastSave = null;
         }
     }
 }
