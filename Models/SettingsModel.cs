@@ -1,4 +1,6 @@
 
+using Assets.Scripts;
+using Assets.Scripts.GridSystem;
 using Assets.Scripts.Networking;
 using Assets.Scripts.Serialization;
 using Steamworks;
@@ -143,6 +145,14 @@ namespace WebAPI.Models
         public static void ClearLastSave()
         {
             SettingsModel.lastSave = null;
+        }
+
+        public static GameState GameStatus
+        {
+            get
+            {
+                return GameManager.GameState;
+            }
         }
     }
 }

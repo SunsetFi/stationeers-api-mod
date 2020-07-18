@@ -12,6 +12,7 @@ namespace WebAPI.Payloads
         public string startingCondition { get; set; }
         public string respawnCondition { get; set; }
         public string lastSave { get; set; }
+        public string gameStatus { get; set; }
 
         public static SettingsPayload FromServer()
         {
@@ -23,7 +24,8 @@ namespace WebAPI.Payloads
                 password = SettingsModel.Password,
                 startingCondition = SettingsModel.StartingCondition,
                 respawnCondition = SettingsModel.RespawnCondition,
-                lastSave = SettingsModel.LastSave?.ToString("s", System.Globalization.CultureInfo.InvariantCulture)
+                lastSave = SettingsModel.LastSave?.ToString("s", System.Globalization.CultureInfo.InvariantCulture),
+                gameStatus = SettingsModel.GameStatus.ToString()
             };
             return payload;
         }
