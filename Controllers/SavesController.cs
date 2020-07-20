@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Assets.Scripts.Serialization;
 using Assets.Scripts.Util;
 using Ceen;
+using WebAPI.Authentication;
 using WebAPI.Payloads;
 using WebAPI.Server.Attributes;
 using WebAPI.Server.Exceptions;
@@ -17,12 +18,15 @@ namespace WebAPI.Controllers
         [WebRouteMethod(Method = "GET")]
         public async Task GetSave(IHttpContext context)
         {
+            Authenticator.VerifyAuth(context);
             await context.SendResponse(HttpStatusCode.OK, SavePayload.FromServer());
         }
 
         [WebRouteMethod(Method = "POST")]
         public async Task PostSave(IHttpContext context, PostSavePayload body)
         {
+            Authenticator.VerifyAuth(context);
+
             if (body == null)
             {
                 throw new BadRequestException("A body with a fileName must be specified.");
