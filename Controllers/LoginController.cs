@@ -12,7 +12,7 @@ namespace WebAPI.Controllers
     {
         [WebRouteMethod(Method = "GET")]
         [WebRouteMethod(Method = "POST")]
-        public async Task GetLogin(IHttpContext context)
+        public async Task Login(IHttpContext context)
         {
             var user = await Authenticator.Authenticate(context);
             if (user == null)
