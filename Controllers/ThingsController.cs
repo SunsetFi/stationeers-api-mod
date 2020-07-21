@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         {
             Authenticator.VerifyAuth(context);
 
-            var thing = Dispatcher.RunOnMainThread(() => ThingsModel.GetThing(referenceId));
+            var thing = await Dispatcher.RunOnMainThread(() => ThingsModel.GetThing(referenceId));
             if (thing == null)
             {
                 throw new NotFoundException("Thing not found.");

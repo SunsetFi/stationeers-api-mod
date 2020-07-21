@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Authentication;
-using WebAPI.Models;
 using WebAPI.Payloads;
 using WebAPI.Server.Attributes;
 
