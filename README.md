@@ -259,9 +259,6 @@ This mod makes use of both nuget dependencies, and takes dependencies on game fi
 
 This library uses nuget to install most local dependencies. You can get these dependencies by running `dotnet restore` in the source directory.
 
-However, we also need to set up JSON.net as an external dependency manually.
-Download JSON.net from [here](https://github.com/JamesNK/Newtonsoft.Json/releases) (version 12 is recommended). In the zip file, copy `/Bin/netstandard2.0/Newtonsoft.Json.dll` to the `externals` folder.
-
 As this mod references many game dlls, you need to give it copies of these dlls for it to compile properly. The project is set up to expect these in the `/externals` folder
 
 ### Game dependencies
