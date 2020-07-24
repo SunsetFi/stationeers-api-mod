@@ -243,6 +243,22 @@ Gets the time the game last saved this session.
 
 Save the game
 
+### GET /api/stationpedia/ic/instructions
+
+Gets a dictionary of IC10 instructions.
+
+### GET /api/stationpedia/logic/slottypes
+
+Gets a dictionary of possible logic slot types.
+
+### GET /api/stationpedia/logic/types
+
+Gets a dictionary of possible logic types.
+
+### GET /api/stationpedia/things
+
+Gets a dictionary of all possible items, structures and things with properties.
+
 #### Body
 
 - `fileName` (string): The name of the file to save.
