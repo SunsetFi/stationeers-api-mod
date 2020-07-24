@@ -247,6 +247,10 @@ Save the game
 
 Gets a dictionary of IC10 instructions.
 
+### GET /api/stationpedia/ic/enums
+
+Gets a dictionary of all possible enums that IC10 instructions can reference.
+
 ### GET /api/stationpedia/logic/slottypes
 
 Gets a dictionary of possible logic slot types.
