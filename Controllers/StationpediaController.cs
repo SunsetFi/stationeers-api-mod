@@ -17,6 +17,13 @@ namespace WebAPI.Controllers
             await context.SendResponse(HttpStatusCode.OK, ICInstructionPayload.FromGame());
         }
 
+                [WebRouteMethod(Method = "GET", Path = "ic/enums")]
+        public async Task GetICEnums(IHttpContext context)
+        {
+            Authenticator.VerifyAuth(context);
+            await context.SendResponse(HttpStatusCode.OK, ICEnumPayload.FromGame());
+        }
+
         [WebRouteMethod(Method = "GET", Path = "logic/slottypes")]
         public async Task GetLogicSlotTypes(IHttpContext context)
         {       
