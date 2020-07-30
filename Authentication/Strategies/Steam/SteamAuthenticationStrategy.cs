@@ -8,10 +8,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Ceen;
+using Newtonsoft.Json.Linq;
 using WebAPI.Payloads;
 using WebAPI.Server.Exceptions;
 
-namespace WebAPI.Authentication.Strategies
+namespace WebAPI.Authentication.Strategies.Steam
 {
     public class SteamAuthenticationStrategy : IAuthenticationStrategy
     {
@@ -22,6 +23,11 @@ namespace WebAPI.Authentication.Strategies
 
         public async Task<ApiUser> TryAuthenticate(IHttpContext context)
         {
+            if (!Config.Instance.SteamAuthentication.Enabled)
+            {
+                throw new NotFoundException();
+            }
+
             if (context.Request.Method != "GET")
             {
                 // openid requests use GET
@@ -77,7 +83,7 @@ namespace WebAPI.Authentication.Strategies
                 throw new ForbiddenException("Invalid Credentials.");
             }
 
-            var allowedSteamIds = Config.AllowedSteamIds;
+            var allowedSteamIds = Config.Instance.SteamAuthentication.AllowedSteamIds;
             if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamId.ToString()))
             {
                 Logging.Log(
@@ -89,25 +95,29 @@ namespace WebAPI.Authentication.Strategies
                 throw new ForbiddenException();
             }
 
-            var user = ApiUser.MakeSteamUser(context, steamId);
+            var user = SteamApiUser.MakeSteamUser(context, steamId);
             Authenticator.SetUserToken(context, user);
             return user;
         }
 
-        public void Verify(IHttpContext context, out ApiUser user)
+        public void Verify(IHttpContext context, JObject authToken, out ApiUser user)
         {
-            user = Authenticator.GetUserFromToken(context);
-            if (user == null || !user.isSteamUser)
+            SteamApiUser steamUser = authToken.ToObject<SteamApiUser>();
+            if (steamUser == null)
             {
-                throw new UnauthorizedException();
+                throw new ForbiddenException();
             }
 
-            var allowedSteamIds = Config.AllowedSteamIds;
-            if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(user.steamId))
+            user = steamUser;
+
+            ApiUser.VerifyUser(steamUser, context);
+
+            var allowedSteamIds = Config.Instance.SteamAuthentication.AllowedSteamIds;
+            if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamUser.SteamID))
             {
                 Logging.Log(
                     new Dictionary<string, string>() {
-                        { "SteamID", user.steamId }
+                        { "SteamID", steamUser.SteamID }
                     },
                     "JWT login request contained a SteamID not in the allow list."
                 );
