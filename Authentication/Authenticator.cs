@@ -4,13 +4,16 @@ using System.Collections.Generic;
 using JWT.Builder;
 using JWT.Algorithms;
 using Ceen;
-using WebAPI.Authentication.Strategies;
 using System.Threading.Tasks;
 using Ceen.Httpd;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using JWT;
 using WebAPI.Server.Exceptions;
+using WebAPI.Authentication.Strategies.Steam;
+using Newtonsoft.Json.Linq;
+using WebAPI.Authentication.Strategies.Anonymous;
+using WebAPI.Authentication.Strategies.Password;
 
 namespace WebAPI.Authentication
 {
@@ -26,52 +29,53 @@ namespace WebAPI.Authentication
             }
         }
 
-        private static IAuthenticationStrategy _authenticationStrategy;
-        private static IAuthenticationStrategy GetAuthenticationStrategy()
-        {
-            if (_authenticationStrategy == null)
-            {
-                switch (Config.AuthenticationMode)
-                {
-                    case AuthenticationMode.None:
-                        _authenticationStrategy = new NoneAuthenticationStrategy();
-                        break;
-                    case AuthenticationMode.Password:
-                        _authenticationStrategy = new PasswordAuthenticationStrategy();
-                        break;
-                    case AuthenticationMode.Steam:
-                        _authenticationStrategy = new SteamAuthenticationStrategy();
-                        break;
-                    default:
-                        throw new Exception("No authentication mode configured.");
-                }
-            }
-            return _authenticationStrategy;
-        }
+        private static Dictionary<string, IAuthenticationStrategy> _authenticationStrategies = new Dictionary<string, IAuthenticationStrategy> {
+            {AuthenticationMethod.Anonymous, new AnonymousAuthenticationStrategy()},
+            {AuthenticationMethod.Password, new PasswordAuthenticationStrategy()},
+            {AuthenticationMethod.Steam, new SteamAuthenticationStrategy()}
+        };
 
-        public static async Task<ApiUser> Authenticate(IHttpContext context)
+
+        public static async Task<ApiUser> Authenticate(IHttpContext context, string strategyType)
         {
-            var authenticationStrategy = GetAuthenticationStrategy();
-            var user = await authenticationStrategy.TryAuthenticate(context);
+            IAuthenticationStrategy strategy;
+            if (!_authenticationStrategies.TryGetValue(strategyType, out strategy))
+            {
+                throw new ArgumentException($"Unrecognize auth strategy {strategyType}");
+            }
+            var user = await strategy.TryAuthenticate(context);
             return user;
         }
 
         public static ApiUser VerifyAuth(IHttpContext context)
         {
-            var authenticationStrategy = GetAuthenticationStrategy();
+            var token = GetJWTToken(context);
 
-            ApiUser user;
-            authenticationStrategy.Verify(context, out user);
+            string authenticationMethod;
+            if (token == null)
+            {
+                authenticationMethod = AuthenticationMethod.Anonymous;
+            }
+            else
+            {
+                var unknownUser = token.ToObject<ApiUser>();
+                authenticationMethod = unknownUser.AuthenticationMethod;
+            }
 
-            return user;
+            if (_authenticationStrategies.TryGetValue(authenticationMethod, out var strategy))
+            {
+                ApiUser user;
+                strategy.Verify(context, token, out user);
+            }
+
+            throw new ForbiddenException();
         }
-
 
         public static string GenerateToken(ApiUser user)
         {
             var builder = new JwtBuilder()
                 .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(Config.JWTSecret)
+                .WithSecret(Config.Instance.JWTSecret)
                 .AddClaim("exp", new DateTimeOffset(Authenticator.TokenExpireTime).ToUnixTimeSeconds());
             user.SerializeToJwt(builder);
             return builder.Encode();
@@ -84,11 +88,11 @@ namespace WebAPI.Authentication
             {
                 Expires = Authenticator.TokenExpireTime,
                 HttpOnly = true,
-                Secure = Config.Protocol == "https"
+                Secure = Config.Instance.Protocol == "https"
             });
         }
 
-        public static ApiUser GetUserFromToken(IHttpContext context)
+        public static JObject GetJWTToken(IHttpContext context)
         {
             string token = null;
             if (context.Request.Cookies.ContainsKey("Authorization"))
@@ -107,21 +111,19 @@ namespace WebAPI.Authentication
 
             if (token == null)
             {
-                throw new UnauthorizedException();
+                return null;
             }
 
             try
             {
                 var json = new JwtBuilder()
                     .WithAlgorithm(new HMACSHA256Algorithm())
-                    .WithSecret(Config.JWTSecret)
+                    .WithSecret(Config.Instance.JWTSecret)
                     .MustVerifySignature()
                     .Decode(token);
-                var apiUser = JsonConvert.DeserializeObject<ApiUser>(json);
 
-                VerifyEndpoint(context, apiUser);
-
-                return apiUser;
+                var payload = JObject.Parse(json);
+                return payload;
             }
             catch (JsonException)
             {
@@ -134,23 +136,6 @@ namespace WebAPI.Authentication
             catch (SignatureVerificationException)
             {
                 throw new UnauthorizedException("Invalid Signature.");
-            }
-        }
-
-
-        private static void VerifyEndpoint(IHttpContext context, ApiUser apiUser)
-        {
-            var endpoint = context.Request.RemoteEndPoint.ToPortlessString();
-            if (apiUser.endpoint != null && apiUser.endpoint != endpoint)
-            {
-                Logging.Log(
-                    new Dictionary<string, string>() {
-                            { "RequestEndpoint", endpoint },
-                            { "JWTEndpoint", apiUser.endpoint }
-                    },
-                    "JWT login request does not match the source endpoint."
-                );
-                throw new UnauthorizedException("IP Changed.");
             }
         }
     }
