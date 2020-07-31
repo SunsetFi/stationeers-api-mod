@@ -1,6 +1,7 @@
 
 using System.Threading.Tasks;
 using Ceen;
+using Newtonsoft.Json.Linq;
 using WebAPI.Authentication;
 using WebAPI.Models;
 using WebAPI.Payloads;
@@ -37,7 +38,7 @@ namespace WebAPI.Controllers
         }
 
         [WebRouteMethod(Method = "POST", Path = ":referenceId")]
-        public async Task PostThing(IHttpContext context, long referenceId, ThingPayload body)
+        public async Task PostThing(IHttpContext context, long referenceId, JObject body)
         {
             Authenticator.VerifyAuth(context);
 

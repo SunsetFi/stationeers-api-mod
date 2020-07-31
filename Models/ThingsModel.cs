@@ -20,21 +20,20 @@ namespace WebAPI.Models
                 uniqueThings.Add(thing);
             }
 
-            //return uniqueThings.Select(thing => ThingPayload.FromThing(thing)).ToList();
             return uniqueThings.Select(thing => JsonPayloadSerializer.ObjectToPayload(thing)).ToList();
         }
 
-        public static ThingPayload GetThing(long referenceId)
+        public static JObject GetThing(long referenceId)
         {
             Thing thing;
             if (!XmlSaveLoad.Referencables.TryGetValue(referenceId, out thing))
             {
                 return null;
             }
-            return ThingPayload.FromThing(thing);
+            return JsonPayloadSerializer.ObjectToPayload(thing);
         }
 
-        public static ThingPayload UpdateThing(long referenceId, ThingPayload updates)
+        public static JObject UpdateThing(long referenceId, JObject updates)
         {
             Thing thing;
             if (!XmlSaveLoad.Referencables.TryGetValue(referenceId, out thing))
@@ -42,22 +41,8 @@ namespace WebAPI.Models
                 return null;
             }
 
-            ThingsModel.WriteThingProperties(thing, updates);
-            return ThingPayload.FromThing(thing);
-        }
-
-        public static void WriteThingProperties(Thing thing, ThingPayload payload)
-        {
-            if (payload.customName != null && payload.customName.Length > 0)
-            {
-                thing.CustomName = payload.customName;
-                thing.IsCustomName = true;
-            }
-
-            if (payload.accessState.HasValue)
-            {
-                thing.AccessState = payload.accessState.Value;
-            }
+            JsonPayloadSerializer.UpdateObjectFromPayload(updates, thing);
+            return JsonPayloadSerializer.ObjectToPayload(thing);
         }
     }
 }
