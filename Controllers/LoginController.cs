@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Authentication;
@@ -13,7 +14,22 @@ namespace WebAPI.Controllers
         [WebRouteMethod(Method = "GET")]
         public async Task Login(IHttpContext context)
         {
-            // TODO: Send a list of supported authentication mechanisms.
+            var loginMethods = new List<string>();
+            if (Config.Instance.PasswordAuthentication.Enabled)
+            {
+                loginMethods.Add("password");
+            }
+            if (Config.Instance.SteamAuthentication.Enabled)
+            {
+                loginMethods.Add("steam");
+            }
+
+            var response = new LoginMethodsPayload
+            {
+                loginMethods = loginMethods
+            };
+
+            await context.SendResponse(HttpStatusCode.OK, response);
         }
 
         [WebRouteMethod(Path = "steam", Method = "GET")]
