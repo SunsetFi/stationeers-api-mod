@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace WebAPI.JsonTranslation
 {
-    static class AutoJsonTranslatorStrategy
+    class AutoJsonTranslatorStrategy : IJsonTranslatorStrategy
     {
         public static IJsonTranslatorStrategy FromInstance(object instance)
         {
@@ -17,13 +17,9 @@ namespace WebAPI.JsonTranslation
                 throw new Exception("Instance passed to AutoJsonTranslatorStrategy must have a JsonTranslatorTargetAttribute.");
             }
 
-            var constructorType = typeof(AutoJsonTranslatorStrategy<>).MakeGenericType(type);
-            return (IJsonTranslatorStrategy)Activator.CreateInstance(constructorType, instance);
+            return new AutoJsonTranslatorStrategy(targetAttribute.TargetType, instance);
         }
-    }
 
-    class AutoJsonTranslatorStrategy<T> : IJsonTranslatorStrategy
-    {
         private static Dictionary<Type, string> sExpectedTypeErrors = new Dictionary<Type, string> {
             {typeof(int), "integer"},
             {typeof(float), "decimal"},
@@ -39,12 +35,16 @@ namespace WebAPI.JsonTranslation
         private Dictionary<string, MethodInfo> propertyGetters = new Dictionary<string, MethodInfo>();
         private Dictionary<string, MethodInfo> propertySetters = new Dictionary<string, MethodInfo>();
 
-        public AutoJsonTranslatorStrategy(object instance)
+        public AutoJsonTranslatorStrategy(Type targetType, object instance)
         {
+            var instanceType = instance.GetType();
+            var instanceMethods = instanceType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+
+            this.TargetType = targetType;
             this.instance = instance;
 
             var getters =
-                from method in typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                from method in instanceMethods
                 let attribute = (JsonPropertyGetterAttribute)Attribute.GetCustomAttribute(method, typeof(JsonPropertyGetterAttribute))
                 where attribute != null
                 select new { Method = method, Attribute = attribute };
@@ -56,9 +56,10 @@ namespace WebAPI.JsonTranslation
                 {
                     throw new Exception("Expected getter method to have exactly 1 parameter");
                 }
-                if (!methodParams[0].ParameterType.IsAssignableFrom(typeof(T)))
+                var firstParamType = methodParams[0].ParameterType;
+                if (!firstParamType.IsAssignableFrom(targetType))
                 {
-                    throw new Exception($"Expected getter method parameter to be assignable from TargetType \"{typeof(T).FullName}\".");
+                    throw new Exception($"Getter method {method.Name} first parameter of type {firstParamType.FullName} is not assignable from TargetType \"{targetType.FullName}\".");
                 }
 
                 this.propertyGetters.Add(getter.Attribute.PropertyName, method);
@@ -66,7 +67,7 @@ namespace WebAPI.JsonTranslation
             }
 
             var setters =
-                from method in typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                from method in instanceMethods
                 let attribute = (JsonPropertySetterAttribute)Attribute.GetCustomAttribute(method, typeof(JsonPropertySetterAttribute))
                 where attribute != null
                 select new { Method = method, Attribute = attribute };
@@ -78,9 +79,10 @@ namespace WebAPI.JsonTranslation
                 {
                     throw new Exception("Expected setter method to have exactly 2 parameters");
                 }
-                if (!methodParams[0].ParameterType.IsAssignableFrom(typeof(T)))
+                var firstParamType = methodParams[0].ParameterType;
+                if (!firstParamType.IsAssignableFrom(targetType))
                 {
-                    throw new Exception($"Expected setter method first parameter to be assignable from TargetType \"{typeof(T).FullName}\".");
+                    throw new Exception($"Setter method {method.Name} first parameter of type {firstParamType.FullName} is not assignable from TargetType \"{targetType.FullName}\".");
                 }
 
                 this.propertySetters.Add(setter.Attribute.PropertyName, setter.Method);
@@ -88,7 +90,7 @@ namespace WebAPI.JsonTranslation
             }
         }
 
-        public Type TargetType => typeof(T);
+        public Type TargetType { get; private set; }
 
         public string[] SupportedProperties
         {
@@ -135,7 +137,14 @@ namespace WebAPI.JsonTranslation
             foreach (var pair in this.propertyGetters)
             {
                 var value = pair.Value.Invoke(this.instance, new[] { target });
-                output[pair.Key] = (JToken)value;
+                if (value == null)
+                {
+                    output[pair.Key] = null;
+                }
+                else
+                {
+                    output[pair.Key] = JToken.FromObject(value);
+                }
             }
         }
 

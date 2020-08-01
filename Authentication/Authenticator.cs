@@ -66,6 +66,7 @@ namespace WebAPI.Authentication
             {
                 ApiUser user;
                 strategy.Verify(context, token, out user);
+                return user;
             }
 
             throw new ForbiddenException();
