@@ -5,7 +5,8 @@ using Assets.Scripts;
 using Assets.Scripts.Objects;
 using Assets.Scripts.Serialization;
 using Newtonsoft.Json.Linq;
-using WebAPI.Payloads;
+using WebAPI.JsonTranslation;
+using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Models
 {
@@ -20,7 +21,7 @@ namespace WebAPI.Models
                 uniqueThings.Add(thing);
             }
 
-            return uniqueThings.Select(thing => JsonPayloadSerializer.ObjectToPayload(thing)).ToList();
+            return uniqueThings.Select(thing => JsonTranslator.ObjectToJson(thing)).ToList();
         }
 
         public static JObject GetThing(long referenceId)
@@ -30,7 +31,7 @@ namespace WebAPI.Models
             {
                 return null;
             }
-            return JsonPayloadSerializer.ObjectToPayload(thing);
+            return JsonTranslator.ObjectToJson(thing);
         }
 
         public static JObject UpdateThing(long referenceId, JObject updates)
@@ -41,8 +42,15 @@ namespace WebAPI.Models
                 return null;
             }
 
-            JsonPayloadSerializer.UpdateObjectFromPayload(updates, thing);
-            return JsonPayloadSerializer.ObjectToPayload(thing);
+            try
+            {
+                JsonTranslator.UpdateObjectFromJson(updates, thing);
+            }
+            catch (JsonTranslationException e)
+            {
+                throw new BadRequestException(e.Message);
+            }
+            return JsonTranslator.ObjectToJson(thing);
         }
     }
 }

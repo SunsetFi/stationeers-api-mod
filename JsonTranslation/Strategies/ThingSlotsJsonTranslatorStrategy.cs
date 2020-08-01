@@ -3,23 +3,33 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.Objects;
 using Newtonsoft.Json.Linq;
-using WebAPI.Server.Exceptions;
 
-namespace WebAPI.Payloads.JsonSerializerStrategies
+namespace WebAPI.JsonTranslation.Strategies
 {
-    [JsonPayloadStrategy]
-    public sealed class ThingSlotsSerializerStrategy : IJsonPayloadStrategy
+    [JsonTranslatorStrategy]
+    public sealed class ThingSlotsJsonTranslatorStrategy : IJsonTranslatorStrategy
     {
         public Type TargetType => typeof(Thing);
 
         public string[] SupportedProperties => new[] { "slotReferenceIds" };
 
-        public void UpdateObjectFromPayload(object target, JObject input)
+        public void UpdateObjectFromJson(object target, JObject input)
         {
-            throw new BadRequestException("slotReferenceIds is read only.");
+            if (input.ContainsKey("slotReferenceIds"))
+            {
+                throw new ReadOnlyPropertyException("slotReferenceIds is read only.");
+            }
         }
 
-        public void WriteObjectToPayload(object target, JObject output)
+        public void VerifyJsonUpdate(object target, JObject input)
+        {
+            if (input.ContainsKey("slotReferenceIds"))
+            {
+                throw new ReadOnlyPropertyException("slotReferenceIds is read only.");
+            }
+        }
+
+        public void WriteObjectToJson(object target, JObject output)
         {
             var thing = (Thing)target;
 

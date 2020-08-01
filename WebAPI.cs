@@ -61,7 +61,7 @@ namespace WebAPI
 
         public void StartServer()
         {
-            if (!WebAPI.Config.Enabled)
+            if (!WebAPI.Config.Instance.Enabled)
             {
                 return;
             }
@@ -74,7 +74,7 @@ namespace WebAPI
             SettingsModel.ClearLastSave();
 
             this._webServer = new WebServer(this.OnRequest);
-            this._webServer.Start(WebAPI.Config.Port ?? SteamServer.Instance.GetGamePort());
+            this._webServer.Start(WebAPI.Config.Instance.Port ?? SteamServer.Instance.GetGamePort());
         }
 
         public void StopServer()
@@ -93,7 +93,7 @@ namespace WebAPI
             WebAPI.Config.LoadConfig();
             Dispatcher.Initialize();
 
-            if (WebAPI.Config.Enabled)
+            if (WebAPI.Config.Instance.Enabled)
             {
 
                 this.ApplyPatches();
