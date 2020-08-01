@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Objects;
-using WebAPI.Payloads;
+using Newtonsoft.Json.Linq;
+using WebAPI.JsonTranslation;
 
 namespace WebAPI.Models
 {
     public static class ItemsModel
     {
-        public static IList<ItemPayload> GetItems()
+        public static IList<JObject> GetItems()
         {
             // AllDevices has duplicates, so filtering this to be safe.
             var set = new HashSet<Item>();
@@ -16,7 +17,7 @@ namespace WebAPI.Models
             {
                 set.Add(item);
             }
-            return set.Select(x => ItemPayload.FromItem(x)).ToList();
+            return set.Select(x => JsonTranslator.ObjectToJson(x)).ToList();
         }
     }
 }

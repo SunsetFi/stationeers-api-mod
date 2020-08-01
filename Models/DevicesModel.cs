@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Objects.Pipes;
-using WebAPI.Payloads;
+using Newtonsoft.Json.Linq;
+using WebAPI.JsonTranslation;
+using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Models
 {
     public static class DevicesModel
     {
-        public static IList<DevicePayload> GetDevices()
+        public static IList<JObject> GetDevices()
         {
             // Devices can have duplicates in this list.
             var set = new HashSet<Device>();
@@ -16,20 +18,20 @@ namespace WebAPI.Models
             {
                 set.Add(device);
             }
-            return set.Select(x => DevicePayload.FromDevice(x)).ToList();
+            return set.Select(x => JsonTranslator.ObjectToJson(x)).ToList();
         }
 
-        public static DevicePayload GetDevice(long referenceId)
+        public static JObject GetDevice(long referenceId)
         {
             var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
             if (device == null)
             {
                 return null;
             }
-            return DevicePayload.FromDevice(device);
+            return JsonTranslator.ObjectToJson(device);
         }
 
-        public static DevicePayload UpdateDevice(long referenceId, DevicePayload updates)
+        public static JObject UpdateDevice(long referenceId, JObject updates)
         {
             var device = Device.AllDevices.Find(x => x.ReferenceId == referenceId);
             if (device == null)
@@ -37,8 +39,15 @@ namespace WebAPI.Models
                 return null;
             }
 
-            ThingsModel.WriteThingProperties(device, updates);
-            return DevicePayload.FromDevice(device);
+            try
+            {
+                JsonTranslator.UpdateObjectFromJson(updates, device);
+            }
+            catch (JsonTranslationException e)
+            {
+                throw new BadRequestException(e.Message);
+            }
+            return JsonTranslator.ObjectToJson(device);
         }
     }
 }
