@@ -13,6 +13,8 @@ using Ceen;
 using WebAPI.Server.Exceptions;
 using WebAPI.Payloads;
 using WebAPI.Models;
+using System.Collections.Generic;
+using WebAPI.JsonTranslation;
 
 namespace WebAPI
 {
@@ -100,6 +102,7 @@ namespace WebAPI
 
                 var ownAssembly = typeof(WebAPIPlugin).Assembly;
                 this.RegisterControllers(ownAssembly);
+                JsonTranslator.LoadJsonTranslatorStrategies(ownAssembly);
             }
             else
             {

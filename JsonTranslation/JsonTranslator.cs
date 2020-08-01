@@ -11,21 +11,17 @@ namespace WebAPI.JsonTranslation
     {
         private static List<IJsonTranslatorStrategy> strategies = new List<IJsonTranslatorStrategy>();
 
-        static JsonTranslator()
-        {
-            var assembly = typeof(JsonTranslator).Assembly;
-            JsonTranslator.LoadJsonTranslatorStrategies(assembly);
-        }
-
         public static void LoadJsonTranslatorStrategies(Assembly assembly)
         {
             var payloadStrategyInterface = typeof(IJsonTranslatorStrategy);
             var payloadStrategyAttribute = typeof(JsonTranslatorStrategyAttribute);
-            var strategies = from type in assembly.GetTypes()
-                             where type.IsClass && type.GetCustomAttribute(payloadStrategyAttribute) != null
-                             let strategy = CreateTranslatorStrategy(type)
-                             select strategy;
+            var strategies = (from type in assembly.GetTypes()
+                              where type.IsClass && type.GetCustomAttribute(payloadStrategyAttribute) != null
+                              let strategy = CreateTranslatorStrategy(type)
+                              select strategy).ToArray();
             JsonTranslator.strategies.AddRange(strategies);
+
+            Logging.Log($"Loaded {strategies.Length} JSON translator strategies from {assembly.FullName}.");
         }
 
         private static IJsonTranslatorStrategy CreateTranslatorStrategy(Type type)
@@ -51,7 +47,7 @@ namespace WebAPI.JsonTranslation
 
             if (strategies.Length == 0)
             {
-                throw new Exception(string.Format("No serializer strategies exist for object of type '{0}'.", targetType.Name));
+                throw new Exception($"No serializer strategies exist for object of type '{targetType.FullName}'.");
             }
 
             var jObj = new JObject();
