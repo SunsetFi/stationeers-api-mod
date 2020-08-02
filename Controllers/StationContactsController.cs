@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using Ceen;
 using WebAPI.Authentication;
 using WebAPI.Models;
-using WebAPI.Payloads;
 using WebAPI.Server.Attributes;
 using WebAPI.Server.Exceptions;
 
 namespace WebAPI.Controllers
 {
-    [WebController(Path = "api/stationcontacts")]
+    [WebController(Path = "api/station-contacts")]
     public class StationContactsController
     {
         [WebRouteMethod(Method = "GET")]
@@ -31,5 +30,5 @@ namespace WebAPI.Controllers
             }
             await context.SendResponse(HttpStatusCode.OK, payload);
         }
-   }
+    }
 }

@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts;
-using Assets.Scripts.Objects;
-using Assets.Scripts.Serialization;
-using Newtonsoft.Json.Linq;
 using WebAPI.Payloads;
 
 namespace WebAPI.Models
@@ -18,25 +15,24 @@ namespace WebAPI.Models
 
         public static StationContactPayload GetStationContact(int contactId)
         {
-            foreach (var contact in StationContact.AllStationContacts)
+            var contact = StationContact.AllStationContacts.FirstOrDefault(x => x.ContactID == contactId);
+            if (contact == null)
             {
-                if (contact.ContactID == contactId)
-                    return StationContactPayload.FromStationContact(contact);
+                return null;
             }
-            return null;
+            return StationContactPayload.FromStationContact(contact);
         }
 
         public static StationContactPayload UpdateStationContact(int contactId, StationContactPayload updates)
         {
-            foreach (var contact in StationContact.AllStationContacts)
+            var contact = StationContact.AllStationContacts.FirstOrDefault(x => x.ContactID == contactId);
+            if (contact == null)
             {
-                if (contact.ContactID == contactId)
-                {
-                    StationContactsModel.WriteStationContactProperties(contact, updates);
-                    return StationContactPayload.FromStationContact(contact);
-                }
+                return null;
             }
-            return null;
+
+            StationContactsModel.WriteStationContactProperties(contact, updates);
+            return StationContactPayload.FromStationContact(contact);
         }
 
         public static void WriteStationContactProperties(StationContact contact, StationContactPayload payload)
@@ -52,7 +48,7 @@ namespace WebAPI.Models
             // contact.CurrentlyTrading = payload.currentlyTrading;
             // contact.ConnectedPad = payload.connectedPad;
             contact.TraderInventoryDict = payload.traderInventoryDict;
-		    contact.SerializedTraderInventory = payload.serializedTraderInventory;
+            contact.SerializedTraderInventory = payload.serializedTraderInventory;
         }
     }
 }

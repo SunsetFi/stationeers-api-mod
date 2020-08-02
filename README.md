@@ -243,6 +243,10 @@ Gets the time the game last saved this session.
 
 Save the game
 
+### GET /api/station-contacts
+
+Gets a list of station contacts, including satalites and traders.
+
 ### GET /api/stationpedia/ic/instructions
 
 Gets a dictionary of IC10 instructions.
