@@ -17,5 +17,14 @@ namespace WebAPI.Payloads
             item.z = v.z;
             return item;
         }
+
+        public static Vector3 ToVector3(Vector3Payload v)
+        {
+            var item = new Vector3();
+            item.x = v.x;
+            item.y = v.y;
+            item.z = v.z;
+            return item;
+        }
     }
 }
