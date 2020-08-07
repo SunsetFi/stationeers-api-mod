@@ -22,26 +22,24 @@ namespace WebAPI.Controllers
         [WebRouteMethod(Method = "GET", Path = ":steamId")]
         public async Task GetBan(IHttpContext context, ulong steamId)
         {
+            Authenticator.VerifyAuth(context);
             var ban = await Dispatcher.RunOnMainThread(() => BansModel.GetBan(steamId));
-
             if (ban == null)
             {
                 throw new NotFoundException("No ban exists by the given SteamID.");
             }
-
             await context.SendResponse(HttpStatusCode.OK, ban);
         }
 
         [WebRouteMethod(Method = "DELETE", Path = ":steamId")]
         public async Task DeleteBan(IHttpContext context, ulong steamId)
         {
+            Authenticator.VerifyAuth(context);
             var removedBan = await Dispatcher.RunOnMainThread(() => BansModel.RemoveBan(steamId));
-
             if (!removedBan)
             {
                 throw new NotFoundException("No ban exists by the given SteamID.");
             }
-
             await context.SendResponse(HttpStatusCode.OK);
         }
     }
