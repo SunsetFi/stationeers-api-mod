@@ -50,5 +50,16 @@ namespace WebAPI.Models
             contact.TraderInventoryDict = payload.traderInventoryDict;
             contact.SerializedTraderInventory = payload.serializedTraderInventory;
         }
+
+        public static StationContactPayload RemoveStationContact(int contactId)
+        {
+            var contact = StationContact.AllStationContacts.FirstOrDefault(x => x.ContactID == contactId);
+            if (contact == null)
+            {
+                return null;
+            }
+            StationContact.AllStationContacts.Remove(contact);
+            return StationContactPayload.FromStationContact(contact);    
+        }
     }
 }
