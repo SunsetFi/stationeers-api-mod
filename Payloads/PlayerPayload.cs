@@ -16,6 +16,8 @@ namespace WebAPI.Payloads
 
         public int score { get; set; }
 
+        public Vector3Payload location { get; set; }
+
         public static PlayerPayload FromPlayerConnection(PlayerConnection connection)
         {
             var payload = new PlayerPayload();
@@ -28,6 +30,8 @@ namespace WebAPI.Payloads
                 payload.score = playerDetail.Score;
                 payload.playTime = PlayerInfoManager.Instance.GetPlayTime(playerDetail.StartPlayTime);
             }
+
+            payload.location = Vector3Payload.FromVector3(connection.Brain.ParentHuman.transform.position);
 
             payload.steamName = connection.SteamName;
             payload.steamId = connection.SteamId.ToString();
