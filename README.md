@@ -247,6 +247,18 @@ Save the game
 
 Gets a list of station contacts, including satalites and traders.
 
+### GET /api/station-contacts/:contactId
+
+Gets a station contact by contact id.
+
+### POST /api/station-contacts/:contactId
+
+Change properties of a station contact.
+
+### DELETE /api/station-contacts/:contactId
+
+Delete a station contact by contact id.
+
 ### GET /api/stationpedia/ic/instructions
 
 Gets a dictionary of IC10 instructions.
