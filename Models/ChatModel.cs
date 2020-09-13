@@ -9,7 +9,7 @@ namespace WebAPI.Models
     {
         public static ChatPayload[] GetChat()
         {
-            var chatPanelText = ChatPanel.Instance.Text.text;
+            var chatPanelText = ChatPanel.Instance.CurrentText;
             return chatPanelText.Split('\n').Select(message =>
             {
                 var parts = message.Split(':');
