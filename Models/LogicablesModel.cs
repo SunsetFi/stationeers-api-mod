@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Assets.Scripts;
 using Assets.Scripts.Objects.Pipes;
 using WebAPI.Payloads;
+using System.Linq;
 
 namespace WebAPI.Models
 {
@@ -10,7 +11,7 @@ namespace WebAPI.Models
     {
         public static IDictionary<string, LogicValuePayload> GetLogicStates(long referenceId)
         {
-            var logicable = OcclusionManager.AllThings.Find(x => x.ReferenceId == referenceId) as ILogicable;
+            var logicable = OcclusionManager.AllThings.Single(x => x.Key.ReferenceId == referenceId).Key as ILogicable;
             if (logicable == null)
             {
                 return null;

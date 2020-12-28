@@ -297,20 +297,21 @@ This mod makes use of both nuget dependencies, and takes dependencies on game fi
 
 This library uses nuget to install most local dependencies. You can get these dependencies by running `dotnet restore` in the source directory.
 
-As this mod references many game dlls, you need to give it copies of these dlls for it to compile properly. The project is set up to expect these in the `/externals` folder
+As this mod references many game dlls, you need to give it copies of these dlls for it to compile properly. The project is set up to expect these in the `externals` folder
 
 ### Game dependencies
 
-Copy the following files from `Stationeers/rocketstation_Data/Managed` to a folder called `/externals` in the root of the source directory:
+Copy the following files from `Stationeers/rocketstation_Data/Managed` to a folder called `externals` in the root of the source directory:
 
 - `Assembly-CSharp.dll`
 - `Assembly-CSharp-firstpass.dll`
 - `UnityEngine.dll`
 - `UnityEngine.CoreModule.dll`
 - `UnityEngine.UI.dll`
+- `Unity.TextMeshPro.dll`
 - `com.unity.multiplayer-hlapi.Runtime.dll`
 
-Copy `BepInEx.dll` from your BepInEx install to the `/externals` folder.
+Copy `BepInEx.dll`, `BepInEx.Harmony.dll` and `0Harmony.dll` from your BepInEx install to the `externals` folder.
 
 ## Compiling
 
