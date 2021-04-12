@@ -43,12 +43,9 @@ namespace WebAPI.Models
             contact.Lifetime = payload.lifetime;
             contact.EndLifetime = payload.endLifetime;
             contact.InitialLifeTime = payload.initialLifeTime;
-            contact.ContactID = payload.contactID;
-            // contact.HumanTradingSteamID = payload.HumanTradingSteamID;
-            // contact.CurrentlyTrading = payload.currentlyTrading;
-            // contact.ConnectedPad = payload.connectedPad;
-            contact.TraderInventoryDict = payload.traderInventoryDict;
-            contact.SerializedTraderInventory = payload.serializedTraderInventory;
+            // TODO: Deserialize inventory data.
+            //contact.TraderInventoryDict = payload.traderInventoryDict;
+            //contact.SerializedTraderInventory = payload.serializedTraderInventory;
         }
 
         public static StationContactPayload RemoveStationContact(int contactId)
@@ -59,7 +56,7 @@ namespace WebAPI.Models
                 return null;
             }
             StationContact.AllStationContacts.Remove(contact);
-            return StationContactPayload.FromStationContact(contact);    
+            return StationContactPayload.FromStationContact(contact);
         }
     }
 }
