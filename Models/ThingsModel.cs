@@ -16,7 +16,7 @@ namespace WebAPI.Models
         {
             // Dedup thing list
             var uniqueThings = new HashSet<Thing>();
-            foreach (var thing in OcclusionManager.AllThings)
+            foreach (var thing in OcclusionManager.AllThings.Keys)
             {
                 uniqueThings.Add(thing);
             }

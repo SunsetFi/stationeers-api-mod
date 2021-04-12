@@ -30,29 +30,29 @@ namespace WebAPI.Payloads
             return item;
         }
 
-        public class ThingPayload 
+        public class ThingPayload
         {
             [JsonIgnore]
             public string name { get; set; }
             public int hash { get; set; }
             public int stackSize { get; set; }
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public Nutrition nutrition { get; set; }
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
-            public Meltable meltable { get; set; }           
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public Meltable meltable { get; set; }
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             private TemperatureLimits temperatureLimits { get; set; }
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             private LogicTypes logicTypes { get; set; }
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             private List<string> slots { get; set; }
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public Dictionary<string, double> createdReagents { get; set; }
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public Dictionary<string, double> spawnedGases { get; set; }
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public List<String> modes { get; set; }
-            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public List<String> constructs { get; set; }
             public List<String> flags { get; set; }
 
@@ -61,15 +61,19 @@ namespace WebAPI.Payloads
                 var item = new ThingPayload();
 
                 item.name = prefab.name;
-                item.hash = prefab.GetPrefabHash;
-                
-                if (prefab is IQuantity quantity) {
-                    item.stackSize = (int) quantity.GetMaxQuantity;
-                } else {
+                item.hash = prefab.GetPrefabHash();
+
+                if (prefab is IQuantity quantity)
+                {
+                    item.stackSize = (int)quantity.GetMaxQuantity;
+                }
+                else
+                {
                     item.stackSize = 1;
                 }
 
-                if (prefab is INutrition nutrition) {
+                if (prefab is INutrition nutrition)
+                {
                     item.nutrition = Nutrition.FromINutrition(nutrition);
                 }
 
@@ -97,7 +101,7 @@ namespace WebAPI.Payloads
                     item.createdReagents = ReagentsFromItem(thingItem);
                 }
 
-                if (prefab is Ore ore) 
+                if (prefab is Ore ore)
                 {
                     item.spawnedGases = SpawnedGasFromOre(ore);
                 }
@@ -106,18 +110,18 @@ namespace WebAPI.Payloads
                 {
                     item.modes = new List<string>(prefab.ModeStrings);
                 }
-                
+
                 if (prefab is IConstructionKit kit)
                 {
                     item.constructs = ConstructsFromKit(kit);
                 }
 
                 item.flags = FlagsFromThing(prefab);
-                
+
                 return item;
             }
 
-            public static List<string> FlagsFromThing(Thing thing) 
+            public static List<string> FlagsFromThing(Thing thing)
             {
                 var flags = new List<string>();
 
@@ -125,7 +129,7 @@ namespace WebAPI.Payloads
                 {
                     flags.Add("paintable");
                 }
-                
+
                 if (thing is Item)
                 {
                     flags.Add("item");
@@ -190,12 +194,13 @@ namespace WebAPI.Payloads
             }
 
             public static Dictionary<string, double> SpawnedGasFromOre(Ore ore)
-            {   
+            {
                 if (ore.SpawnContents.Count > 0)
                 {
                     var spawnedGases = new Dictionary<string, double>();
 
-                    foreach (SpawnGas gas in ore.SpawnContents) {
+                    foreach (SpawnGas gas in ore.SpawnContents)
+                    {
                         spawnedGases.Add(gas.Name, gas.Quantity);
                     }
 
@@ -207,7 +212,7 @@ namespace WebAPI.Payloads
             }
 
             public static Dictionary<string, double> ReagentsFromItem(Item item)
-             {
+            {
                 if (item.CreatedReagentMixture.TotalReagents > 0)
                 {
                     var createdReagents = new Dictionary<string, double>();
@@ -228,10 +233,12 @@ namespace WebAPI.Payloads
                 return null;
             }
 
-            public static List<string> SlotsFromThing(Thing thing) {
+            public static List<string> SlotsFromThing(Thing thing)
+            {
                 var slots = new List<string>();
 
-                for (int i = 0; i < thing.Slots.Count; i++) {
+                for (int i = 0; i < thing.Slots.Count; i++)
+                {
                     var slot = thing.Slots[i];
                     slots.Add(string.IsNullOrEmpty(slot.DisplayName) ? ("Slot " + i) : slot.DisplayName);
                 }
@@ -239,14 +246,16 @@ namespace WebAPI.Payloads
                 return slots;
             }
 
-            public static List<string> ConstructsFromKit(IConstructionKit kit) {
+            public static List<string> ConstructsFromKit(IConstructionKit kit)
+            {
                 var constructedPrefabs = kit.GetConstructedPrefabs();
 
-                if (constructedPrefabs != null) 
+                if (constructedPrefabs != null)
                 {
                     var constructs = new List<string>();
 
-                    foreach (Thing constructed in constructedPrefabs) {
+                    foreach (Thing constructed in constructedPrefabs)
+                    {
                         if (constructed != null)
                         {
                             constructs.Add(constructed.PrefabName);
@@ -260,7 +269,8 @@ namespace WebAPI.Payloads
             }
         }
 
-        public class Nutrition {
+        public class Nutrition
+        {
             public float perQuantity { get; set; }
 
             public static Nutrition FromINutrition(INutrition iNutrition)
@@ -272,7 +282,8 @@ namespace WebAPI.Payloads
             }
         }
 
-        public class Meltable {
+        public class Meltable
+        {
             public float temperature { get; set; }
             public float pressure { get; set; }
 
@@ -286,7 +297,8 @@ namespace WebAPI.Payloads
             }
         }
 
-        public class TemperatureLimits {
+        public class TemperatureLimits
+        {
             public float shatter { get; set; }
             public float flashpoint { get; set; }
             public float autoignition { get; set; }
@@ -294,7 +306,7 @@ namespace WebAPI.Payloads
             public static TemperatureLimits FromThing(Thing thing)
             {
                 var limits = new TemperatureLimits();
-        
+
                 limits.shatter = thing.ShatterTemperature;
                 limits.flashpoint = thing.FlashpointTemperature;
                 limits.autoignition = thing.AutoignitionTemperature;
@@ -303,22 +315,26 @@ namespace WebAPI.Payloads
             }
         }
 
-        public class LogicTypes {
+        public class LogicTypes
+        {
             public List<string> read { get; set; }
             public List<string> write { get; set; }
 
-            public static LogicTypes FromILogicable(ILogicable logicable) {
+            public static LogicTypes FromILogicable(ILogicable logicable)
+            {
                 var logicTypes = new LogicTypes();
                 logicTypes.read = new List<string>();
                 logicTypes.write = new List<string>();
 
                 foreach (LogicType logicType in Enum.GetValues(typeof(LogicType)))
                 {
-                    if (logicable.CanLogicRead(logicType)) {
+                    if (logicable.CanLogicRead(logicType))
+                    {
                         logicTypes.read.Add(logicType.ToString());
                     }
 
-                    if (logicable.CanLogicWrite(logicType)) {
+                    if (logicable.CanLogicWrite(logicType))
+                    {
                         logicTypes.write.Add(logicType.ToString());
                     }
                 }
