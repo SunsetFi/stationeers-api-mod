@@ -5,8 +5,8 @@ namespace WebAPI.Server.Exceptions
 {
     public class BadRequestException : WebException
     {
-        public BadRequestException() : base(HttpStatusCode.NotFound, "Bad Request.") { }
+        public BadRequestException() : base(HttpStatusCode.BadRequest, "Bad Request.") { }
 
-        public BadRequestException(string message) : base(HttpStatusCode.NotFound, message) { }
+        public BadRequestException(string message) : base(HttpStatusCode.BadRequest, message) { }
     }
 }

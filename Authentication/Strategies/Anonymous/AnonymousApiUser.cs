@@ -1,13 +1,11 @@
 
-using JWT.Builder;
-
 namespace WebAPI.Authentication.Strategies.Anonymous
 {
     public class AnonymousApiUser : ApiUser
     {
-        public override void SerializeToJwt(JwtBuilder builder)
+        public AnonymousApiUser()
+        : base(Authentication.AuthenticationMethod.Anonymous)
         {
-            base.SerializeToJwt(builder);
         }
     }
 }
