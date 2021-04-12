@@ -14,9 +14,7 @@ Requires [BepInEx 5.0.1](https://github.com/BepInEx/BepInEx/releases) or later.
 
 # Compatibility
 
-This mod is compatible with the Stationeers Dedicated Server 0.2.2474.11332.
-
-As of the most recent update, this mod no longer works on the client. The reason for this is not readily apparent, and being investigated.
+This mod has been tested against Stationeers 0.2.2821.13996 and its Dedicated Server.
 
 # Usage
 
