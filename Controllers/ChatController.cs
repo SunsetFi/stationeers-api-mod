@@ -17,7 +17,7 @@ namespace WebAPI.Controllers
         {
             Authenticator.VerifyAuth(context);
 
-            var chat = Dispatcher.RunOnMainThread(() => ChatModel.GetChat());
+            var chat = await Dispatcher.RunOnMainThread(() => ChatModel.GetChat());
 
             await context.SendResponse(HttpStatusCode.OK, chat);
         }

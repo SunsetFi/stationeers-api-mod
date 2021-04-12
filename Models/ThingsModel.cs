@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts;
@@ -14,14 +15,19 @@ namespace WebAPI.Models
     {
         public static IList<JObject> GetThings()
         {
-            // Dedup thing list
-            var uniqueThings = new HashSet<Thing>();
-            foreach (var thing in OcclusionManager.AllThings.Keys)
+            // This seems to have prefabs in it.  Not sure how to filter those out apart from checking ReferenceId 0
+            return OcclusionManager.AllThings.Keys.Where(x => x.ReferenceId != 0).Select(thing =>
             {
-                uniqueThings.Add(thing);
-            }
-
-            return uniqueThings.Select(thing => JsonTranslator.ObjectToJson(thing)).ToList();
+                try
+                {
+                    return JsonTranslator.ObjectToJson(thing);
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log("GetThings: Exception deserializing thing id {0}: {1}\n{2}", thing.ReferenceId, ex.Message, ex.StackTrace);
+                    return null;
+                }
+            }).Where(x => x != null).ToList();
         }
 
         public static JObject GetThing(long referenceId)

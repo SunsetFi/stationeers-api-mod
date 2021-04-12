@@ -4,7 +4,7 @@ namespace WebAPI.Payloads
 {
     public class AtmospherePayload : IAtmosphericContentPayload
     {
-        public float? roomId { get; set; }
+        public string roomId { get; set; }
         public float? pipeNetworkId { get; set; }
         public bool isGlobal { get; set; }
 
@@ -24,7 +24,7 @@ namespace WebAPI.Payloads
         {
             var payload = new AtmospherePayload()
             {
-                roomId = atmosphere.Room?.RoomId,
+                roomId = atmosphere.Room?.RoomId.ToString(),
                 pipeNetworkId = atmosphere.PipeNetwork?.NetworkId,
                 isGlobal = atmosphere.IsGlobalAtmosphere,
             };
