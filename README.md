@@ -32,10 +32,12 @@ This file should be a json object with the following properties.
 - `port` (number): The port to use. Defaults to your server's game port.
 - `protocol` (`http` or `https`, optional): Sets the protocol to use for the api.
   - Note: https prevents malacious networks from stealing login credentials, and is required for the `steam` authentication mode.
-- `authenticationMode` (`none`, `password`, or `steam`, optional): Sets the authentication mode for the server.
-  - Note: `steam` is a work in progress and requires an https certificate.
-- `plaintextPassword` (string, optional): Sets the password to require on login. Only supported if `authenticationMode` is `password`.
-- `allowedSteamIds` (array of strings, optional): Sets the steam ids allowed to use the api. Only supported if `authenticationMode` is `steam`.
+- `passwordAuthentication`: Settings for unsecure plaintext password authentication.
+  - `enabled`: Set to true to enable this authentication mechanism.
+  - `password`: The password to require.
+- `steamAuthentication`: Settings for authenticating with steam user accounts.
+  - `enabled`: Set to true to enable this authentication mechanism.
+  - `allowedSteamIds`: An array of steam id strings to allow.  If not specified, any steam id can log in.
 - `jwtSecret` (string, optional): The encryption key to encode the user's login token. If unset, a random key will be used.
   - Note: Set this if you want to remember logins across server restarts.
 
@@ -54,9 +56,9 @@ Connection security comes in two forms:
 
 HTTP mode is insecure, as malacious networks can intercept packets and find passwords and login tokens.
 Despite this, the origional built-in rcon server also runs in http mode, and has the same security problems. Running in http mode will not make you any less
-secure than the game already is.
+secure than the game already is, save for extending the attack surface to the additional commands enabled by this api.
 
-HTTP mode cannot be used with steam authentication, as steam refuses to authenticate unless the connection uses https.
+HTTP mode cannot be used with steam authentication, as steam sensibly refuses to authenticate unless the connection uses https.
 
 ## https
 
@@ -66,29 +68,30 @@ HTTPS mode is a work in progress, and currently cannot be used.
 
 ## Authentication
 
-Authentication controls how the mod determines who is and is not allowed to execute commands on the server.
-The authentication mode is chosen by setting the `authenticationMode` configuration parameter.
+Authentication controls how the mod determines who is and is not allowed to execute commands on the server.  Multiple authentication mechanisms can be
+enabled at the same time and used concurrently.
 
-### None
+### Anonymous Authentication
 
-No authentication will be used. Any command sent to the api will be executed.
+If neither password nor steam authentication is enabled, the server will allow anonymous users access without any authentication.
+This is not a discrete mode, but instead only applies when no other mode is available.
 
-### Password
+### Password Authentication
 
-To execute a command, you must first log in to the api by sending a request to `/api/login` containing a `password` query parameter. This query parameter must be set to the same
-password as the `plaintextPassword` configuration parameter. Once a valid login token is returned, this login token can be used for all future requests.
+Password authentication accepts a plaintext (unsecured) password.  At the moment, there is only support for one password, and it will grant access to all api endpoints.
+To enable password authentication, set the configuration option`passwordAuthentication.enabled` to `true`, and set your password in `passwordAuthentication.password`.
+
+To login with a password, make a request to `/api/login/password?password=foobar`, where `foobar` is the configured password.
 
 ### Steam
 
-Steam authentication involves using the Steam OpenID servers to require the user to log in with their steam account. The mod never receives their steam password, only their username, id, and a session key. This is used to verify
-with steam that the user did indeed log in on behalf of the mod. This can be used to allow steam id logins without risking the user's credentials being leaked, and provides the best security for the api.
+Steam authentication involves using the Steam OpenID servers to require the user to log in with their steam account. The mod never receives their steam password, only their username, id, and a session key. This is used to verify with steam that the user did indeed log in on behalf of the mod. This can be used to allow steam id logins without risking the user's credentials being leaked, and provides the best security for the api.
 
-Steam authentication is still a work in progress. A functional prototype is available, but due to a requirement imposed by steam, it requires the use of https connection security. More details about implementing
-steam authentication will be provided once https is fully implemented.
+Steam authentication is still a work in progress. A functional prototype is available, but due to a requirement imposed by steam, it requires the use of https connection security. More details about implementing steam authentication will be provided once https is fully implemented.
 
 ## Login Tokens
 
-For all authentication methods that require a login, the user must log in using the `/api/login` endpoint. On a successful login, the mod will return a login token under the `authorization` property.
+For all authentication methods that require a login, the user must log in using the appropriate endpoint. On a successful login, the mod will return a login token under the `authorization` property.
 This token must be sent with all requests in one of two ways:
 
 - In an `Authorization` cookie.
@@ -97,8 +100,9 @@ This token must be sent with all requests in one of two ways:
 Failure to send this token, or sending an invalid token, will result in the command being rejected.
 
 These tokens uniquely identify your user to the system, and connect your login with your future requests. They are valid for 1 hour, after which you must log in again.
-These tokens are encrypted. By default, the encryption key is randomly generated each time the server starts up. You may choose to use a persistent key by specifying the `jwtSecret` configuration property. However,
-if a third party obtains this key, they will be able to generate forged login requests and bypass security. It is recommended that this parameter remains empty so a random encrpytion key will be used every server restart.
+These tokens are encrypted. By default, the encryption key is randomly generated each time the server starts up. You may choose to use a persistent key by specifying the `jwtSecret` configuration property. However, if a third party obtains this key, they will be able to generate forged login requests and bypass security. It is recommended that this parameter remains empty so a random encrpytion key will be used every server restart.
+
+For additional security, tokens are bound to the ip address of the client when the token was issued.  If the client's ip changes, they will need to login again.  This is to provide a small amount of protection against the case where a token is intercepted by a malacious third party, as can happen when using the http protocol.
 
 ## Supported Requests
 
@@ -291,7 +295,7 @@ This mod can be compiled using the .net SDK tools. Visual studio will do nicely,
 
 ## Dependencies
 
-This mod makes use of both nuget dependencies, and takes dependencies on game files. For copyright reasons, the game files must be taken from your own game and cannot be redistributed,
+This mod makes use of both nuget dependencies, and takes dependencies on game files. For copyright reasons, the game files must be taken from your own game and cannot be redistributed.
 
 ### Local dependencies
 
@@ -326,7 +330,5 @@ Assuming you have installed the .net sdk properly, the project can be built with
   - Endpoint for fabricators / manufacturing
     - Get recipes
     - post recipe to facbicator
-  - There is a classification system in logic. Make endpoints per classification?
-    - Scrap all thing-derived endpoints and allow the thing endpoint to return dynamic payloads based on type?
 - Test chat endpoint on dedicated servers
 - Strip colors from chat name. Probably still include them in message.
