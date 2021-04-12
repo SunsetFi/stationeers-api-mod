@@ -9,6 +9,11 @@ namespace WebAPI.Authentication.Strategies.Steam
         [JsonProperty("steamId")]
         public string SteamID { get; set; }
 
+        public SteamApiUser()
+         : base(Authentication.AuthenticationMethod.Steam)
+        {
+        }
+
         public override void SerializeToJwt(JwtBuilder builder)
         {
             base.SerializeToJwt(builder);

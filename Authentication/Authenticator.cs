@@ -29,7 +29,7 @@ namespace WebAPI.Authentication
             }
         }
 
-        private static Dictionary<string, IAuthenticationStrategy> _authenticationStrategies = new Dictionary<string, IAuthenticationStrategy> {
+        private static readonly Dictionary<string, IAuthenticationStrategy> _authenticationStrategies = new Dictionary<string, IAuthenticationStrategy> {
             {AuthenticationMethod.Anonymous, new AnonymousAuthenticationStrategy()},
             {AuthenticationMethod.Password, new PasswordAuthenticationStrategy()},
             {AuthenticationMethod.Steam, new SteamAuthenticationStrategy()}
@@ -62,6 +62,11 @@ namespace WebAPI.Authentication
                 authenticationMethod = unknownUser.AuthenticationMethod;
             }
 
+            if (string.IsNullOrEmpty(authenticationMethod))
+            {
+                throw new BadRequestException("Bad Token.");
+            }
+
             if (_authenticationStrategies.TryGetValue(authenticationMethod, out var strategy))
             {
                 ApiUser user;
@@ -69,7 +74,7 @@ namespace WebAPI.Authentication
                 return user;
             }
 
-            throw new ForbiddenException();
+            throw new BadRequestException("Bad Token.");
         }
 
         public static string GenerateToken(ApiUser user)

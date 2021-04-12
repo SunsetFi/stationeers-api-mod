@@ -19,6 +19,11 @@ namespace WebAPI.Authentication
         [JsonProperty("endpoint")]
         public string Endpoint { get; set; }
 
+        public ApiUser(string authenticationMethod)
+        {
+            this.AuthenticationMethod = authenticationMethod;
+        }
+
         public virtual void SerializeToJwt(JwtBuilder builder)
         {
             builder.AddClaim("jwtId", this.jwtId);

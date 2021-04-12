@@ -35,19 +35,20 @@ namespace WebAPI.Authentication.Strategies.Password
             PasswordApiUser passwordUser = authToken.ToObject<PasswordApiUser>();
             if (passwordUser == null)
             {
-                throw new ForbiddenException();
+                throw new UnauthorizedException();
             }
 
             user = passwordUser;
 
             ApiUser.VerifyUser(passwordUser, context);
 
-            // We know they had the password at one point due to the valid jwt.
-            //  However, the password may have changed since they last entered it.  Check for this.
-            if (passwordUser.PasswordHash != Config.Instance.PasswordAuthentication.Password.GetHashCode())
-            {
-                throw new UnauthorizedException();
-            }
+            // TODO: Verify password has not changed.
+            //  Disabling this for now.  GetHashCode is returning inconsistent results between checks.
+            // if (passwordUser.PasswordHash != Config.Instance.PasswordAuthentication.Password.GetHashCode())
+            // {
+            //     Logging.Log("Password verify with wrong password");
+            //     throw new UnauthorizedException();
+            // }
         }
     }
 }
