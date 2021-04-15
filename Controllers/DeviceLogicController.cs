@@ -28,7 +28,6 @@ namespace WebAPI.Controllers
         }
 
         [WebRouteMethod(Method = "GET", Path = ":logicType")]
-        // FIXME: Make logicType parameter case insensitive
         public async Task GetLogicValue(IHttpContext context, long referenceId, LogicType logicType)
         {
             Authenticator.VerifyAuth(context);

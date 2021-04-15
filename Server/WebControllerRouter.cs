@@ -100,7 +100,7 @@ namespace WebAPI.Server
             {
                 if (targetType.IsEnum)
                 {
-                    return Enum.Parse(targetType, value);
+                    return Enum.Parse(targetType, value, true);
                 }
 
                 if (targetType == typeof(bool))
