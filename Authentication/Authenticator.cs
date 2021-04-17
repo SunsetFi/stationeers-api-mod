@@ -41,7 +41,7 @@ namespace WebAPI.Authentication
             IAuthenticationStrategy strategy;
             if (!_authenticationStrategies.TryGetValue(strategyType, out strategy))
             {
-                throw new ArgumentException($"Unrecognize auth strategy {strategyType}");
+                throw new ArgumentException($"Unrecognized auth strategy {strategyType}");
             }
             var user = await strategy.TryAuthenticate(context);
             return user;
@@ -62,19 +62,14 @@ namespace WebAPI.Authentication
                 authenticationMethod = unknownUser.AuthenticationMethod;
             }
 
-            if (string.IsNullOrEmpty(authenticationMethod))
+            if (!_authenticationStrategies.TryGetValue(authenticationMethod, out var strategy))
             {
                 throw new BadRequestException("Bad Token.");
             }
 
-            if (_authenticationStrategies.TryGetValue(authenticationMethod, out var strategy))
-            {
-                ApiUser user;
-                strategy.Verify(context, token, out user);
-                return user;
-            }
-
-            throw new BadRequestException("Bad Token.");
+            ApiUser user;
+            strategy.Verify(context, token, out user);
+            return user;
         }
 
         public static string GenerateToken(ApiUser user)

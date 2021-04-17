@@ -1,9 +1,9 @@
 
 using System.Collections.Generic;
-using Assets.Scripts;
 using Assets.Scripts.Objects.Pipes;
-using System.Linq;
 using WebAPI.Payloads;
+using Assets.Scripts.Serialization;
+using Assets.Scripts.Objects;
 
 namespace WebAPI.Models
 {
@@ -11,7 +11,12 @@ namespace WebAPI.Models
     {
         public static IDictionary<string, LogicValuePayload> GetLogicStates(long referenceId)
         {
-            var logicable = OcclusionManager.AllThings.Keys.FirstOrDefault(x => x.ReferenceId == referenceId) as ILogicable;
+            if (!XmlSaveLoad.Referencables.TryGetValue(referenceId, out Thing thing))
+            {
+                return null;
+            }
+
+            var logicable = thing as ILogicable;
             if (logicable == null)
             {
                 return null;

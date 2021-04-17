@@ -25,45 +25,31 @@ namespace WebAPI.Controllers
         {
             Authenticator.VerifyAuth(context);
 
-            SettingsPayload payload = null;
-            try
-            {
-                payload = context.ParseBody<SettingsPayload>();
-            }
-            catch
-            {
-                await context.SendResponse(HttpStatusCode.BadRequest, new ErrorPayload()
-                {
-                    message = "Expected body to be ServerPayload."
-                });
-                return;
-            }
-
             var response = await Dispatcher.RunOnMainThread(() =>
             {
-                if (payload.name != null && payload.name.Length != 0)
+                if (body.name != null && body.name.Length != 0)
                 {
-                    SettingsModel.Name = payload.name;
+                    SettingsModel.Name = body.name;
                 }
 
-                if (payload.maxPlayers.HasValue)
+                if (body.maxPlayers.HasValue)
                 {
-                    SettingsModel.MaxPlayers = payload.maxPlayers.Value;
+                    SettingsModel.MaxPlayers = body.maxPlayers.Value;
                 }
 
-                if (payload.password != null)
+                if (body.password != null)
                 {
-                    SettingsModel.Password = payload.password;
+                    SettingsModel.Password = body.password;
                 }
 
-                if (payload.startingCondition != null)
+                if (body.startingCondition != null)
                 {
-                    SettingsModel.StartingCondition = payload.startingCondition;
+                    SettingsModel.StartingCondition = body.startingCondition;
                 }
 
-                if (payload.respawnCondition != null)
+                if (body.respawnCondition != null)
                 {
-                    SettingsModel.RespawnCondition = payload.respawnCondition;
+                    SettingsModel.RespawnCondition = body.respawnCondition;
                 }
 
                 return SettingsPayload.FromServer();

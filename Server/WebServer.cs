@@ -37,7 +37,7 @@ namespace WebAPI.Server
                 _cancellationTokenSource.Token
             );
 
-            Logging.Log(string.Format("Server started on port {0}", port));
+            Logging.Log("Server started on port {0}", port);
         }
 
         public void Dispose()
