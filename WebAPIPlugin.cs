@@ -17,7 +17,7 @@ using WebAPI.JsonTranslation;
 
 namespace WebAPI
 {
-    [BepInPlugin("net.robophreddev.stationeers.WebAPI", "Web API for Stationeers", "3.0.0.0")]
+    [BepInPlugin("net.robophreddev.stationeers.WebAPI", "Web API for Stationeers", "3.0.1.0")]
     public class WebAPIPlugin : BaseUnityPlugin
     {
         public static WebAPIPlugin Instance;
