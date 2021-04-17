@@ -84,7 +84,7 @@ namespace WebAPI.Authentication.Strategies.Steam
             }
 
             var allowedSteamIds = Config.Instance.SteamAuthentication.AllowedSteamIds;
-            if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamId.ToString()))
+            if (allowedSteamIds != null && allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamId.ToString()))
             {
                 Logging.Log(
                     new Dictionary<string, string>() {
@@ -113,7 +113,7 @@ namespace WebAPI.Authentication.Strategies.Steam
             ApiUser.VerifyUser(steamUser, context);
 
             var allowedSteamIds = Config.Instance.SteamAuthentication.AllowedSteamIds;
-            if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamUser.SteamID))
+            if (allowedSteamIds != null && allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamUser.SteamID))
             {
                 Logging.Log(
                     new Dictionary<string, string>() {
