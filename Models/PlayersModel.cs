@@ -8,26 +8,31 @@ namespace StationeersWebApi.Models
 {
     public static class PlayersModel
     {
-        public static PlayerPayload GetPlayer(ulong steamId)
+        public static PlayerPayload GetPlayer(ulong clientId)
         {
-            var player = NetworkManagerOverride.PlayerConnections.Keys.FirstOrDefault(x => x.SteamId == steamId);
-            if (player == null)
+            var client = NetworkBase.Clients.FirstOrDefault(x => x.ClientId == clientId);
+            if (client == null)
             {
                 return null;
             }
-            return PlayerPayload.FromPlayerConnection(player);
+            return PlayerPayload.FromPlayerConnection(client);
 
         }
         public static IList<PlayerPayload> GetPlayers()
         {
-            return NetworkManagerOverride.PlayerConnections.Keys.Select(x => PlayerPayload.FromPlayerConnection(x)).ToArray();
+            return NetworkBase.Clients.Select(x => PlayerPayload.FromPlayerConnection(x)).ToArray();
         }
 
-        public static PlayerPayload KickPlayer(ulong steamId, string reason)
+        public static PlayerPayload KickPlayer(ulong clientId, string reason)
         {
-            var player = NetworkManagerOverride.PlayerConnections.Keys.FirstOrDefault(x => x.SteamId == steamId);
-            var playerPayload = PlayerPayload.FromPlayerConnection(player);
-            NetworkManagerHudOverride.Instance.KickPlayer(player.SteamName, reason.Length > 0 ? reason : "");
+            var client = NetworkBase.Clients.FirstOrDefault(x => x.ClientId == clientId);
+            if (client == null)
+            {
+                return null;
+            }
+
+            var playerPayload = PlayerPayload.FromPlayerConnection(client);
+            client.Disconnect();
             return playerPayload;
         }
     }

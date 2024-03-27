@@ -1,13 +1,14 @@
 
 using Assets.Scripts;
+using Assets.Scripts.Objects.Entities;
 using Assets.Scripts.PlayerInfo;
+using UnityEngine;
 
 namespace StationeersWebApi.Payloads
 {
     public class PlayerPayload
     {
-        public string steamName { get; set; }
-        public string steamId { get; set; }
+        public string clientId { get; set; }
 
         public string playerName { get; set; }
 
@@ -18,12 +19,17 @@ namespace StationeersWebApi.Payloads
 
         public Vector3Payload location { get; set; }
 
-        public static PlayerPayload FromPlayerConnection(PlayerConnection connection)
+        public static PlayerPayload FromPlayerConnection(Client client)
         {
-            var payload = new PlayerPayload();
+            var human = Human.AllHumans.Find(x => x.OrganBrain.ClientId == client.ClientId);
+            var payload = new PlayerPayload
+            {
+                clientId = client.ClientId.ToString(),
+                location = Vector3Payload.FromVector3(human != null ? human.transform.position : Vector3.zero)
+            };
 
-            PlayerDetail playerDetail;
-            if (PlayerInfoManager.Instance.GetPlayer(connection.SteamId, out playerDetail))
+            // ClientId and SteamId seem to be the same... PlayerInfoManager sets SteamId from NetworkManager.LocalClientId.
+            if (PlayerInfoManager.PlayerDictionary.TryGetValue(client.ClientId, out var playerDetail))
             {
                 payload.playerName = playerDetail.PlayerName;
                 payload.ping = playerDetail.PingMs;
@@ -31,10 +37,6 @@ namespace StationeersWebApi.Payloads
                 payload.playTime = PlayerInfoManager.Instance.GetPlayTime(playerDetail.StartPlayTime);
             }
 
-            payload.location = Vector3Payload.FromVector3(connection.Brain.ParentHuman.transform.position);
-
-            payload.steamName = connection.SteamName;
-            payload.steamId = connection.SteamId.ToString();
             return payload;
         }
     }
