@@ -23,7 +23,7 @@ namespace StationeersWebApi.Models
             return NetworkBase.Clients.Select(x => PlayerPayload.FromPlayerConnection(x)).ToArray();
         }
 
-        public static PlayerPayload KickPlayer(ulong clientId, string reason)
+        public static PlayerPayload KickPlayer(ulong clientId)
         {
             var client = NetworkBase.Clients.FirstOrDefault(x => x.ClientId == clientId);
             if (client == null)
@@ -33,6 +33,19 @@ namespace StationeersWebApi.Models
 
             var playerPayload = PlayerPayload.FromPlayerConnection(client);
             client.Disconnect();
+            return playerPayload;
+        }
+
+        public static PlayerPayload BanPlayer(ulong clientId)
+        {
+            var client = NetworkBase.Clients.FirstOrDefault(x => x.ClientId == clientId);
+            if (client == null)
+            {
+                return null;
+            }
+
+            var playerPayload = PlayerPayload.FromPlayerConnection(client);
+            client.Ban();
             return playerPayload;
         }
     }
