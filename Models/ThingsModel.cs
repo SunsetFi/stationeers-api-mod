@@ -16,7 +16,7 @@ namespace StationeersWebApi.Models
         public static IList<JObject> GetThings()
         {
             // This seems to have prefabs in it.  Not sure how to filter those out apart from checking ReferenceId 0
-            return OcclusionManager.AllThings.Keys.Where(x => x.ReferenceId != 0).Select(thing =>
+            return Thing.AllThings.Where(x => x.ReferenceId != 0).Select(thing =>
             {
                 try
                 {
@@ -32,18 +32,22 @@ namespace StationeersWebApi.Models
 
         public static JObject GetThing(long referenceId)
         {
-            Thing thing;
-            if (!XmlSaveLoad.Referencables.TryGetValue(referenceId, out thing))
+            if (referenceId == 0)
             {
                 return null;
             }
+
+            if (!Thing.TryFind(referenceId, out var thing))
+            {
+                return null;
+            }
+
             return JsonTranslator.ObjectToJson(thing);
         }
 
         public static JObject UpdateThing(long referenceId, JObject updates)
         {
-            Thing thing;
-            if (!XmlSaveLoad.Referencables.TryGetValue(referenceId, out thing))
+            if (!Thing.TryFind(referenceId, out var thing))
             {
                 return null;
             }
@@ -56,6 +60,7 @@ namespace StationeersWebApi.Models
             {
                 throw new BadRequestException(e.Message);
             }
+
             return JsonTranslator.ObjectToJson(thing);
         }
     }
