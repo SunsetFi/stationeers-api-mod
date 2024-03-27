@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using StationeersWebApi.Authentication;
 using StationeersWebApi.Models;
+using StationeersWebApi.Server;
 using StationeersWebApi.Server.Attributes;
 
 namespace StationeersWebApi.Controllers
