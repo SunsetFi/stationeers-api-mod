@@ -1,6 +1,5 @@
 
 using System.Threading.Tasks;
-using Ceen;
 using StationeersWebApi.Authentication;
 using StationeersWebApi.Models;
 using StationeersWebApi.Server.Attributes;

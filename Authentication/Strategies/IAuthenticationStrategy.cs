@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using StationeersWebApi.Server;
 
-namespace WebAPI.Authentication
+namespace StationeersWebApi.Authentication
 {
     public interface IAuthenticationStrategy
     {

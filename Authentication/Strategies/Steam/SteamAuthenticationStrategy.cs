@@ -13,7 +13,7 @@ using StationeersWebApi.Payloads;
 using StationeersWebApi.Server;
 using StationeersWebApi.Server.Exceptions;
 
-namespace WebAPI.Authentication.Strategies.Steam
+namespace StationeersWebApi.Authentication.Strategies.Steam
 {
     public class SteamAuthenticationStrategy : IAuthenticationStrategy
     {

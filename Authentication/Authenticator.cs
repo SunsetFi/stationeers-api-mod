@@ -6,19 +6,16 @@ using JWT.Algorithms;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
-using JWT;
-using WebAPI.Authentication.Strategies.Steam;
+using StationeersWebApi.Authentication.Strategies.Steam;
 using Newtonsoft.Json.Linq;
-using WebAPI.Authentication.Strategies.Anonymous;
-using WebAPI.Authentication.Strategies.Password;
+using StationeersWebApi.Authentication.Strategies.Anonymous;
+using StationeersWebApi.Authentication.Strategies.Password;
 using StationeersWebApi.Server;
 using StationeersWebApi.Server.Exceptions;
-using StationeersWebApi;
 using System.Net;
-using System.Linq;
 using JWT.Exceptions;
 
-namespace WebAPI.Authentication
+namespace StationeersWebApi.Authentication
 {
     public static class Authenticator
     {

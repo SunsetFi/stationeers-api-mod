@@ -7,7 +7,7 @@ using StationeersWebApi;
 using StationeersWebApi.Server;
 using StationeersWebApi.Server.Exceptions;
 
-namespace WebAPI.Authentication
+namespace StationeersWebApi.Authentication
 {
     public class ApiUser
     {

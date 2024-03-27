@@ -122,18 +122,18 @@ namespace StationeersWebApi
             {
                 context.Response.AddHeader("Access-Control-Allow-Origin", "*");
                 // TODO: Choose based on available routes at this path
-                context.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
-                context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-                context.Response.AddHeader("Access-Control-Max-Age", "1728000");
-                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
-                context.Response.StatusCode = Ceen.HttpStatusCode.NoContent;
-                context.Response.Headers["Content-Length"] = "0";
+                context.SetHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
+                context.SetHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                context.SetHeader("Access-Control-Max-Age", "1728000");
+                context.SetHeader("Access-Control-Expose-Headers", "Authorization");
+                context.SetHeader("Content-Length", "0");
+                context.SendResponse(HttpStatusCode.NoContent);
                 return true;
             }
             else
             {
-                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-                context.Response.AddHeader("Access-Control-Expose-Headers", "Authorization");
+                context.SetHeader("Access-Control-Allow-Origin", "*");
+                context.SetHeader("Access-Control-Expose-Headers", "Authorization");
             }
 
             try
