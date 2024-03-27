@@ -1,4 +1,4 @@
-# WebAPI for Stationeers
+# StationeersWebApi for Stationeers
 
 Provies a RESTful API for reading and writing data to a live Stationeers game.
 
@@ -9,7 +9,7 @@ Requires [BepInEx 5.0.1](https://github.com/BepInEx/BepInEx/releases) or later.
 1. Install BepInEx in the Stationeers steam folder.
 2. Launch the game, reach the main menu, then quit back out.
 3. In the steam folder, there should now be a folder BepInEx/Plugins
-4. Create a folder `stationeers-webapi` in the BepInEx/Plugins folder.
+4. Create a folder `stationeers-StationeersWebApi` in the BepInEx/Plugins folder.
 5. Extract the release zip file to this folder.
 
 # Compatibility
@@ -23,7 +23,7 @@ Expect responses to be `application/json`
 
 # Configuration
 
-Create a file called `config.json` inside the `stationeers-webapi` folder under `BepInEx/Plugins`.
+Create a file called `config.json` inside the `stationeers-StationeersWebApi` folder under `BepInEx/Plugins`.
 This file should be a json object with the following properties.
 
 - `enabled` (bool): Specify whether the mod should be enabled or disabled. Set to `true` to enable.
@@ -35,7 +35,7 @@ This file should be a json object with the following properties.
   - `password`: The password to require.
 - `steamAuthentication`: Settings for authenticating with steam user accounts.
   - `enabled`: Set to true to enable this authentication mechanism.
-  - `allowedSteamIds`: An array of steam id strings to allow.  If not specified, any steam id can log in.
+  - `allowedSteamIds`: An array of steam id strings to allow. If not specified, any steam id can log in.
 - `jwtSecret` (string, optional): The encryption key to encode the user's login token. If unset, a random key will be used.
   - Note: Set this if you want to remember logins across server restarts.
 
@@ -66,7 +66,7 @@ HTTPS mode is a work in progress, and currently cannot be used.
 
 ## Authentication
 
-Authentication controls how the mod determines who is and is not allowed to execute commands on the server.  Multiple authentication mechanisms can be
+Authentication controls how the mod determines who is and is not allowed to execute commands on the server. Multiple authentication mechanisms can be
 enabled at the same time and used concurrently.
 
 ### Anonymous Authentication
@@ -76,7 +76,7 @@ This is not a discrete mode, but instead only applies when no other mode is avai
 
 ### Password Authentication
 
-Password authentication accepts a plaintext (unsecured) password.  At the moment, there is only support for one password, and it will grant access to all api endpoints.
+Password authentication accepts a plaintext (unsecured) password. At the moment, there is only support for one password, and it will grant access to all api endpoints.
 To enable password authentication, set the configuration option`passwordAuthentication.enabled` to `true`, and set your password in `passwordAuthentication.password`.
 
 To login with a password, make a request to `/api/login/password?password=foobar`, where `foobar` is the configured password.
@@ -100,7 +100,7 @@ Failure to send this token, or sending an invalid token, will result in the comm
 These tokens uniquely identify your user to the system, and connect your login with your future requests. They are valid for 1 hour, after which you must log in again.
 These tokens are encrypted. By default, the encryption key is randomly generated each time the server starts up. You may choose to use a persistent key by specifying the `jwtSecret` configuration property. However, if a third party obtains this key, they will be able to generate forged login requests and bypass security. It is recommended that this parameter remains empty so a random encrpytion key will be used every server restart.
 
-For additional security, tokens are bound to the ip address of the client when the token was issued.  If the client's ip changes, they will need to login again.  This is to provide a small amount of protection against the case where a token is intercepted by a malacious third party, as can happen when using the http protocol.
+For additional security, tokens are bound to the ip address of the client when the token was issued. If the client's ip changes, they will need to login again. This is to provide a small amount of protection against the case where a token is intercepted by a malacious third party, as can happen when using the http protocol.
 
 ## Supported Requests
 

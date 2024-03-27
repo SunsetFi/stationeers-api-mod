@@ -2,7 +2,7 @@
 using Assets.Scripts;
 using Assets.Scripts.PlayerInfo;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class PlayerPayload
     {

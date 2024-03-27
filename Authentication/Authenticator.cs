@@ -3,17 +3,20 @@ using System;
 using System.Collections.Generic;
 using JWT.Builder;
 using JWT.Algorithms;
-using Ceen;
 using System.Threading.Tasks;
-using Ceen.Httpd;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using JWT;
-using WebAPI.Server.Exceptions;
 using WebAPI.Authentication.Strategies.Steam;
 using Newtonsoft.Json.Linq;
 using WebAPI.Authentication.Strategies.Anonymous;
 using WebAPI.Authentication.Strategies.Password;
+using StationeersWebApi.Server;
+using StationeersWebApi.Server.Exceptions;
+using StationeersWebApi;
+using System.Net;
+using System.Linq;
+using JWT.Exceptions;
 
 namespace WebAPI.Authentication
 {
@@ -90,24 +93,23 @@ namespace WebAPI.Authentication
         public static void SetUserToken(IHttpContext context, ApiUser user)
         {
             var token = Authenticator.GenerateToken(user);
-            context.Response.Cookies.Add(new ResponseCookie("Authorization", token)
+            context.AddResponseCookie(new Cookie("Authorization", token)
             {
                 Expires = Authenticator.TokenExpireTime,
                 HttpOnly = true,
-                Secure = Config.Instance.Protocol == "https"
             });
         }
 
         public static JObject GetJWTToken(IHttpContext context)
         {
             string token = null;
-            if (context.Request.Cookies.ContainsKey("Authorization"))
+            if (context.Cookies.ContainsKey("Authorization"))
             {
-                token = context.Request.Cookies["Authorization"];
+                token = context.Cookies["Authorization"];
             }
-            else if (context.Request.Headers.ContainsKey("Authorization"))
+            else if (context.Headers.ContainsKey("Authorization"))
             {
-                var authHeader = context.Request.Headers["Authorization"];
+                var authHeader = context.Headers["Authorization"];
                 var match = BearerRegex.Match(authHeader);
                 if (match.Success)
                 {

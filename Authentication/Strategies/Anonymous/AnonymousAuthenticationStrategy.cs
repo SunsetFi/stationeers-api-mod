@@ -1,8 +1,9 @@
 
 using System.Threading.Tasks;
-using Ceen;
 using Newtonsoft.Json.Linq;
-using WebAPI.Server.Exceptions;
+using StationeersWebApi;
+using StationeersWebApi.Server;
+using StationeersWebApi.Server.Exceptions;
 
 namespace WebAPI.Authentication.Strategies.Anonymous
 {

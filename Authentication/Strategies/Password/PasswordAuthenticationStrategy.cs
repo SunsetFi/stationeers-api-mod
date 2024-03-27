@@ -1,8 +1,9 @@
 
 using System.Threading.Tasks;
-using Ceen;
 using Newtonsoft.Json.Linq;
-using WebAPI.Server.Exceptions;
+using StationeersWebApi;
+using StationeersWebApi.Server;
+using StationeersWebApi.Server.Exceptions;
 
 namespace WebAPI.Authentication.Strategies.Password
 {
@@ -15,7 +16,7 @@ namespace WebAPI.Authentication.Strategies.Password
                 throw new NotFoundException();
             }
 
-            var password = context.Request.QueryString["password"];
+            var password = context.QueryString["password"];
             if (string.IsNullOrEmpty(password))
             {
                 throw new BadRequestException("Password query parameter is required.");

@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json.Linq;
 
-namespace WebAPI.JsonTranslation
+namespace StationeersWebApi.JsonTranslation
 {
     public interface IJsonTranslatorStrategy
     {

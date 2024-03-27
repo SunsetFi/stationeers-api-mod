@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Objects;
 using Newtonsoft.Json.Linq;
-using WebAPI.JsonTranslation;
+using StationeersWebApi.JsonTranslation;
 
-namespace WebAPI.Models
+namespace StationeersWebApi.Models
 {
     public static class ItemsModel
     {

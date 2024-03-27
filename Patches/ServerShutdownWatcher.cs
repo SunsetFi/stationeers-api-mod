@@ -2,7 +2,7 @@
 using Assets.Scripts.Networking;
 using HarmonyLib;
 
-namespace WebAPI.Patches
+namespace StationeersWebApi.Patches
 {
 
     [HarmonyPatch(typeof(SteamServer), "ShutdownGameServer")]
@@ -10,7 +10,7 @@ namespace WebAPI.Patches
     {
         static void Postfix()
         {
-            WebAPIPlugin.Instance.StopServer();
+            StationeersWebApiPlugin.Instance.StopServer();
         }
     }
 }

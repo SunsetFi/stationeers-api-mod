@@ -1,11 +1,11 @@
 
 using System.Threading.Tasks;
 using Ceen;
-using WebAPI.Authentication;
-using WebAPI.Models;
-using WebAPI.Server.Attributes;
+using StationeersWebApi.Authentication;
+using StationeersWebApi.Models;
+using StationeersWebApi.Server.Attributes;
 
-namespace WebAPI.Controllers
+namespace StationeersWebApi.Controllers
 {
     [WebController(Path = "api/atmospheres")]
     class AtmospheresController

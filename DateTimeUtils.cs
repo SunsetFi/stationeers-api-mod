@@ -1,7 +1,7 @@
 
 using System;
 
-namespace WebAPI
+namespace StationeersWebApi
 {
     public static class DateTimeUtils
     {

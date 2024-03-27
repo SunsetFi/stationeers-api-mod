@@ -1,6 +1,6 @@
 using System;
 
-namespace WebAPI.JsonTranslation
+namespace StationeersWebApi.JsonTranslation
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class JsonPropertyGetterAttribute : Attribute

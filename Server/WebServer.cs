@@ -1,84 +1,155 @@
-
-
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Ceen;
-using Ceen.Httpd;
-
-namespace WebAPI.Server
+namespace StationeersWebApi.Server
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using StationeersWebApi.Payloads;
+    using StationeersWebApi.Server.Exceptions;
+
+    /// <summary>
+    /// A web server for receiving HTTP requests.
+    /// </summary>
     public class WebServer : IDisposable
     {
-        private readonly HttpHandlerDelegate requestHandler;
-        private CancellationTokenSource _cancellationTokenSource;
+        private readonly Func<IHttpContext, Task<bool>> requestHandler;
 
-        public WebServer(HttpHandlerDelegate requestHandler)
+        private HttpListener listener;
+        private Thread listenerThread;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebServer"/> class.
+        /// </summary>
+        /// <param name="requestHandler">The web request handler to use.</param>
+        public WebServer(Func<IHttpContext, Task<bool>> requestHandler)
         {
             this.requestHandler = requestHandler;
         }
 
+        /// <summary>
+        /// Starts the HTTP server.
+        /// </summary>
+        /// <param name="port">The port to listen on.</param>
         public void Start(int port)
         {
-            Logging.Log("Starting web server");
+            if (this.listener != null)
+            {
+                throw new InvalidOperationException("Server already started.");
+            }
 
-            var tcs = new CancellationTokenSource();
-            var config = new ServerConfig()
-                .AddLogger(OnLogMessage)
-                .AddRoute(this.requestHandler);
+            Logging.LogTrace("Starting web server");
 
-            this._cancellationTokenSource = new CancellationTokenSource();
-            HttpServer.ListenAsync(
-                new IPEndPoint(IPAddress.Any, port),
-                false,
-                config,
-                _cancellationTokenSource.Token
-            );
+            this.listener = new HttpListener();
+            this.listener.Prefixes.Add($"http://*:{port}/");
+            this.listener.AuthenticationSchemes = AuthenticationSchemes.None;
+            this.listener.Start();
 
-            Logging.Log(string.Format("Server started on port {0}", port));
+            this.listenerThread = new Thread(this.Listen);
+            this.listenerThread.Start();
+
+            Logging.LogInfo($"Server started on port {port}");
         }
 
+        /// <summary>
+        /// Stops the HTTP server.
+        /// </summary>
         public void Dispose()
         {
-            this._cancellationTokenSource.Cancel();
-            Logging.Log("Server stopped");
+            this.listener.Stop();
+            this.listenerThread.Abort();
+            Logging.LogTrace("Server stopped");
         }
 
-        private Task OnLogMessage(IHttpContext context, Exception exception, DateTime started, TimeSpan duration)
+        private async void Listen()
         {
-            if (exception != null)
+            while (true)
             {
-                Dispatcher.RunOnMainThread(() =>
-                {
-                    var aggregateException = exception as AggregateException;
-                    if (aggregateException != null)
-                    {
-                        foreach (var ex in aggregateException.InnerExceptions)
-                        {
-                            this.LogException(ex, context);
-                        }
-                    }
-                    else
-                    {
-                        this.LogException(exception, context);
-                    }
-                });
+                var context = await this.listener.GetContextAsync();
+                this.HandleRequest(context);
             }
-            return Task.CompletedTask;
         }
 
-        private void LogException(Exception exception, IHttpContext context)
+        private void HandleRequest(HttpListenerContext context)
         {
-            Logging.Log(
-                new Dictionary<string, string>() {
-                    {"RequestMethod", context.Request.Method},
-                    {"RequestPath", context.Request.Path},
-                    {"RemoteEndpoint", context.Request.RemoteEndPoint.ToString()}
-                },
-                exception.ToString()
-            );
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await this.OnRequest(context);
+                }
+                catch (Exception e)
+                {
+                    Logging.LogError($"Failed to handle request: {e}");
+                }
+            });
+        }
+
+        private async Task OnRequest(HttpListenerContext context)
+        {
+            // Need to get this ahead of time as we loose access to it when the context is disposed.
+            var remoteEndPoint = context.Request.RemoteEndPoint.ToString();
+
+            var httpContext = new HttpListenerHttpContext(context);
+            try
+            {
+                var handled = await this.requestHandler(httpContext);
+                if (!handled)
+                {
+                    throw new NotFoundException();
+                }
+            }
+            catch (Exception e)
+            {
+                var webException = e.GetInnerException<Exceptions.WebException>();
+                if (webException != null)
+                {
+                    Logging.LogError(
+                        new Dictionary<string, string>()
+                        {
+                        { "RequestMethod", httpContext.Method },
+                        { "RequestPath", httpContext.Path },
+                        { "StatusCode", webException.StatusCode.ToString() },
+                        { "RemoteEndpoint", remoteEndPoint },
+                        }, $"Failed to handle request: {webException.Message}\n{webException.StackTrace}");
+
+                    await httpContext.TrySendResponse(webException.StatusCode, new ErrorPayload
+                    {
+                        Message = webException.Message,
+                    });
+                }
+                else
+                {
+                    var unwrapped = e.GetInnerException<Exception>() ?? e;
+                    Logging.LogError(
+                        new Dictionary<string, string>()
+                        {
+                        { "RequestMethod", httpContext.Method },
+                        { "RequestPath", httpContext.Path },
+                        { "RemoteEndpoint", remoteEndPoint },
+                        }, $"Failed to handle request: {unwrapped}\n{unwrapped.StackTrace}");
+
+                    await httpContext.TrySendResponse(HttpStatusCode.InternalServerError, new ErrorPayload
+                    {
+                        Message = unwrapped.Message,
+                    });
+                }
+            }
+            finally
+            {
+                // TODO: We don't know whether the websocket was upgraded or not.
+                if (!context.Request.IsWebSocketRequest)
+                {
+                    try
+                    {
+                        context.Response.Close();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        // This is fine, it just means the connection was already handled.
+                    }
+                }
+            }
         }
     }
 }

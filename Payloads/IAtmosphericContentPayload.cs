@@ -1,7 +1,7 @@
 
 using Assets.Scripts.Atmospherics;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public interface IAtmosphericContentPayload
     {

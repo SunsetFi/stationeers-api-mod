@@ -1,5 +1,5 @@
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class PostSavePayload
     {

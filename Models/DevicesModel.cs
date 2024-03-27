@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Objects.Pipes;
 using Newtonsoft.Json.Linq;
-using WebAPI.JsonTranslation;
-using WebAPI.Server.Exceptions;
+using StationeersWebApi.JsonTranslation;
+using StationeersWebApi.Server.Exceptions;
 
-namespace WebAPI.Models
+namespace StationeersWebApi.Models
 {
     public static class DevicesModel
     {

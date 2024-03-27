@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace WebAPI
+namespace StationeersWebApi
 {
     public static class Logging
     {
@@ -11,7 +11,7 @@ namespace WebAPI
         {
             get
             {
-                var assemblyDir = WebAPIPlugin.AssemblyDirectory;
+                var assemblyDir = StationeersWebApiPlugin.AssemblyDirectory;
                 var path = Path.Combine(assemblyDir, "log.txt");
                 return path;
             }
@@ -21,6 +21,70 @@ namespace WebAPI
         {
             Logging.Log(new Dictionary<string, string>(), message, args);
         }
+
+        /// <summary>
+        /// Logs a trace message.
+        /// </summary>
+        /// <param name="message">The log message format string.</param>
+        /// <param name="args">An object array that contains zero or more items to format.</param>
+        public static void LogTrace(string message, params object[] args)
+        {
+            Log(new Dictionary<string, string>(), message, args);
+        }
+
+        /// <summary>
+        /// Logs a trace message with associated key-value pairs.
+        /// </summary>
+        /// <param name="values">A dictionary containing key-value pairs to be included in the log entry.</param>
+        /// <param name="message">The log message format string.</param>
+        /// <param name="args">An object array that contains zero or more items to format.</param>
+        public static void LogTrace(IDictionary<string, string> values, string message, params object[] args)
+        {
+            Log(values, message, args);
+        }
+
+        /// <summary>
+        /// Logs an informational message.
+        /// </summary>
+        /// <param name="message">The log message format string.</param>
+        /// <param name="args">An object array that contains zero or more items to format.</param>
+        public static void LogInfo(string message, params object[] args)
+        {
+            Log(new Dictionary<string, string>(), message, args);
+        }
+
+        /// <summary>
+        /// Logs an informational message with associated key-value pairs.
+        /// </summary>
+        /// <param name="values">A dictionary containing key-value pairs to be included in the log entry.</param>
+        /// <param name="message">The log message format string.</param>
+        /// <param name="args">An object array that contains zero or more items to format.</param>
+        public static void LogInfo(IDictionary<string, string> values, string message, params object[] args)
+        {
+            Log(values, message, args);
+        }
+
+        /// <summary>
+        /// Logs an error message.
+        /// </summary>
+        /// <param name="message">The log message format string.</param>
+        /// <param name="args">An object array that contains zero or more items to format.</param>
+        public static void LogError(string message, params object[] args)
+        {
+            Log(new Dictionary<string, string>(), message, args);
+        }
+
+        /// <summary>
+        /// Logs an error message with associated key-value pairs.
+        /// </summary>
+        /// <param name="values">A dictionary containing key-value pairs to be included in the log entry.</param>
+        /// <param name="message">The log message format string.</param>
+        /// <param name="args">An object array that contains zero or more items to format.</param>
+        public static void LogError(IDictionary<string, string> values, string message, params object[] args)
+        {
+            Log(values, message, args);
+        }
+
 
         public static void Log(IDictionary<string, string> values, string message, params object[] args)
         {
@@ -33,7 +97,7 @@ namespace WebAPI
             sb.Append("\n");
             sb.AppendFormat(message, args);
 
-            UnityEngine.Debug.Log("[WebAPI]: " + sb.ToString().Replace("\n", "\n\t"));
+            UnityEngine.Debug.Log("[StationeersWebApi]: " + sb.ToString().Replace("\n", "\n\t"));
 
             sb.Append("\n\n");
             File.AppendAllText(Logging.LogFilePath, sb.ToString());

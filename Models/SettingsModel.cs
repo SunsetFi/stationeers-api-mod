@@ -7,7 +7,7 @@ using Steamworks;
 using System;
 using System.Linq;
 
-namespace WebAPI.Models
+namespace StationeersWebApi.Models
 {
     public static class SettingsModel
     {

@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Target Name="CheckEnvironmentVars">
+    <Error Text="Please set the GameDir environment variable." Condition="'$(GameDir)' == ''" ContinueOnError="false" />
+  </Target>
+
+  <PropertyGroup>
+    <BepCoreFolder>$(GameDir)/BepInEx/core</BepCoreFolder>
+    <BepPluginFolder>$(GameDir)/BepInEx/plugins</BepPluginFolder>
+    <StationeersBinaries>$(GameDir)/rocketstation_Data/Managed</StationeersBinaries>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <RootNamespace>StationeersWebApi</RootNamespace>
+    <AssemblyName>StationeersWebApi</AssemblyName>
+    <OutputType>Library</OutputType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <FileAlignment>512</FileAlignment>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="BepInEx.Harmony">
+      <HintPath>$(BepCoreFolder)/BepInEx.Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(BepCoreFolder)/0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="BepInEx" CopyToPublishDirectory="Never">
+      <HintPath>$(BepCoreFolder)/BepInEx.dll</HintPath>
+    </Reference>
+
+    <Reference Include="Assembly-CSharp" CopyToPublishDirectory="Never">
+      <HintPath>$(StationeersBinaries)/Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass" CopyToPublishDirectory="Never">
+      <HintPath>$(StationeersBinaries)/Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine" CopyToPublishDirectory="Never">
+      <HintPath>$(StationeersBinaries)/UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule" CopyToPublishDirectory="Never">
+      <HintPath>$(StationeersBinaries)/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+        <Reference Include="UnityEngine.UI" CopyToPublishDirectory="Never">
+      <HintPath>$(StationeersBinaries)/UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JWT" Version="10.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+</Project>

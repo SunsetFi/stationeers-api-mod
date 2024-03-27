@@ -1,7 +1,7 @@
 
-using WebAPI.Models;
+using StationeersWebApi.Models;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class StatusPayload
     {

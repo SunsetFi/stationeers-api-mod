@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 
-namespace WebAPI.JsonTranslation
+namespace StationeersWebApi.JsonTranslation
 {
     public static class JsonTranslator
     {

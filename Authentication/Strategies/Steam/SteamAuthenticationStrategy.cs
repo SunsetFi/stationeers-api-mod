@@ -7,10 +7,11 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Ceen;
 using Newtonsoft.Json.Linq;
-using WebAPI.Payloads;
-using WebAPI.Server.Exceptions;
+using StationeersWebApi;
+using StationeersWebApi.Payloads;
+using StationeersWebApi.Server;
+using StationeersWebApi.Server.Exceptions;
 
 namespace WebAPI.Authentication.Strategies.Steam
 {
@@ -28,13 +29,13 @@ namespace WebAPI.Authentication.Strategies.Steam
                 throw new NotFoundException();
             }
 
-            if (context.Request.Method != "GET")
+            if (context.Method != "GET")
             {
                 // openid requests use GET
                 throw new MethodNotAllowedException();
             }
 
-            var queryString = context.Request.QueryString;
+            var queryString = context.QueryString.ToDictionary(x => x.Key, x => x.Value);
 
             if (queryString.Count == 0)
             {
@@ -56,7 +57,7 @@ namespace WebAPI.Authentication.Strategies.Steam
                 // Would be nice to use TemporarilyMoved here, but thats auto handled by browsers
                 //  and there is no way for the client to receive the location being redirected.
                 // context.Response.Headers.Add("Location", string.Format("{0}?{1}", ProviderUri, query));
-                await context.SendResponse(Ceen.HttpStatusCode.OK, new AuthenticateWithSteamPayload()
+                await context.SendResponse(StationeersWebApi.Server.HttpStatusCode.OK, new AuthenticateWithSteamPayload()
                 {
                     location = string.Format("{0}?{1}", ProviderUri, query)
                 });

@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using Ceen;
 using Newtonsoft.Json.Linq;
-using WebAPI.Authentication;
-using WebAPI.Models;
-using WebAPI.Payloads;
-using WebAPI.Server.Attributes;
-using WebAPI.Server.Exceptions;
+using StationeersWebApi.Authentication;
+using StationeersWebApi.Models;
+using StationeersWebApi.Payloads;
+using StationeersWebApi.Server.Attributes;
+using StationeersWebApi.Server.Exceptions;
 
-namespace WebAPI.Controllers
+namespace StationeersWebApi.Controllers
 {
     [WebController(Path = "api/things")]
     public class ThingsController

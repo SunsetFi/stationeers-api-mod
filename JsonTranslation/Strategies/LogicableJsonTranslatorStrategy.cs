@@ -6,7 +6,7 @@ using Assets.Scripts.Objects.Motherboards;
 using Assets.Scripts.Objects.Pipes;
 using Newtonsoft.Json.Linq;
 
-namespace WebAPI.JsonTranslation.Strategies
+namespace StationeersWebApi.JsonTranslation.Strategies
 {
     [JsonTranslatorStrategy]
     [JsonTranslatorTarget(typeof(ILogicable))]

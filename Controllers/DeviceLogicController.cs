@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using Assets.Scripts.Objects.Motherboards;
 using Assets.Scripts.Objects.Pipes;
 using Ceen;
-using WebAPI.Authentication;
-using WebAPI.Payloads;
-using WebAPI.Server.Attributes;
-using WebAPI.Server.Exceptions;
+using StationeersWebApi.Authentication;
+using StationeersWebApi.Payloads;
+using StationeersWebApi.Server.Attributes;
+using StationeersWebApi.Server.Exceptions;
 
-namespace WebAPI.Controllers
+namespace StationeersWebApi.Controllers
 {
     [WebController(Path = "api/devices/:referenceId/logic")]
     public class DeviceLogicController
