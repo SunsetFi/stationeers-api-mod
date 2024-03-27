@@ -5,7 +5,7 @@ using StationeersWebApi;
 using StationeersWebApi.Server;
 using StationeersWebApi.Server.Exceptions;
 
-namespace WebAPI.Authentication.Strategies.Password
+namespace StationeersWebApi.Authentication.Strategies.Password
 {
     public class PasswordAuthenticationStrategy : IAuthenticationStrategy
     {

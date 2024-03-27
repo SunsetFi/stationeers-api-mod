@@ -1,4 +1,4 @@
-namespace WebAPI.Authentication
+namespace StationeersWebApi.Authentication
 {
     public static class AuthenticationMethod
     {

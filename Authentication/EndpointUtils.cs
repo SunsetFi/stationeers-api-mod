@@ -1,7 +1,7 @@
 
 using System.Net;
 
-namespace WebAPI.Authentication
+namespace StationeersWebApi.Authentication
 {
     public static class EndpointUtils
     {

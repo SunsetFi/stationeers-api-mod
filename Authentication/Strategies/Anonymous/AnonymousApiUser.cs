@@ -1,5 +1,5 @@
 
-namespace WebAPI.Authentication.Strategies.Anonymous
+namespace StationeersWebApi.Authentication.Strategies.Anonymous
 {
     public class AnonymousApiUser : ApiUser
     {

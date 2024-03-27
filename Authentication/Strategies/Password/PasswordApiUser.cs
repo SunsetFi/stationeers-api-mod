@@ -1,7 +1,7 @@
 
 using StationeersWebApi.Server;
 
-namespace WebAPI.Authentication.Strategies.Password
+namespace StationeersWebApi.Authentication.Strategies.Password
 {
     public class PasswordApiUser : ApiUser
     {

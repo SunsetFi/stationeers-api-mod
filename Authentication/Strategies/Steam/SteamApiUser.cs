@@ -2,7 +2,7 @@ using JWT.Builder;
 using Newtonsoft.Json;
 using StationeersWebApi.Server;
 
-namespace WebAPI.Authentication.Strategies.Steam
+namespace StationeersWebApi.Authentication.Strategies.Steam
 {
     public class SteamApiUser : ApiUser
     {

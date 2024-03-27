@@ -5,7 +5,7 @@ using StationeersWebApi;
 using StationeersWebApi.Server;
 using StationeersWebApi.Server.Exceptions;
 
-namespace WebAPI.Authentication.Strategies.Anonymous
+namespace StationeersWebApi.Authentication.Strategies.Anonymous
 {
     public class AnonymousAuthenticationStrategy : IAuthenticationStrategy
     {
