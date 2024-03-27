@@ -37,9 +37,10 @@ namespace StationeersWebApi.JsonTranslation.Strategies
             for (var i = 0; i < thing.Slots.Count; i++)
             {
                 var slot = thing.Slots[i];
-                if (slot.Occupant != null)
+                var occupant = slot.Get();
+                if (occupant != null)
                 {
-                    refIds.Add(i, slot.Occupant.ReferenceId.ToString());
+                    refIds.Add(i, occupant.ReferenceId.ToString());
                 }
             }
 
