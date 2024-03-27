@@ -1,5 +1,8 @@
 
+#if TODO_BANNED_PLAYERS
+
 using System.Collections.Generic;
+using Assets.Scripts;
 using StationeersWebApi.Payloads;
 
 namespace StationeersWebApi.Models
@@ -7,7 +10,7 @@ namespace StationeersWebApi.Models
 
     public static class BansModel
     {
-        private static Dictionary<ulong, string> Bans
+        private static List<string> Bans
         {
             get
             {
@@ -46,3 +49,4 @@ namespace StationeersWebApi.Models
         }
     }
 }
+#endif

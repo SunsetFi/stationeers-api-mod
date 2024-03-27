@@ -1,4 +1,6 @@
 
+#if TODO_BANNED_PLAYERS
+
 using System.Threading.Tasks;
 using StationeersWebApi.Authentication;
 using StationeersWebApi.Models;
@@ -44,3 +46,5 @@ namespace StationeersWebApi.Controllers
         }
     }
 }
+
+#endif
