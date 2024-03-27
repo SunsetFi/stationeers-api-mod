@@ -2,7 +2,7 @@ using System.Net;
 using Assets.Scripts.AwayMission;
 using HarmonyLib;
 
-namespace WebAPI.Patches
+namespace StationeersWebApi.Patches
 {
 
     [HarmonyPatch(typeof(SimpleHttpServerComponent), "StartServer")]

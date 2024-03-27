@@ -1,8 +1,8 @@
 
 using System.Collections.Generic;
-using WebAPI.Payloads;
+using StationeersWebApi.Payloads;
 
-namespace WebAPI.Models
+namespace StationeersWebApi.Models
 {
 
     public static class BansModel

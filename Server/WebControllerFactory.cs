@@ -1,14 +1,21 @@
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using WebAPI.Server.Attributes;
-
-namespace WebAPI.Server
+namespace StationeersWebApi.Server
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using StationeersWebApi.Server.Attributes;
+
+    /// <summary>
+    /// Factory for creating routes from a controller.
+    /// </summary>
     public static class WebControllerFactory
     {
+        /// <summary>
+        /// Creates routes from a controller.
+        /// </summary>
+        /// <param name="instance">The instance of the controller to create routes from.</param>
+        /// <returns>An enumerable of routes handling the controller paths and methods.</returns>
         public static IEnumerable<IWebRoute> CreateRoutesFromController(object instance)
         {
             var type = instance.GetType();

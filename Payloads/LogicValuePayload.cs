@@ -1,9 +1,9 @@
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class LogicValuePayload
     {
         public double value { get; set; }
-        public bool writable { get; set;}
+        public bool writable { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Assets.Scripts.Objects.Motherboards;
 using Assets.Scripts.Objects.Pipes;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public interface ILogicablePayload
     {

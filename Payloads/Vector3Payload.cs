@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class Vector3Payload
     {

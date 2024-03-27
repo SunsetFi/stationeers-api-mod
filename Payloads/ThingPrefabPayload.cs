@@ -10,7 +10,7 @@ using Assets.Scripts.Util;
 using Reagents;
 using Newtonsoft.Json;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class ThingPrefabPayload
     {

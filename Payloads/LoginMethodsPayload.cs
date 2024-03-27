@@ -1,7 +1,7 @@
 
 using System.Collections.Generic;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class LoginMethodsPayload
     {

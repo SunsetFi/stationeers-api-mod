@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Atmospherics;
-using WebAPI.Payloads;
+using StationeersWebApi.Payloads;
 
-namespace WebAPI.Models
+namespace StationeersWebApi.Models
 {
     public static class AtmospheresModel
     {

@@ -1,20 +1,29 @@
-
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using WebAPI.Server.Attributes;
-using WebAPI.Server.Exceptions;
-
-namespace WebAPI.Server
+namespace StationeersWebApi.Server
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json.Linq;
+    using StationeersWebApi.Server.Attributes;
+    using StationeersWebApi.Server.Exceptions;
+
+    /// <summary>
+    /// A router that provides routing for a <see cref="WebControllerAttribute"/> marked class.
+    /// </summary>
     public class WebControllerRouter : IWebRoute
     {
         private object instance;
         private MethodBase handler;
-        private Func<IWebAPIContext, Task<bool>>[] middleware;
+        private Func<IHttpContext, Task<bool>>[] middleware;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebControllerRouter"/> class.
+        /// </summary>
+        /// <param name="instance">The web controller instance.</param>
+        /// <param name="method">The method to route.</param>
+        /// <param name="attr">The attribute describing the method.</param>
+        /// <param name="rootPath">The root web path for this controller.</param>
         public WebControllerRouter(object instance, MethodBase method, WebRouteMethodAttribute attr, string rootPath)
         {
             this.instance = instance;
@@ -32,13 +41,15 @@ namespace WebAPI.Server
             }
         }
 
+        /// <inheritdoc/>
         public string Method { get; private set; }
 
+        /// <inheritdoc/>
         public string Path { get; private set; }
 
-        public async Task OnRequested(IWebAPIContext context)
+        /// <inheritdoc/>
+        public async Task OnRequested(IWebRouteHttpContext context)
         {
-
             foreach (var middleware in this.middleware)
             {
                 if (await middleware(context) == false)
@@ -50,19 +61,15 @@ namespace WebAPI.Server
             var paramInfos = this.handler.GetParameters();
             var paramValues = paramInfos.Select(paramInfo => this.GetParameterValue(paramInfo, context)).ToArray();
 
-            await (Task)this.handler.Invoke(instance, paramValues);
+            await (Task)this.handler.Invoke(this.instance, paramValues);
         }
 
-        private object GetParameterValue(ParameterInfo parameterInfo, IWebAPIContext context)
+        private object GetParameterValue(ParameterInfo parameterInfo, IWebRouteHttpContext context)
         {
             switch (parameterInfo.Name)
             {
                 case "context":
                     return context;
-                case "request":
-                    return context.Request;
-                case "response":
-                    return context.Response;
                 case "body":
                     {
                         try
@@ -83,14 +90,16 @@ namespace WebAPI.Server
 
             if (context.PathParameters.ContainsKey(parameterInfo.Name))
             {
-                return WebControllerRouter.ConvertPathParameter(parameterInfo.ParameterType, context.PathParameters[parameterInfo.Name]);
+                return this.ConvertPathParameter(parameterInfo.ParameterType, context.PathParameters[parameterInfo.Name]);
             }
 
             throw new Exception(string.Format("Unable to determine value for parameter '{0} of route method '{1}'", parameterInfo.Name, this.handler.Name));
         }
 
-        private static object ConvertPathParameter(Type targetType, string value)
+        private object ConvertPathParameter(Type targetType, string value)
         {
+            value = Uri.UnescapeDataString(value);
+
             if (targetType == typeof(string))
             {
                 return value;
@@ -100,41 +109,49 @@ namespace WebAPI.Server
             {
                 if (targetType.IsEnum)
                 {
-                    return Enum.Parse(targetType, value);
+                    return Enum.Parse(targetType, value, true);
                 }
 
                 if (targetType == typeof(bool))
                 {
                     return Convert.ToBoolean(value);
                 }
-                if (targetType == typeof(Int16))
+
+                if (targetType == typeof(short))
                 {
                     return Convert.ToInt16(value);
                 }
-                if (targetType == typeof(Int32))
+
+                if (targetType == typeof(int))
                 {
                     return Convert.ToInt32(value);
                 }
-                if (targetType == typeof(Int64))
+
+                if (targetType == typeof(long))
                 {
                     return Convert.ToInt64(value);
                 }
-                if (targetType == typeof(UInt16))
+
+                if (targetType == typeof(ushort))
                 {
                     return Convert.ToUInt16(value);
                 }
-                if (targetType == typeof(UInt32))
+
+                if (targetType == typeof(uint))
                 {
                     return Convert.ToUInt32(value);
                 }
-                if (targetType == typeof(UInt64))
+
+                if (targetType == typeof(ulong))
                 {
                     return Convert.ToUInt64(value);
                 }
+
                 if (targetType == typeof(float))
                 {
                     return (float)Convert.ToDouble(value);
                 }
+
                 if (targetType == typeof(double))
                 {
                     return Convert.ToDouble(value);

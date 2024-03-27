@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace WebAPI
+namespace StationeersWebApi
 {
     [JsonObject(MemberSerialization.OptIn)]
     class ConfigPasswordAuth
@@ -53,10 +53,7 @@ namespace WebAPI
         public bool Enabled { get; set; }
 
         [JsonProperty("port")]
-        public int? Port { get; set; }
-
-        [JsonProperty("protocol")]
-        public string Protocol { get; set; }
+        public int Port { get; set; }
 
         [JsonProperty("passwordAuthentication")]
         public ConfigPasswordAuth PasswordAuthentication { get; set; } = new ConfigPasswordAuth();
@@ -78,9 +75,7 @@ namespace WebAPI
         public Config()
         {
             this.Enabled = true;
-            this.Port = null;
-            this.Protocol = "http";
-            this.JWTSecret = Guid.NewGuid().ToString();
+            this.Port = 8081;
         }
 
         public void Validate()
@@ -89,17 +84,13 @@ namespace WebAPI
             {
                 throw new Exception("Invalid Port.");
             }
-            if (this.Protocol != "http" && this.Protocol != "https")
-            {
-                throw new Exception("Invalid Protocol.");
-            }
 
             this.PasswordAuthentication.Validate();
         }
 
         public static void LoadConfig()
         {
-            var assemblyDir = WebAPIPlugin.AssemblyDirectory;
+            var assemblyDir = StationeersWebApiPlugin.AssemblyDirectory;
             var path = Path.Combine(assemblyDir, "config.json");
             Logging.Log("Loading config at: " + path);
 

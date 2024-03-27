@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Assets.Scripts.Networks;
 using Assets.Scripts.Objects;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class PipeNetworkPayload : IAtmosphericContentPayload
     {

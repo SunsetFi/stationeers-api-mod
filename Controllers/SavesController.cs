@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Assets.Scripts.Serialization;
 using Assets.Scripts.Util;
 using Ceen;
-using WebAPI.Authentication;
-using WebAPI.Payloads;
-using WebAPI.Server.Attributes;
-using WebAPI.Server.Exceptions;
+using StationeersWebApi.Authentication;
+using StationeersWebApi.Payloads;
+using StationeersWebApi.Server.Attributes;
+using StationeersWebApi.Server.Exceptions;
 
-namespace WebAPI.Controllers
+namespace StationeersWebApi.Controllers
 {
     [WebController(Path = "api/saves")]
     public class SavesController

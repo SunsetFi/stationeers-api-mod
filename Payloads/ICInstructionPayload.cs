@@ -3,7 +3,7 @@ using Assets.Scripts.Objects.Electrical;
 using System;
 using Newtonsoft.Json;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class ICInstructionPayload
     {
@@ -14,7 +14,7 @@ namespace WebAPI.Payloads
             var item = new ICInstructionPayload();
             item.instructions = new Dictionary<string, Instruction>();
 
-            foreach (ScriptCommand scriptCommand in Enum.GetValues(typeof(ScriptCommand))) 
+            foreach (ScriptCommand scriptCommand in Enum.GetValues(typeof(ScriptCommand)))
             {
                 var instruction = Instruction.FromScriptCommand(scriptCommand);
                 item.instructions[instruction.mnemonic] = instruction;
@@ -23,7 +23,7 @@ namespace WebAPI.Payloads
             return item;
         }
 
-        public class Instruction 
+        public class Instruction
         {
             [JsonIgnore]
             public string mnemonic { get; set; }
@@ -36,7 +36,7 @@ namespace WebAPI.Payloads
 
                 item.mnemonic = scriptCommand.ToString();
                 item.description = ProgrammableChip.GetCommandDescription(scriptCommand);
-                item.example = ProgrammableChip.GetCommandExample(scriptCommand);          
+                item.example = ProgrammableChip.GetCommandExample(scriptCommand);
 
                 return item;
             }

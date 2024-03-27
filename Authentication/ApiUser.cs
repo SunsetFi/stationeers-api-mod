@@ -1,10 +1,11 @@
 
 using System;
 using System.Collections.Generic;
-using Ceen;
 using JWT.Builder;
 using Newtonsoft.Json;
-using WebAPI.Server.Exceptions;
+using StationeersWebApi;
+using StationeersWebApi.Server;
+using StationeersWebApi.Server.Exceptions;
 
 namespace WebAPI.Authentication
 {
@@ -38,12 +39,12 @@ namespace WebAPI.Authentication
 
         public static void InitializeUser(ApiUser user, IHttpContext context)
         {
-            user.Endpoint = context.Request.RemoteEndPoint.ToPortlessString();
+            user.Endpoint = context.RemoteEndPoint.ToPortlessString();
         }
 
         public static void VerifyUser(ApiUser user, IHttpContext context)
         {
-            var endpoint = context.Request.RemoteEndPoint.ToPortlessString();
+            var endpoint = context.RemoteEndPoint.ToPortlessString();
             if (user.Endpoint != null && user.Endpoint != endpoint)
             {
                 Logging.Log(

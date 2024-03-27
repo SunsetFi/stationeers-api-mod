@@ -5,7 +5,7 @@ using Assets.Scripts;
 using Assets.Scripts.Objects;
 using Assets.Scripts.Objects.Electrical;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class StationContactPayload
     {

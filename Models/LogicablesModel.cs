@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Assets.Scripts;
 using Assets.Scripts.Objects.Pipes;
 using System.Linq;
-using WebAPI.Payloads;
+using StationeersWebApi.Payloads;
 
-namespace WebAPI.Models
+namespace StationeersWebApi.Models
 {
     public static class LogicablesModel
     {

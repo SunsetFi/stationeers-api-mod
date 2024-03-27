@@ -5,22 +5,20 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using HarmonyLib;
-using WebAPI.Server.Attributes;
-using WebAPI.Server;
-using Assets.Scripts.Networking;
+using StationeersWebApi.Server.Attributes;
+using StationeersWebApi.Server;
 using System.Threading.Tasks;
-using Ceen;
-using WebAPI.Server.Exceptions;
-using WebAPI.Payloads;
-using WebAPI.Models;
-using WebAPI.JsonTranslation;
+using StationeersWebApi.Server.Exceptions;
+using StationeersWebApi.Payloads;
+using StationeersWebApi.Models;
+using StationeersWebApi.JsonTranslation;
 
-namespace WebAPI
+namespace StationeersWebApi
 {
-    [BepInPlugin("net.robophreddev.stationeers.WebAPI", "Web API for Stationeers", "2.1.1.0")]
-    public class WebAPIPlugin : BaseUnityPlugin
+    [BepInPlugin("net.sunsetfidev.stationeers.StationeersWebApi", "Web API for Stationeers", "2.1.1.0")]
+    public class StationeersWebApiPlugin : BaseUnityPlugin
     {
-        public static WebAPIPlugin Instance;
+        public static StationeersWebApiPlugin Instance;
 
         private WebServer _webServer;
         private WebRouter _router = new WebRouter();
@@ -29,7 +27,7 @@ namespace WebAPI
         {
             get
             {
-                var assemblyLocation = typeof(WebAPIPlugin).Assembly.Location;
+                var assemblyLocation = typeof(StationeersWebApiPlugin).Assembly.Location;
                 var assemblyDir = Path.GetDirectoryName(assemblyLocation);
                 return assemblyDir;
             }
@@ -62,7 +60,7 @@ namespace WebAPI
 
         public void StartServer()
         {
-            if (!WebAPI.Config.Instance.Enabled)
+            if (!StationeersWebApi.Config.Instance.Enabled)
             {
                 return;
             }
@@ -75,7 +73,7 @@ namespace WebAPI
             SettingsModel.ClearLastSave();
 
             this._webServer = new WebServer(this.OnRequest);
-            this._webServer.Start(WebAPI.Config.Instance.Port ?? SteamServer.Instance.GetGamePort());
+            this._webServer.Start(StationeersWebApi.Config.Instance.Port ?? SteamServer.Instance.GetGamePort());
         }
 
         public void StopServer()
@@ -89,29 +87,29 @@ namespace WebAPI
 
         void Awake()
         {
-            WebAPIPlugin.Instance = this;
+            StationeersWebApiPlugin.Instance = this;
 
-            WebAPI.Config.LoadConfig();
+            StationeersWebApi.Config.LoadConfig();
             Dispatcher.Initialize();
 
-            if (WebAPI.Config.Instance.Enabled)
+            if (StationeersWebApi.Config.Instance.Enabled)
             {
 
                 this.ApplyPatches();
 
-                var ownAssembly = typeof(WebAPIPlugin).Assembly;
+                var ownAssembly = typeof(StationeersWebApiPlugin).Assembly;
                 this.RegisterControllers(ownAssembly);
                 JsonTranslator.LoadJsonTranslatorStrategies(ownAssembly);
             }
             else
             {
-                Logging.Log("WebAPI is disabled.");
+                Logging.Log("StationeersWebApi is disabled.");
             }
         }
 
         private void ApplyPatches()
         {
-            var harmony = new Harmony("net.robophreddev.stationeers.WebAPI");
+            var harmony = new Harmony("net.robophreddev.stationeers.StationeersWebApi");
             harmony.PatchAll();
             Logging.Log("Patch succeeded");
         }

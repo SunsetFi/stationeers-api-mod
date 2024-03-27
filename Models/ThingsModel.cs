@@ -6,10 +6,10 @@ using Assets.Scripts;
 using Assets.Scripts.Objects;
 using Assets.Scripts.Serialization;
 using Newtonsoft.Json.Linq;
-using WebAPI.JsonTranslation;
-using WebAPI.Server.Exceptions;
+using StationeersWebApi.JsonTranslation;
+using StationeersWebApi.Server.Exceptions;
 
-namespace WebAPI.Models
+namespace StationeersWebApi.Models
 {
     public static class ThingsModel
     {

@@ -2,7 +2,7 @@
 
 using Assets.Scripts.Objects;
 
-namespace WebAPI.JsonTranslation.Strategies
+namespace StationeersWebApi.JsonTranslation.Strategies
 {
     [JsonTranslatorStrategy]
     [JsonTranslatorTarget(typeof(Item))]

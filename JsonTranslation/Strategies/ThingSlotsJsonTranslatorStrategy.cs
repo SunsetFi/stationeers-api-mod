@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Assets.Scripts.Objects;
 using Newtonsoft.Json.Linq;
 
-namespace WebAPI.JsonTranslation.Strategies
+namespace StationeersWebApi.JsonTranslation.Strategies
 {
     [JsonTranslatorStrategy]
     public sealed class ThingSlotsJsonTranslatorStrategy : IJsonTranslatorStrategy

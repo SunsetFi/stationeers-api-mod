@@ -1,6 +1,6 @@
 
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class LoginPayload
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Assets.Scripts.Objects.Motherboards;
 using System;
 
-namespace WebAPI.Payloads
+namespace StationeersWebApi.Payloads
 {
     public class LogicSlotTypesPayload
     {
@@ -13,9 +13,9 @@ namespace WebAPI.Payloads
             var item = new LogicSlotTypesPayload();
             item.logicSlotTypes = new Dictionary<string, int>();
 
-            foreach (LogicSlotType slotType in Enum.GetValues(typeof(LogicSlotType))) 
+            foreach (LogicSlotType slotType in Enum.GetValues(typeof(LogicSlotType)))
             {
-                item.logicSlotTypes.Add(slotType.ToString(), (int) slotType);
+                item.logicSlotTypes.Add(slotType.ToString(), (int)slotType);
             }
 
             return item;

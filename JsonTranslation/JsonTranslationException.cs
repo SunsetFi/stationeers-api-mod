@@ -1,7 +1,7 @@
 
 using System;
 
-namespace WebAPI.JsonTranslation
+namespace StationeersWebApi.JsonTranslation
 {
     public class JsonTranslationException : Exception
     {
