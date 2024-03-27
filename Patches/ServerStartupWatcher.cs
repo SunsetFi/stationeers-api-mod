@@ -5,7 +5,7 @@ using HarmonyLib;
 namespace StationeersWebApi.Patches
 {
 
-    [HarmonyPatch(typeof(SteamServer), "StartSteamServer")]
+    [HarmonyPatch(typeof(NetworkManager), "StartServer")]
     sealed class ServerStartupWatcher
     {
         static void Postfix()
