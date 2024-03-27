@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Assets.Scripts.Serialization;
-using Assets.Scripts.Util;
 using StationeersWebApi.Authentication;
 using StationeersWebApi.Payloads;
 using StationeersWebApi.Server;
@@ -36,8 +35,8 @@ namespace StationeersWebApi.Controllers
                 throw new BadRequestException("Filename contains invalid characters.");
             }
 
-            string worldDirectory = Path.Combine(XmlSaveLoad.CheckFiles(), "saves/" + body.fileName);
-            UnityMainThreadDispatcher.Instance().Enqueue(XmlSaveLoad.Instance.ForceWriteWorld(worldDirectory));
+            var worldDirectory = StationSaveUtils.GetWorldSaveDirectory(body.fileName);
+            await Dispatcher.RunOnMainThread(() => XmlSaveLoad.SaveGameAs(worldDirectory));
             await context.SendResponse(HttpStatusCode.OK, body);
         }
     }
