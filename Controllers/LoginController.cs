@@ -43,7 +43,7 @@ namespace StationeersWebApi.Controllers
             }
 
             var token = Authenticator.GenerateToken(user);
-            context.Response.Headers.Add("Authorization", string.Format("Bearer {0}", token));
+            context.SetResponseHeader("Authorization", string.Format("Bearer {0}", token));
             await context.SendResponse(HttpStatusCode.OK, LoginPayload.FromToken(token));
         }
 
@@ -58,7 +58,7 @@ namespace StationeersWebApi.Controllers
             }
 
             var token = Authenticator.GenerateToken(user);
-            context.Response.Headers.Add("Authorization", string.Format("Bearer {0}", token));
+            context.SetResponseHeader("Authorization", string.Format("Bearer {0}", token));
             await context.SendResponse(HttpStatusCode.OK, LoginPayload.FromToken(token));
         }
     }

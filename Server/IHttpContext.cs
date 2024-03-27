@@ -51,7 +51,7 @@ namespace StationeersWebApi.Server
         /// </summary>
         /// <param name="header">The header name.</param>
         /// <param name="value">The header value.</param>
-        void SetHeader(string header, string value);
+        void SetResponseHeader(string header, string value);
 
         /// <summary>
         /// Sets a cookie on the response.

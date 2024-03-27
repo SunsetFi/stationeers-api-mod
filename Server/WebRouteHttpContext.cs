@@ -66,9 +66,9 @@ namespace StationeersWebApi.Server
         }
 
         /// <inheritdoc/>
-        public void SetHeader(string header, string value)
+        public void SetResponseHeader(string header, string value)
         {
-            this.httpContext.SetHeader(header, value);
+            this.httpContext.SetResponseHeader(header, value);
         }
 
         /// <inheritdoc/>
