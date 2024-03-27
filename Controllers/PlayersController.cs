@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using StationeersWebApi.Authentication;
 using StationeersWebApi.Models;
-using StationeersWebApi.Payloads;
 using StationeersWebApi.Server;
 using StationeersWebApi.Server.Attributes;
 using StationeersWebApi.Server.Exceptions;
@@ -23,42 +22,34 @@ namespace StationeersWebApi.Controllers
             await context.SendResponse(HttpStatusCode.OK, players);
         }
 
-        [WebRouteMethod(Method = "POST", Path = ":steamId/kick")]
-        public async Task KickPlayer(IHttpContext context, ulong steamId, KickPlayerPayload body)
+        [WebRouteMethod(Method = "POST", Path = ":clientId/kick")]
+        public async Task KickPlayer(IHttpContext context, ulong clientId)
         {
             Authenticator.VerifyAuth(context);
 
-            var payload = await Dispatcher.RunOnMainThread(() => PlayersModel.KickPlayer(steamId, body.reason));
+            var payload = await Dispatcher.RunOnMainThread(() => PlayersModel.KickPlayer(clientId));
 
             if (payload == null)
             {
-                throw new NotFoundException("No player exist by the given SteamID.");
+                throw new NotFoundException("No player exist by the given client id.");
             }
 
             await context.SendResponse(HttpStatusCode.OK, payload);
         }
 
-        [WebRouteMethod(Method = "POST", Path = ":steamId/ban")]
-        public async Task BanPlayer(IHttpContext context, ulong steamId, BanPlayerPayload body)
+        [WebRouteMethod(Method = "POST", Path = ":clientId/ban")]
+        public async Task BanPlayer(IHttpContext context, ulong clientId)
         {
             Authenticator.VerifyAuth(context);
 
-            var bannedPlayer = await Dispatcher.RunOnMainThread(() =>
-            {
-                var player = PlayersModel.GetPlayer(steamId);
-                if (player != null)
-                {
-                    BansModel.AddBan(steamId, body.hours, body.reason);
-                }
-                return player;
-            });
+            var payload = await Dispatcher.RunOnMainThread(() => PlayersModel.BanPlayer(clientId));
 
-            if (bannedPlayer == null)
+            if (payload == null)
             {
-                throw new NotFoundException("No player exist by the given SteamID.");
+                throw new NotFoundException("No player exist by the given client id.");
             }
 
-            await context.SendResponse(HttpStatusCode.OK, bannedPlayer);
+            await context.SendResponse(HttpStatusCode.OK, payload);
         }
     }
 }
