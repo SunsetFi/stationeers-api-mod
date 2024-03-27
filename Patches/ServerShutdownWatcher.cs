@@ -5,7 +5,7 @@ using HarmonyLib;
 namespace StationeersWebApi.Patches
 {
 
-    [HarmonyPatch(typeof(SteamServer), "ShutdownGameServer")]
+    [HarmonyPatch(typeof(NetworkManager), "StopServer")]
     sealed class ServerShutdownWatcher
     {
         static void Postfix()
