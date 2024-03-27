@@ -3,31 +3,17 @@ using Assets.Scripts;
 using Assets.Scripts.GridSystem;
 using Assets.Scripts.Networking;
 using Assets.Scripts.Serialization;
-using Steamworks;
-using System;
 using System.Linq;
 
 namespace StationeersWebApi.Models
 {
     public static class SettingsModel
     {
-        private static DateTime? lastSave;
-
-        static SettingsModel()
-        {
-            XmlSaveLoad.OnSaveLoadFinished += OnSaveLoadFinished;
-        }
-
-        static void OnSaveLoadFinished()
-        {
-            SettingsModel.lastSave = DateTime.Now;
-        }
-
         public static string IP
         {
             get
             {
-                return NetworkManagerHudOverride.Instance.Manager.serverBindAddress;
+                return NetworkManager.GetPublicIpAddress();
             }
         }
 
@@ -35,17 +21,12 @@ namespace StationeersWebApi.Models
         {
             get
             {
-                return Reflection.GetPrivateField<string>(SteamServer.Instance, "ServerNameText");
+                return Settings.CurrentData.ServerName;
             }
             set
             {
-                var serverInstance = SteamServer.Instance;
-                if (serverInstance.ServerName)
-                {
-                    serverInstance.ServerName.text = value;
-                }
-                Reflection.SetPrivateField(serverInstance, "ServerNameText", value);
-                SteamGameServer.SetServerName(value);
+                Settings.CurrentData.ServerName = value;
+                NetworkManager.UpdateSessionData(Settings.CurrentData);
             }
         }
 
@@ -53,17 +34,12 @@ namespace StationeersWebApi.Models
         {
             get
             {
-                return Reflection.GetPrivateField<string>(SteamServer.Instance, "PasswordText");
+                return Settings.CurrentData.ServerPassword;
             }
             set
             {
-                var serverInstance = SteamServer.Instance;
-                if (serverInstance.Password)
-                {
-                    serverInstance.Password.text = value;
-                }
-                Reflection.SetPrivateField(serverInstance, "PasswordText", value);
-                SteamGameServer.SetPasswordProtected(value.Length > 0);
+                Settings.CurrentData.ServerPassword = value;
+                NetworkManager.UpdateSessionData(Settings.CurrentData);
             }
         }
 
@@ -71,16 +47,12 @@ namespace StationeersWebApi.Models
         {
             get
             {
-                return int.Parse(Reflection.GetPrivateField<string>(SteamServer.Instance, "MaxPlayerText"));
+                return Settings.CurrentData.ServerMaxPlayers;
             }
             set
             {
-                var serverInstance = SteamServer.Instance;
-                if (serverInstance.MaxPlayer)
-                {
-                    serverInstance.MaxPlayer.text = value.ToString();
-                }
-                Reflection.SetPrivateField(serverInstance, "MaxPlayerText", value.ToString());
+                Settings.CurrentData.ServerMaxPlayers = value;
+                NetworkManager.UpdateSessionData(Settings.CurrentData);
             }
         }
 
@@ -132,19 +104,6 @@ namespace StationeersWebApi.Models
             {
                 return WorldManager.RespawnConditions.Select(x => x.Key).ToArray();
             }
-        }
-
-        public static DateTime? LastSave
-        {
-            get
-            {
-                return SettingsModel.lastSave;
-            }
-        }
-
-        public static void ClearLastSave()
-        {
-            SettingsModel.lastSave = null;
         }
 
         public static GameState GameStatus
