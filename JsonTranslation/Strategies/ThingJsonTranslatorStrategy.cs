@@ -40,7 +40,7 @@ namespace StationeersWebApi.JsonTranslation.Strategies
         [JsonPropertyGetter("customName")]
         public string GetCustomName(Thing thing)
         {
-            return thing.IsCustomName ? thing.CustomName : null;
+            return thing.CustomName;
         }
 
         [JsonPropertySetter("customName")]
@@ -48,13 +48,11 @@ namespace StationeersWebApi.JsonTranslation.Strategies
         {
             if (string.IsNullOrEmpty(name))
             {
-                thing.IsCustomName = false;
                 thing.CustomName = null;
             }
             else
             {
                 thing.CustomName = name;
-                thing.IsCustomName = true;
             }
         }
 
