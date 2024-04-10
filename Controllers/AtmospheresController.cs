@@ -22,7 +22,7 @@ namespace StationeersWebApi.Controllers
                 throw new BadRequestException("Invalid skip value.");
             }
 
-            var take = 0;
+            var take = int.MaxValue;
             context.QueryString.TryGetValue("take", out var takeStr);
             if (!string.IsNullOrEmpty(takeStr) && !int.TryParse(takeStr, out take))
             {
@@ -45,7 +45,7 @@ namespace StationeersWebApi.Controllers
                 throw new BadRequestException("Invalid skip value.");
             }
 
-            var take = 0;
+            var take = int.MaxValue;
             context.QueryString.TryGetValue("take", out var takeStr);
             if (!string.IsNullOrEmpty(takeStr) && !int.TryParse(takeStr, out take))
             {
@@ -68,7 +68,7 @@ namespace StationeersWebApi.Controllers
                 throw new BadRequestException("Invalid skip value.");
             }
 
-            var take = 0;
+            var take = int.MaxValue;
             context.QueryString.TryGetValue("take", out var takeStr);
             if (!string.IsNullOrEmpty(takeStr) && !int.TryParse(takeStr, out take))
             {
