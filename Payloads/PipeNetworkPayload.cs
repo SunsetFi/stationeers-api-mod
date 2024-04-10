@@ -44,7 +44,7 @@ namespace StationeersWebApi.Payloads
                             prefabName = thing.PrefabName,
                             prefabHash = thing.PrefabHash,
                             referenceId = thing.ReferenceId.ToString(),
-                            connectionRole = end.ConnectionRole
+                            connectionRole = end.ConnectionRole.ToString()
                         });
                     }
                 }
@@ -61,6 +61,6 @@ namespace StationeersWebApi.Payloads
         public string prefabName { get; set; }
         public int prefabHash { get; set; }
         public string referenceId { get; set; }
-        public ConnectionRole connectionRole { get; set; }
+        public string connectionRole { get; set; }
     }
 }
