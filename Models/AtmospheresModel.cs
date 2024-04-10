@@ -1,6 +1,5 @@
 
 using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.Atmospherics;
 using StationeersWebApi.Payloads;
 
@@ -10,7 +9,20 @@ namespace StationeersWebApi.Models
     {
         public static IList<AtmospherePayload> GetAtmospheres()
         {
-            return AtmosphericsManager.AllAtmospheres.Select(atmosphere => AtmospherePayload.FromAtmosphere(atmosphere)).ToList();
+            var items = new List<AtmospherePayload>(AtmosphericsManager.AllAtmospheres.Count);
+            foreach (var atmo in AtmosphericsManager.AllAtmospheres)
+            {
+                if (atmo == null)
+                {
+                    // WHY DOES THIS HAVE NULL ATMOSPHERES???
+                    continue;
+                }
+
+                var payload = AtmospherePayload.FromAtmosphere(atmo);
+                items.Add(payload);
+            }
+
+            return items;
         }
     }
 }

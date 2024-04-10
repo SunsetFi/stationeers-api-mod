@@ -25,12 +25,13 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutDir>$(ModOutputDir)</OutDir>
-    <PublishDir>$(ModOutputDir)</PublishDir>
+    <!-- FIXME: All deps are being copied in here, despite all the CopyToPublishDirectory Never and PrivateAssets All -->
+    <!-- <OutDir>$(ModOutputDir)</OutDir>
+    <PublishDir>$(ModOutputDir)</PublishDir> -->
     <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,8 +41,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutDir>$(ModOutputDir)</OutDir>
-    <PublishDir>$(ModOutputDir)</PublishDir>
+    <!-- FIXME: All deps are being copied in here, despite all the CopyToPublishDirectory Never and PrivateAssets All -->
+    <!-- <OutDir>$(ModOutputDir)</OutDir>
+    <PublishDir>$(ModOutputDir)</PublishDir> -->
     <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

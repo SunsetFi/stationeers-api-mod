@@ -1,11 +1,13 @@
+using System;
 using Assets.Scripts.Atmospherics;
 
 namespace StationeersWebApi.Payloads
 {
     public class AtmospherePayload : IAtmosphericContentPayload
     {
+        // Room IDs are long, which potential consumers of json don't really support
         public string roomId { get; set; }
-        public float? networkReferenceId { get; set; }
+        public string networkReferenceId { get; set; }
         public bool isGlobal { get; set; }
 
         public float oxygen { get; set; }
@@ -22,10 +24,17 @@ namespace StationeersWebApi.Payloads
 
         public static AtmospherePayload FromAtmosphere(Atmosphere atmosphere)
         {
+            if (atmosphere == null)
+            {
+                throw new ArgumentNullException(nameof(atmosphere));
+            }
+
             var payload = new AtmospherePayload()
             {
+                // Stringify the long for web json consumption.
                 roomId = atmosphere.Room?.RoomId.ToString(),
-                networkReferenceId = atmosphere.AtmosphericsNetwork.ReferenceId,
+                // Stringify the long for web json consumption.
+                networkReferenceId = atmosphere.AtmosphericsNetwork?.ReferenceId.ToString(),
                 isGlobal = atmosphere.IsGlobalAtmosphere,
             };
             payload.CopyFromAtmosphere(atmosphere);

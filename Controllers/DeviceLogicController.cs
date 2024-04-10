@@ -24,7 +24,9 @@ namespace StationeersWebApi.Controllers
                 throw new NotFoundException("Device not found.");
             }
 
-            await context.SendResponse(HttpStatusCode.OK, LogicableItemUtils.GetLogicValues(device));
+            var payload = Dispatcher.RunOnMainThread(() => LogicableItemUtils.GetLogicValues(device));
+
+            await context.SendResponse(HttpStatusCode.OK, payload);
         }
 
         [WebRouteMethod(Method = "GET", Path = ":logicType")]

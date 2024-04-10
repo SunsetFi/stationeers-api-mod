@@ -18,7 +18,6 @@ namespace StationeersWebApi
     {
         public static Task RunOnMainThread(Action action)
         {
-            Logging.Log("Dispatcher item added");
             return Dispatcher.RunOnMainThread<object>(() =>
             {
                 action();
@@ -28,7 +27,6 @@ namespace StationeersWebApi
 
         public static Task<T> RunOnMainThread<T>(Func<T> function)
         {
-            Logging.Log("Dispatcher item added");
             var source = new TaskCompletionSource<object>();
             var queueItem = new QueuedTask()
             {
@@ -69,7 +67,6 @@ namespace StationeersWebApi
 
                 foreach (var action in _actions)
                 {
-                    Logging.Log("Dispatcher item drained");
                     try
                     {
                         var result = action.function();
