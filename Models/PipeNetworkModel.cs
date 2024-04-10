@@ -10,7 +10,7 @@ namespace StationeersWebApi.Models
     {
         public static IList<PipeNetworkPayload> GetPipeNetworks()
         {
-            return PipeNetwork.AllPipeNetworks.Select(network => PipeNetworkPayload.FromPipeNetwork(network)).ToList();
+            return PipeNetwork.AllPipeNetworks.Select(PipeNetworkPayload.FromPipeNetwork).ToList();
         }
     }
 }

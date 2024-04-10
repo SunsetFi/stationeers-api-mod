@@ -39,6 +39,8 @@ namespace StationeersWebApi.Payloads
                     {
                         payload.connectedDevices.Add(new PipeNetworkConnectionPayload
                         {
+                            name = registration.Key.CustomName ?? registration.Key.PrefabName,
+                            prefabHash = registration.Key.PrefabHash,
                             referenceId = registration.Key.ReferenceId.ToString(),
                             connectionRole = end.ConnectionRole
                         });
@@ -53,6 +55,8 @@ namespace StationeersWebApi.Payloads
 
     public class PipeNetworkConnectionPayload
     {
+        public string name { get; set; }
+        public int prefabHash { get; set; }
         public string referenceId { get; set; }
         public ConnectionRole connectionRole { get; set; }
     }
