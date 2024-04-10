@@ -37,11 +37,13 @@ namespace StationeersWebApi.Payloads
                     var end = registration.Key.OpenEnds.Find(openEnd => object.ReferenceEquals(openEnd.GetPipe(), pipe));
                     if (end != null)
                     {
+                        var thing = registration.Key;
                         payload.connectedDevices.Add(new PipeNetworkConnectionPayload
                         {
-                            name = registration.Key.CustomName ?? registration.Key.PrefabName,
-                            prefabHash = registration.Key.PrefabHash,
-                            referenceId = registration.Key.ReferenceId.ToString(),
+                            name = string.IsNullOrEmpty(thing.CustomName) ? thing.PrefabName : thing.CustomName,
+                            prefabName = thing.PrefabName,
+                            prefabHash = thing.PrefabHash,
+                            referenceId = thing.ReferenceId.ToString(),
                             connectionRole = end.ConnectionRole
                         });
                     }
@@ -56,6 +58,7 @@ namespace StationeersWebApi.Payloads
     public class PipeNetworkConnectionPayload
     {
         public string name { get; set; }
+        public string prefabName { get; set; }
         public int prefabHash { get; set; }
         public string referenceId { get; set; }
         public ConnectionRole connectionRole { get; set; }
