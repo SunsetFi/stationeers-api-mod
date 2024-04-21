@@ -29,9 +29,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <!-- FIXME: All deps are being copied in here, despite all the CopyToPublishDirectory Never and PrivateAssets All -->
-    <!-- <OutDir>$(ModOutputDir)</OutDir>
-    <PublishDir>$(ModOutputDir)</PublishDir> -->
+    <OutDir>$(ModOutputDir)</OutDir>
+    <PublishDir>$(ModOutputDir)</PublishDir>
     <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,9 +40,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <!-- FIXME: All deps are being copied in here, despite all the CopyToPublishDirectory Never and PrivateAssets All -->
-    <!-- <OutDir>$(ModOutputDir)</OutDir>
-    <PublishDir>$(ModOutputDir)</PublishDir> -->
+    <OutDir>$(ModOutputDir)</OutDir>
+    <PublishDir>$(ModOutputDir)</PublishDir>
     <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -51,30 +49,53 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
+    Note: There are many documented ways of disabling copying referenced assemblies to the output directory, and most of them
+    dont seem to work.
+
+    This project uses every possible trick, but <Private>true</Private> seems to be the one that does the job.
+    -->
+
+    <Reference Include="BepInEx" CopyToPublishDirectory="Never" PrivateAssets="All">
+      <HintPath>$(BepCoreFolder)/BepInEx.dll</HintPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+      <Private>false</Private>
+    </Reference>
     <Reference Include="BepInEx.Harmony" CopyToPublishDirectory="Never" PrivateAssets="All">
       <HintPath>$(BepCoreFolder)/BepInEx.Harmony.dll</HintPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+      <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony" CopyToPublishDirectory="Never" PrivateAssets="All">
       <HintPath>$(BepCoreFolder)/0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx" CopyToPublishDirectory="Never" PrivateAssets="All">
-      <HintPath>$(BepCoreFolder)/BepInEx.dll</HintPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+      <Private>false</Private>
     </Reference>
 
     <Reference Include="Assembly-CSharp" CopyToPublishDirectory="Never" PrivateAssets="All">
       <HintPath>$(StationeersBinaries)/Assembly-CSharp.dll</HintPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+      <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass" CopyToPublishDirectory="Never" PrivateAssets="All">
       <HintPath>$(StationeersBinaries)/Assembly-CSharp-firstpass.dll</HintPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine" CopyToPublishDirectory="Never" PrivateAssets="All">
       <HintPath>$(StationeersBinaries)/UnityEngine.dll</HintPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule" CopyToPublishDirectory="Never" PrivateAssets="All">
       <HintPath>$(StationeersBinaries)/UnityEngine.CoreModule.dll</HintPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UI" CopyToPublishDirectory="Never" PrivateAssets="All">
       <HintPath>$(StationeersBinaries)/UnityEngine.UI.dll</HintPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 
