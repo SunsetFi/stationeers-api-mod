@@ -31,36 +31,14 @@ This file should be a json object with the following properties.
 - `passwordAuthentication`: Settings for unsecure plaintext password authentication.
   - `enabled`: Set to true to enable this authentication mechanism.
   - `password`: The password to require.
-- `steamAuthentication`: Settings for authenticating with steam user accounts.
-  - `enabled`: Set to true to enable this authentication mechanism.
-  - `allowedSteamIds`: An array of steam id strings to allow. If not specified, any steam id can log in.
 - `jwtSecret` (string, optional): The encryption key to encode the user's login token. If unset, a random key will be used.
   - Note: Set this if you want to remember logins across server restarts.
 
 # Security
 
-There are two factors to the security of any RCON mod: Connection and authentication
+Currently, only HTTP is supported. This is an unsecure protocol, so the authentication mechanism is vulnurable to man in the middle attacks.
 
-## Connection security
-
-The security of the connection between you and the server determines if any outside party can intercept your connection to steal passwords and login tokens.
-The connection mode is determined by the `protocol` configuration parameter.
-
-Connection security comes in two forms:
-
-## http
-
-HTTP mode is insecure, as malacious networks can intercept packets and find passwords and login tokens.
-Despite this, the origional built-in rcon server also runs in http mode, and has the same security problems. Running in http mode will not make you any less
-secure than the game already is, save for extending the attack surface to the additional commands enabled by this api.
-
-HTTP mode cannot be used with steam authentication, as steam sensibly refuses to authenticate unless the connection uses https.
-
-## https
-
-HTTPS adds encryption to the http connection, preventing malacious networks from stealing passwords and login tokens.
-
-HTTPS mode is a work in progress, and currently cannot be used.
+HTTPS support has been abandoned for the time being as Stationeers is now on a unity version that is incompatible with the previous secure web request library being used.
 
 ## Authentication
 
@@ -78,12 +56,6 @@ Password authentication accepts a plaintext (unsecured) password. At the moment,
 To enable password authentication, set the configuration option`passwordAuthentication.enabled` to `true`, and set your password in `passwordAuthentication.password`.
 
 To login with a password, make a request to `/api/login/password?password=foobar`, where `foobar` is the configured password.
-
-### Steam
-
-Steam authentication involves using the Steam OpenID servers to require the user to log in with their steam account. The mod never receives their steam password, only their username, id, and a session key. This is used to verify with steam that the user did indeed log in on behalf of the mod. This can be used to allow steam id logins without risking the user's credentials being leaked, and provides the best security for the api.
-
-Steam authentication is still a work in progress. A functional prototype is available, but due to a requirement imposed by steam, it requires the use of https connection security. More details about implementing steam authentication will be provided once https is fully implemented.
 
 ## Login Tokens
 
@@ -229,6 +201,11 @@ Gets a dictionary of possible logic slot types.
 
 Gets a dictionary of possible logic types.
 
+### GET /\*
+
+For any GET request NOT in the /api/ folder, content will be served from the `web-content` folder of the plugin's folder.
+For exact paths, the file will be returned if it exists. If the path is a directory, an `index.htm` or `index.html` file in that directory will be returned if it exists, or a directory listing will be used as a fallback.
+
 # Compiling from source
 
 This mod can be compiled using the .net SDK tools. Visual studio will do nicely, but any text editor will do as long as the .net sdk is installed.
@@ -241,6 +218,8 @@ To properly work with this mod, the `GameDir` environment variable must be set t
 will not build. You should set this env var in the terminal that launches VSCode or Visual Studio in order to get proper intellisense support.
 
 ## Compiling
+
+This project loads its dependencies from the Stationeers directory directly. To tell the project what directory to use, set the `StationeersGameDir` environment variable to your stationeers folder.
 
 Assuming you have installed the .net sdk properly, the project can be built with `dotnet build` from the command line.
 

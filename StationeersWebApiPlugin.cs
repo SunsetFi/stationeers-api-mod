@@ -32,6 +32,17 @@ namespace StationeersWebApi
             }
         }
 
+        /// <summary>
+        /// Gets the path to the web host content.
+        /// </summary>
+        public static string WebhostPath
+        {
+            get
+            {
+                return Path.Combine(AssemblyDirectory, "web-content");
+            }
+        }
+
         public void AddRoute(IWebRoute route)
         {
             this._router.AddRoute(route);

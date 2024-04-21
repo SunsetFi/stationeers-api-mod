@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Target Name="CheckEnvironmentVars">
-    <Error Text="Please set the GameDir environment variable." Condition="'$(GameDir)' == ''" ContinueOnError="false" />
+    <Error Text="Please set the StationeersGameDir environment variable." Condition="'$(StationeersGameDir)' == ''" ContinueOnError="false" />
   </Target>
 
   <PropertyGroup>
-    <BepCoreFolder>$(GameDir)/BepInEx/core</BepCoreFolder>
-    <BepPluginFolder>$(GameDir)/BepInEx/plugins</BepPluginFolder>
+    <BepCoreFolder>$(StationeersGameDir)/BepInEx/core</BepCoreFolder>
+    <BepPluginFolder>$(StationeersGameDir)/BepInEx/plugins</BepPluginFolder>
     <ModOutputDir>$(BepPluginFolder)/StationeersWebApi</ModOutputDir>
-    <StationeersBinaries>$(GameDir)/rocketstation_Data/Managed</StationeersBinaries>
+    <StationeersBinaries>$(StationeersGameDir)/rocketstation_Data/Managed</StationeersBinaries>
   </PropertyGroup>
 
   <PropertyGroup>
