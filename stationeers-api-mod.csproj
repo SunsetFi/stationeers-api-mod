@@ -15,14 +15,11 @@
     <RootNamespace>StationeersWebApi</RootNamespace>
     <AssemblyName>StationeersWebApi</AssemblyName>
     <OutputType>Library</OutputType>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <FileAlignment>512</FileAlignment>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TargetFrameworkProfile />
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -49,52 +46,37 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--
-    Note: There are many documented ways of disabling copying referenced assemblies to the output directory, and most of them
-    dont seem to work.
-
-    This project uses every possible trick, but <Private>true</Private> seems to be the one that does the job.
-    -->
-
-    <Reference Include="BepInEx" CopyToPublishDirectory="Never" PrivateAssets="All">
+    <Reference Include="BepInEx">
       <HintPath>$(BepCoreFolder)/BepInEx.dll</HintPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
       <Private>false</Private>
     </Reference>
-    <Reference Include="BepInEx.Harmony" CopyToPublishDirectory="Never" PrivateAssets="All">
+    <Reference Include="BepInEx.Harmony">
       <HintPath>$(BepCoreFolder)/BepInEx.Harmony.dll</HintPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
       <Private>false</Private>
     </Reference>
-    <Reference Include="0Harmony" CopyToPublishDirectory="Never" PrivateAssets="All">
+    <Reference Include="0Harmony">
       <HintPath>$(BepCoreFolder)/0Harmony.dll</HintPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
       <Private>false</Private>
     </Reference>
 
-    <Reference Include="Assembly-CSharp" CopyToPublishDirectory="Never" PrivateAssets="All">
+    <Reference Include="Assembly-CSharp">
       <HintPath>$(StationeersBinaries)/Assembly-CSharp.dll</HintPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
       <Private>false</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass" CopyToPublishDirectory="Never" PrivateAssets="All">
+    <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>$(StationeersBinaries)/Assembly-CSharp-firstpass.dll</HintPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine" CopyToPublishDirectory="Never" PrivateAssets="All">
+    <Reference Include="UnityEngine">
       <HintPath>$(StationeersBinaries)/UnityEngine.dll</HintPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule" CopyToPublishDirectory="Never" PrivateAssets="All">
+    <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(StationeersBinaries)/UnityEngine.CoreModule.dll</HintPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.UI" CopyToPublishDirectory="Never" PrivateAssets="All">
+    <Reference Include="UnityEngine.UI">
       <HintPath>$(StationeersBinaries)/UnityEngine.UI.dll</HintPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
       <Private>false</Private>
     </Reference>
   </ItemGroup>

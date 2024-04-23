@@ -127,6 +127,11 @@ steamId should be a valid steamId, but the player does not have to be on the ser
 
 Gets an array of all things.
 
+#### Query Params
+
+- `prefabName`: Only return things with the given prefab name.
+- `prefabHash`: Only return things with the given prefab hash.
+
 ### GET /api/things/:thingId
 
 Gets a thing by its id.
@@ -143,6 +148,11 @@ Change properties of a thing.
 ### GET /api/devices
 
 Gets an array of all device things.
+
+#### Query Params
+
+- `prefabName`: Only return devices with the given prefab name.
+- `prefabHash`: Only return devices with the given prefab hash.
 
 ### GET /api/devices/:deviceId
 

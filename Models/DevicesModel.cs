@@ -10,12 +10,31 @@ namespace StationeersWebApi.Models
 {
     public static class DevicesModel
     {
-        public static IList<JObject> GetDevices()
+        public static IList<JObject> GetDevices(string prefabName = null, string prefabHashStr = null)
         {
+            long prefabHash = 0;
+            if (prefabHashStr != null)
+            {
+                if (!long.TryParse(prefabHashStr, out prefabHash))
+                {
+                    throw new BadRequestException("Invalid prefabHash.");
+                }
+            }
+
             // Devices can have duplicates in this list.
             var set = new HashSet<Device>();
             foreach (var device in Device.AllDevices)
             {
+                if (prefabName != null && device.PrefabName != prefabName)
+                {
+                    continue;
+                }
+
+                if (prefabHash != 0 && device.PrefabHash != prefabHash)
+                {
+                    continue;
+                }
+
                 set.Add(device);
             }
             return set.Select(x => JsonTranslator.ObjectToJson(x)).ToList();

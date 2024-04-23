@@ -17,7 +17,10 @@ namespace StationeersWebApi.Controllers
         {
             Authenticator.VerifyAuth(context);
 
-            var devices = await Dispatcher.RunOnMainThread(() => DevicesModel.GetDevices());
+            context.QueryString.TryGetValue("prefabName", out var prefabName);
+            context.QueryString.TryGetValue("prefabHash", out var prefabHash);
+
+            var devices = await Dispatcher.RunOnMainThread(() => DevicesModel.GetDevices(prefabName, prefabHash));
             await context.SendResponse(HttpStatusCode.OK, devices);
         }
 
