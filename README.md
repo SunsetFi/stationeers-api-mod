@@ -129,8 +129,8 @@ Gets an array of all things.
 
 #### Query Params
 
-- `prefabName`: Only return things with the given prefab name.
-- `prefabHash`: Only return things with the given prefab hash.
+- `prefabName` (optional): Only return things with the given prefab name.
+- `prefabHash` (optional): Only return things with the given prefab hash.
 
 ### GET /api/things/:thingId
 
@@ -151,8 +151,8 @@ Gets an array of all device things.
 
 #### Query Params
 
-- `prefabName`: Only return devices with the given prefab name.
-- `prefabHash`: Only return devices with the given prefab hash.
+- `prefabName` (optional): Only return devices with the given prefab name.
+- `prefabHash` (optional): Only return devices with the given prefab hash.
 
 ### GET /api/devices/:deviceId
 

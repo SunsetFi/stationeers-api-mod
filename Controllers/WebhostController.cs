@@ -10,7 +10,7 @@ namespace StationeersWebApi.Controllers
     /// <summary>
     /// A controller for providing hosted web content.
     /// </summary>
-    [WebController(Path = "/", Priority = -1000)]
+    [WebController(Path = "/")]
     public class WebhostController
     {
         /// <summary>
@@ -42,7 +42,7 @@ namespace StationeersWebApi.Controllers
         /// <param name="context">The HTTP context.</param>
         /// <param name="path">The request path.</param>
         /// <returns>A task that is resolved when the request is completed.</returns>
-        [WebRouteMethod(Method = "GET", Path = "**path")]
+        [WebRouteMethod(Method = "GET", Path = "**path", Priority = -1000)]
         public Task GetPath(IHttpContext context, string path)
         {
             // This is a bit hackish, but we dont want to give false results for anything that is actually our api.

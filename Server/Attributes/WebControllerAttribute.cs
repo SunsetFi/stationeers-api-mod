@@ -10,10 +10,5 @@ namespace StationeersWebApi.Server.Attributes
         /// Gets or sets the path for the controller.
         /// </summary>
         public string Path { get; set; }
-
-        /// <summary>
-        /// Gets or sets the weight of the controller.
-        /// </summary>
-        public int Priority { get; set; } = 0;
     }
 }

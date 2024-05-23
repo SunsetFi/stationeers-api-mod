@@ -9,8 +9,6 @@ namespace StationeersWebApi.Payloads
         public string mapName { get; set; }
         public int? maxPlayers { get; set; }
         public string password { get; set; }
-        public string startingCondition { get; set; }
-        public string respawnCondition { get; set; }
 
         public static SettingsPayload FromServer()
         {
@@ -20,8 +18,6 @@ namespace StationeersWebApi.Payloads
                 mapName = SettingsModel.MapName,
                 maxPlayers = SettingsModel.MaxPlayers,
                 password = SettingsModel.Password,
-                startingCondition = SettingsModel.StartingCondition,
-                respawnCondition = SettingsModel.RespawnCondition
             };
             return payload;
         }

@@ -39,6 +39,7 @@ namespace StationeersWebApi.Server
             {
                 this.Path = System.IO.Path.Combine(this.Path, attr.Path).Replace("\\", "/");
             }
+            this.Priority = attr.Priority;
         }
 
         /// <inheritdoc/>
@@ -46,6 +47,8 @@ namespace StationeersWebApi.Server
 
         /// <inheritdoc/>
         public string Path { get; private set; }
+
+        public int Priority { get; private set; }
 
         /// <inheritdoc/>
         public async Task OnRequested(IWebRouteHttpContext context)

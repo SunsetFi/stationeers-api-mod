@@ -56,38 +56,10 @@ namespace StationeersWebApi.Controllers
                     SettingsModel.Password = payload.password;
                 }
 
-                if (payload.startingCondition != null)
-                {
-                    SettingsModel.StartingCondition = payload.startingCondition;
-                }
-
-                if (payload.respawnCondition != null)
-                {
-                    SettingsModel.RespawnCondition = payload.respawnCondition;
-                }
-
                 return SettingsPayload.FromServer();
             });
 
             await context.SendResponse(HttpStatusCode.OK, response);
-        }
-
-        [WebRouteMethod(Method = "GET", Path = "respawn-conditions")]
-        public async Task GetRespawnConditions(IHttpContext context)
-        {
-            Authenticator.VerifyAuth(context);
-
-            var payload = await Dispatcher.RunOnMainThread(() => SettingsModel.AllRespawnConditions);
-            await context.SendResponse(HttpStatusCode.OK, payload);
-        }
-
-        [WebRouteMethod(Method = "GET", Path = "starting-conditions")]
-        public async Task GetStartingConditions(IHttpContext context)
-        {
-            Authenticator.VerifyAuth(context);
-
-            var payload = await Dispatcher.RunOnMainThread(() => SettingsModel.AllStartingConditions);
-            await context.SendResponse(HttpStatusCode.OK, payload);
         }
     }
 }

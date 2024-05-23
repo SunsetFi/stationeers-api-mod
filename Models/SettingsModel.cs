@@ -64,48 +64,6 @@ namespace StationeersWebApi.Models
             }
         }
 
-        public static string StartingCondition
-        {
-            get
-            {
-                return WorldManager.CurrentStartCondition.Key;
-            }
-            set
-            {
-                // Validates the condition and does a no-op if invalid.
-                WorldManager.SetStartCondition(value);
-            }
-        }
-
-        public static string[] AllStartingConditions
-        {
-            get
-            {
-                return WorldManager.StartingConditions.Select(x => x.Key).ToArray();
-            }
-        }
-
-        public static string RespawnCondition
-        {
-            get
-            {
-                return WorldManager.CurrentRespawnCondition.Key;
-            }
-            set
-            {
-                // Validates the condition and does a no-op if invalid.
-                WorldManager.SetRespawnCondition(value);
-            }
-        }
-
-        public static string[] AllRespawnConditions
-        {
-            get
-            {
-                return WorldManager.RespawnConditions.Select(x => x.Key).ToArray();
-            }
-        }
-
         public static GameState GameStatus
         {
             get

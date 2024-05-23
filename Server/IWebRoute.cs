@@ -18,6 +18,11 @@ namespace StationeersWebApi.Server
         string Path { get; }
 
         /// <summary>
+        /// Gets the priority of this route.
+        /// </summary>
+        int Priority { get; }
+
+        /// <summary>
         /// Handle a request for this route.
         /// </summary>
         /// <param name="context">The request context.</param>

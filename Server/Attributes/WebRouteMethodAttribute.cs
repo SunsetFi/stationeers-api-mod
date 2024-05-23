@@ -17,5 +17,10 @@ namespace StationeersWebApi.Server.Attributes
         /// Gets or sets the method for this route.
         /// </summary>
         public string Method { get; set; } = "GET";
+
+        /// <summary>
+        /// Gets or sets the priority for this route when resolving routes.
+        /// </summary>
+        public int Priority { get; set; } = 0;
     }
 }
