@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using StationeersWebApi.Authentication;
 using StationeersWebApi.Models;
+using StationeersWebApi.Payloads;
 using StationeersWebApi.Server;
 using StationeersWebApi.Server.Attributes;
 using StationeersWebApi.Server.Exceptions;
@@ -18,9 +19,29 @@ namespace StationeersWebApi.Controllers
             Authenticator.VerifyAuth(context);
 
             context.QueryString.TryGetValue("prefabName", out var prefabName);
-            context.QueryString.TryGetValue("prefabHash", out var prefabHash);
+            context.QueryString.TryGetValue("prefabHash", out var prefabHashStr);
+            context.QueryString.TryGetValue("displayName", out var displayName);
 
-            var devices = await Dispatcher.RunOnMainThread(() => DevicesModel.GetDevices(prefabName, prefabHash));
+            long prefabHash = 0;
+            if (prefabHashStr != null)
+            {
+                if (!long.TryParse(prefabHashStr, out prefabHash))
+                {
+                    throw new BadRequestException("Invalid prefabHash.");
+                }
+            }
+
+            var devices = await Dispatcher.RunOnMainThread(() => DevicesModel.GetDevices(
+                prefabName: prefabName,
+                prefabHash: prefabHash,
+                displayName: displayName));
+            await context.SendResponse(HttpStatusCode.OK, devices);
+        }
+
+        [WebRouteMethod(Method = "POST", Path = "query")]
+        public async Task QueryDevices(IHttpContext context, ThingsQueryPayload body)
+        {
+            var devices = await Dispatcher.RunOnMainThread(() => DevicesModel.QueryDevices(body));
             await context.SendResponse(HttpStatusCode.OK, devices);
         }
 

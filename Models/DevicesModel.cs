@@ -4,23 +4,15 @@ using System.Linq;
 using Assets.Scripts.Objects.Pipes;
 using Newtonsoft.Json.Linq;
 using StationeersWebApi.JsonTranslation;
+using StationeersWebApi.Payloads;
 using StationeersWebApi.Server.Exceptions;
 
 namespace StationeersWebApi.Models
 {
     public static class DevicesModel
     {
-        public static IList<JObject> GetDevices(string prefabName = null, string prefabHashStr = null)
+        public static IList<JObject> GetDevices(string prefabName = null, long prefabHash = 0, string displayName = null)
         {
-            long prefabHash = 0;
-            if (prefabHashStr != null)
-            {
-                if (!long.TryParse(prefabHashStr, out prefabHash))
-                {
-                    throw new BadRequestException("Invalid prefabHash.");
-                }
-            }
-
             // Devices can have duplicates in this list.
             var set = new HashSet<Device>();
             foreach (var device in Device.AllDevices)
@@ -34,6 +26,37 @@ namespace StationeersWebApi.Models
                 {
                     continue;
                 }
+
+                if (displayName != null && device.DisplayName != displayName)
+                {
+                    continue;
+                }
+
+                set.Add(device);
+            }
+            return set.Select(x => JsonTranslator.ObjectToJson(x)).ToList();
+        }
+
+        public static IList<JObject> QueryDevices(ThingsQueryPayload query)
+        {
+            var set = new HashSet<Device>();
+            foreach (var device in Device.AllDevices)
+            {
+                var hasReferenceId = query.referenceIds.Count == 0 || query.referenceIds.Contains(device.ReferenceId.ToString());
+                var hasName = query.prefabNames.Count == 0 || query.prefabNames.Contains(device.PrefabName);
+                var hasHash = query.prefabHashes.Count == 0 || query.prefabHashes.Contains(device.PrefabHash);
+                var hasDisplayName = query.displayNames.Count == 0 || query.displayNames.Contains(device.DisplayName);
+
+                if (!hasReferenceId || !hasName || !hasHash || !hasDisplayName)
+                {
+                    continue;
+                }
+
+                if (query.matchIntersection && !(hasReferenceId && hasName && hasHash && hasDisplayName))
+                {
+                    continue;
+                }
+
 
                 set.Add(device);
             }
