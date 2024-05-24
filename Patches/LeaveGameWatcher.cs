@@ -1,6 +1,5 @@
 
 using Assets.Scripts;
-using Assets.Scripts.Networking;
 using HarmonyLib;
 
 namespace StationeersWebApi.Patches
