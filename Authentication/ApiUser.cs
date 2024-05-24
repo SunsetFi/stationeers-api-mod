@@ -47,7 +47,7 @@ namespace StationeersWebApi.Authentication
             var endpoint = context.RemoteEndPoint.ToPortlessString();
             if (user.Endpoint != null && user.Endpoint != endpoint)
             {
-                Logging.Log(
+                Logging.LogError(
                     new Dictionary<string, string>() {
                             { "RequestEndpoint", endpoint },
                             { "JWTEndpoint", user.Endpoint }

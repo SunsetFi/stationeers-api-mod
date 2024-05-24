@@ -75,7 +75,7 @@ namespace StationeersWebApi.Authentication.Strategies.Steam
             var isValid = match.Success;
             if (!isValid)
             {
-                Logging.Log(
+                Logging.LogError(
                     new Dictionary<string, string>() {
                         { "SteamID", steamId.ToString() }
                     },
@@ -87,7 +87,7 @@ namespace StationeersWebApi.Authentication.Strategies.Steam
             var allowedSteamIds = Config.Instance.SteamAuthentication.AllowedSteamIds;
             if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamId.ToString()))
             {
-                Logging.Log(
+                Logging.LogError(
                     new Dictionary<string, string>() {
                         { "SteamID", steamId.ToString() }
                     },
@@ -116,7 +116,7 @@ namespace StationeersWebApi.Authentication.Strategies.Steam
             var allowedSteamIds = Config.Instance.SteamAuthentication.AllowedSteamIds;
             if (allowedSteamIds.Length > 0 && !allowedSteamIds.Contains(steamUser.SteamID))
             {
-                Logging.Log(
+                Logging.LogError(
                     new Dictionary<string, string>() {
                         { "SteamID", steamUser.SteamID }
                     },

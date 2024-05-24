@@ -92,7 +92,7 @@ namespace StationeersWebApi
         {
             var assemblyDir = StationeersWebApiPlugin.AssemblyDirectory;
             var path = Path.Combine(assemblyDir, "config.json");
-            Logging.LogInfo("Loading config at: " + path);
+            Logging.LogTrace("Loading config at: " + path);
 
             string configText;
             try
@@ -109,11 +109,11 @@ namespace StationeersWebApi
             try
             {
                 Config.Instance = JsonConvert.DeserializeObject<Config>(configText);
-                Logging.LogInfo("Config loaded successfully.");
+                Logging.LogTrace("Config loaded successfully.");
             }
             catch (Exception e)
             {
-                Logging.Log(
+                Logging.LogError(
                     new Dictionary<string, string>() {
                         {"ConfigPath", path}
                     },
@@ -132,7 +132,7 @@ namespace StationeersWebApi
             }
             catch (Exception e)
             {
-                Logging.Log(
+                Logging.LogError(
                 new Dictionary<string, string>() {
                     {"ConfigPath", path}
                 },
