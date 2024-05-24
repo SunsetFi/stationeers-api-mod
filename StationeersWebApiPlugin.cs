@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace StationeersWebApi
 {
-    [BepInPlugin("net.sunsetfidev.stationeers.StationeersWebApi", "Web API for Stationeers", "2.1.1.0")]
+    [BepInPlugin("dev.sunsetfi.stationeers.webapi", "Web API for Stationeers", "2.1.1.0")]
     public class StationeersWebApiPlugin : BaseUnityPlugin
     {
         public static StationeersWebApiPlugin Instance;
