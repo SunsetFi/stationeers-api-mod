@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using StationeersWebApi.Server.Exceptions;
 using StationeersWebApi.Payloads;
 using StationeersWebApi.JsonTranslation;
+using System.Collections.Generic;
 
 namespace StationeersWebApi
 {
@@ -21,6 +22,7 @@ namespace StationeersWebApi
 
         private WebServer _webServer;
         private WebRouter _router = new WebRouter();
+        private HashSet<string> _registeredAssemblies = new();
 
         public static string AssemblyDirectory
         {
@@ -50,6 +52,12 @@ namespace StationeersWebApi
 
         public void RegisterControllers(Assembly assembly)
         {
+            if (!this._registeredAssemblies.Add(assembly.FullName))
+            {
+                Logging.LogError($"Assembly {assembly.FullName} has already been registered.  Skipping registration.");
+                return;
+            }
+
             var controllerTypes = (from type in assembly.GetTypes()
                                    where type.GetCustomAttribute(typeof(WebControllerAttribute)) != null
                                    select type).ToArray();
@@ -65,7 +73,7 @@ namespace StationeersWebApi
                 this._router.AddRoute(route);
             }
 
-            Logging.Log("Loaded {0} routes from {1} controllers in {2}", controllerRoutes.Length, controllerTypes.Length, assembly.FullName);
+            Logging.LogInfo("Loaded {0} routes from {1} controllers in {2}", controllerRoutes.Length, controllerTypes.Length, assembly.FullName);
         }
 
         public void StartServer()
@@ -83,7 +91,7 @@ namespace StationeersWebApi
             // TODO: Dispatcher game object is getting destroyed somewhere.
             Dispatcher.Initialize();
 
-            Logging.Log("Starting server on port {0}", StationeersWebApi.Config.Instance.Port);
+            Logging.LogInfo("Starting server on port {0}", StationeersWebApi.Config.Instance.Port);
             this._webServer = new WebServer(this.OnRequest);
             this._webServer.Start(StationeersWebApi.Config.Instance.Port);
         }
@@ -92,7 +100,7 @@ namespace StationeersWebApi
         {
             if (this._webServer != null)
             {
-                Logging.Log("Stopping server");
+                Logging.LogInfo("Stopping server");
                 this._webServer.Dispose();
                 this._webServer = null;
             }
@@ -110,11 +118,11 @@ namespace StationeersWebApi
                 try
                 {
                     this.ApplyPatches();
-                    Logging.Log("Patches applied successfully");
+                    Logging.LogInfo("Patches applied successfully");
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log("Failed to apply patches: {0}", ex.Message);
+                    Logging.LogInfo("Failed to apply patches: {0}", ex.Message);
                 }
 
                 var ownAssembly = typeof(StationeersWebApiPlugin).Assembly;
@@ -125,7 +133,7 @@ namespace StationeersWebApi
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log("Failed to register default controllers: {0}", ex.Message);
+                    Logging.LogInfo("Failed to register default controllers: {0}", ex.Message);
                 }
 
                 try
@@ -134,20 +142,27 @@ namespace StationeersWebApi
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log("Failed to load JsonTranslator strategies: {0}", ex.Message);
+                    Logging.LogInfo("Failed to load JsonTranslator strategies: {0}", ex.Message);
                 }
             }
             else
             {
-                Logging.Log("StationeersWebApi is disabled.");
+                Logging.LogInfo("StationeersWebApi is disabled.");
             }
         }
 
         private void ApplyPatches()
         {
-            var harmony = new Harmony("net.robophreddev.stationeers.StationeersWebApi");
-            harmony.PatchAll();
-            Logging.Log("Patch succeeded");
+            try
+            {
+                var harmony = new Harmony("net.robophreddev.stationeers.StationeersWebApi");
+                harmony.PatchAll();
+                Logging.LogInfo("Harmony patching succeeded");
+            }
+            catch (Exception e)
+            {
+                Logging.LogError($"Harmony patching failed: {e.StackTrace}");
+            }
         }
 
         private async Task<bool> OnRequest(IHttpContext context)

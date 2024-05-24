@@ -21,7 +21,7 @@ namespace StationeersWebApi.JsonTranslation
                               select strategy).ToArray();
             JsonTranslator.strategies.AddRange(strategies);
 
-            Logging.Log($"Loaded {strategies.Length} JSON translator strategies from {assembly.FullName}.");
+            Logging.LogInfo($"Loaded {strategies.Length} JSON translator strategies from {assembly.FullName}.");
         }
 
         private static IJsonTranslatorStrategy CreateTranslatorStrategy(Type type)

@@ -17,11 +17,6 @@ namespace StationeersWebApi
             }
         }
 
-        public static void Log(string message, params object[] args)
-        {
-            Logging.Log(new Dictionary<string, string>(), message, args);
-        }
-
         /// <summary>
         /// Logs a trace message.
         /// </summary>
@@ -85,8 +80,12 @@ namespace StationeersWebApi
             Log(values, message, args);
         }
 
+        private static void Log(string message, params object[] args)
+        {
+            Logging.Log(new Dictionary<string, string>(), message, args);
+        }
 
-        public static void Log(IDictionary<string, string> values, string message, params object[] args)
+        private static void Log(IDictionary<string, string> values, string message, params object[] args)
         {
             var sb = new StringBuilder();
             sb.AppendFormat("DateTime={0} ", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"));

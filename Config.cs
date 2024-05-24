@@ -92,7 +92,7 @@ namespace StationeersWebApi
         {
             var assemblyDir = StationeersWebApiPlugin.AssemblyDirectory;
             var path = Path.Combine(assemblyDir, "config.json");
-            Logging.Log("Loading config at: " + path);
+            Logging.LogInfo("Loading config at: " + path);
 
             string configText;
             try
@@ -101,7 +101,7 @@ namespace StationeersWebApi
             }
             catch (FileNotFoundException)
             {
-                Logging.Log("No config file present.");
+                Logging.LogInfo("No config file present.");
                 Instance = new Config();
                 return;
             }
@@ -109,7 +109,7 @@ namespace StationeersWebApi
             try
             {
                 Config.Instance = JsonConvert.DeserializeObject<Config>(configText);
-                Logging.Log("Config loaded successfully.");
+                Logging.LogInfo("Config loaded successfully.");
             }
             catch (Exception e)
             {
