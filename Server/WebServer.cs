@@ -38,8 +38,6 @@ namespace StationeersWebApi.Server
                 throw new InvalidOperationException("Server already started.");
             }
 
-            Logging.LogTrace("Starting web server");
-
             this.listener = new HttpListener();
             this.listener.Prefixes.Add($"http://*:{port}/");
             this.listener.AuthenticationSchemes = AuthenticationSchemes.None;

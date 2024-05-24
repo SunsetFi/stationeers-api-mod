@@ -88,10 +88,11 @@ namespace StationeersWebApi
                 return;
             }
 
-            // TODO: Dispatcher game object is getting destroyed somewhere.
+            // The dispatcher game object is deleted on us after the plugin initializes.
+            // To account for this, re-initialize it here.  It is safe to call this multiple times,
+            // it will only initialize if it has been previously destroyed.
             Dispatcher.Initialize();
 
-            Logging.LogInfo("Starting server on port {0}", StationeersWebApi.Config.Instance.Port);
             this._webServer = new WebServer(this.OnRequest);
             this._webServer.Start(StationeersWebApi.Config.Instance.Port);
         }
@@ -115,15 +116,7 @@ namespace StationeersWebApi
 
             if (StationeersWebApi.Config.Instance.Enabled)
             {
-                try
-                {
-                    this.ApplyPatches();
-                    Logging.LogInfo("Patches applied successfully");
-                }
-                catch (Exception ex)
-                {
-                    Logging.LogInfo("Failed to apply patches: {0}", ex.Message);
-                }
+                this.ApplyPatches();
 
                 var ownAssembly = typeof(StationeersWebApiPlugin).Assembly;
 
