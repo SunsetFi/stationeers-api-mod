@@ -37,7 +37,7 @@ namespace StationeersWebApi.Models
             return set.Select(x => JsonTranslator.ObjectToJson(x)).ToList();
         }
 
-        public static IList<JObject> QueryDevices(ThingsQueryPayload query)
+        public static IList<JObject> QueryDevices(DeviceQueryPayload query)
         {
             var set = new HashSet<Device>();
             foreach (var device in Device.AllDevices)
@@ -46,13 +46,14 @@ namespace StationeersWebApi.Models
                 var hasName = query.prefabNames.Count == 0 || query.prefabNames.Contains(device.PrefabName);
                 var hasHash = query.prefabHashes.Count == 0 || query.prefabHashes.Contains(device.PrefabHash);
                 var hasDisplayName = query.displayNames.Count == 0 || query.displayNames.Contains(device.DisplayName);
+                var hasCableNetwork = query.cableNetworkIds.Count == 0 || device.AttachedCables.Any(x => query.cableNetworkIds.Contains(x.CableNetworkId.ToString()));
 
-                if (!hasReferenceId || !hasName || !hasHash || !hasDisplayName)
+                if (!hasReferenceId || !hasName || !hasHash || !hasDisplayName || !hasCableNetwork)
                 {
                     continue;
                 }
 
-                if (query.matchIntersection && !(hasReferenceId && hasName && hasHash && hasDisplayName))
+                if (query.matchIntersection && !(hasReferenceId && hasName && hasHash && hasDisplayName && !hasCableNetwork))
                 {
                     continue;
                 }

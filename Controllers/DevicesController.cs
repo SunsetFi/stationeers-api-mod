@@ -39,7 +39,7 @@ namespace StationeersWebApi.Controllers
         }
 
         [WebRouteMethod(Method = "POST", Path = "query")]
-        public async Task QueryDevices(IHttpContext context, ThingsQueryPayload body)
+        public async Task QueryDevices(IHttpContext context, DeviceQueryPayload body)
         {
             var devices = await Dispatcher.RunOnMainThread(() => DevicesModel.QueryDevices(body));
             await context.SendResponse(HttpStatusCode.OK, devices);
