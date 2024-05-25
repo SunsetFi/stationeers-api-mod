@@ -3,6 +3,7 @@
 using System.Threading.Tasks;
 using StationeersWebApi.Authentication;
 using StationeersWebApi.Models;
+using StationeersWebApi.Payloads;
 using StationeersWebApi.Server;
 using StationeersWebApi.Server.Attributes;
 using StationeersWebApi.Server.Exceptions;
@@ -22,17 +23,11 @@ namespace StationeersWebApi.Controllers
         }
 
         [WebRouteMethod(Method = "GET", Path = "/:referenceId")]
-        public async Task GetCableNetwork(IHttpContext context, string referenceId)
+        public async Task GetCableNetwork(IHttpContext context, long referenceId)
         {
             Authenticator.VerifyAuth(context);
 
-            if (!long.TryParse(referenceId, out var referenceIdLong))
-            {
-                await context.SendResponse(HttpStatusCode.BadRequest, "Invalid referenceId");
-                return;
-            }
-
-            var network = await Dispatcher.RunOnMainThread(() => CableNetworksModel.GetCableNetwork(referenceIdLong));
+            var network = await Dispatcher.RunOnMainThread(() => CableNetworksModel.GetCableNetwork(referenceId));
             if (network == null)
             {
                 throw new NotFoundException("Cable network not found");
@@ -42,17 +37,25 @@ namespace StationeersWebApi.Controllers
         }
 
         [WebRouteMethod(Method = "GET", Path = "/:referenceId/devices")]
-        public async Task GetCableNetworkDevices(IHttpContext context, string referenceId)
+        public async Task GetCableNetworkDevices(IHttpContext context, long referenceId)
         {
             Authenticator.VerifyAuth(context);
 
-            if (!long.TryParse(referenceId, out var referenceIdLong))
+            var devices = await Dispatcher.RunOnMainThread(() => CableNetworksModel.GetCableNetworkDevices(referenceId));
+            if (devices == null)
             {
-                await context.SendResponse(HttpStatusCode.BadRequest, "Invalid referenceId");
-                return;
+                throw new NotFoundException("Cable network not found");
             }
 
-            var devices = await Dispatcher.RunOnMainThread(() => CableNetworksModel.GetCableNetworkDevices(referenceIdLong));
+            await context.SendResponse(HttpStatusCode.OK, devices);
+        }
+
+        [WebRouteMethod(Method = "POST", Path = "/:referenceId/devices/query")]
+        public async Task QueryCableNetworkDevices(IHttpContext context, long referenceId, DeviceQueryPayload query)
+        {
+            Authenticator.VerifyAuth(context);
+
+            var devices = await Dispatcher.RunOnMainThread(() => CableNetworksModel.QueryCableNetworkDevices(referenceId, query));
             if (devices == null)
             {
                 throw new NotFoundException("Cable network not found");
