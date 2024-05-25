@@ -46,14 +46,14 @@ namespace StationeersWebApi.Models
                 var hasName = query.prefabNames.Count == 0 || query.prefabNames.Contains(device.PrefabName);
                 var hasHash = query.prefabHashes.Count == 0 || query.prefabHashes.Contains(device.PrefabHash);
                 var hasDisplayName = query.displayNames.Count == 0 || query.displayNames.Contains(device.DisplayName);
-                var hasCableNetwork = query.cableNetworkIds.Count == 0 || device.AttachedCables.Any(x => query.cableNetworkIds.Contains(x.CableNetworkId.ToString()));
+                var hasCableNetwork = query.dataNetworkIds.Count == 0 || (device.DataCableNetwork != null && query.dataNetworkIds.Contains(device.DataCableNetwork.ReferenceId.ToString()));
 
                 if (!hasReferenceId || !hasName || !hasHash || !hasDisplayName || !hasCableNetwork)
                 {
                     continue;
                 }
 
-                if (query.matchIntersection && !(hasReferenceId && hasName && hasHash && hasDisplayName && !hasCableNetwork))
+                if (query.matchIntersection && !(hasReferenceId && hasName && hasHash && hasDisplayName && hasCableNetwork))
                 {
                     continue;
                 }

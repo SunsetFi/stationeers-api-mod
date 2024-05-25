@@ -1,5 +1,4 @@
 
-using System.Linq;
 using Assets.Scripts.Objects.Pipes;
 
 namespace StationeersWebApi.JsonTranslation.Strategies
@@ -8,12 +7,15 @@ namespace StationeersWebApi.JsonTranslation.Strategies
     [JsonTranslatorTarget(typeof(Device))]
     public sealed class DeviceJsonTranslatorStrategy
     {
-        [JsonPropertyGetter("cableNetworks")]
-        public string[] GetReferenceId(Device device)
+        [JsonPropertyGetter("dataNetworkId")]
+        public string GetDataNetworkId(Device device)
         {
-            var networks = from cable in device.AttachedCables
-                           select cable.CableNetworkId.ToString();
-            return networks.Distinct().ToArray();
+            if (device.DataCableNetwork == null)
+            {
+                return null;
+            }
+
+            return device.DataCableNetwork.ReferenceId.ToString();
         }
     }
 }
