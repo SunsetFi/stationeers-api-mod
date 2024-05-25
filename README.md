@@ -149,6 +149,25 @@ Change properties of a thing.
 
 Gets an array of all device things.
 
+### POST /api/devices/query
+
+Queries devices.
+
+Each body property takes an array of values, using `OR` logic. A device will match if it matches any item
+in the list.
+
+By default, all body properties are treated with `OR` logic. That is, if a device matches any of the properties,
+it will be included. This can be changed to `AND` logic by setting `matchIntersection` to true, which will include a device only if it matches at least one value for every given body property.
+
+#### Body
+
+- `referenceIds` (string array, optional): An array of reference ids to filter by.
+- `prefabNames` (string array, optional): An array of prefab names to filter by.
+- `prefabHashes` (int array, optional): An array of prefab hashes to filter by.
+- `displayNames` (string array, optional): An array of display names to filter by.
+- `dataNetworkIds` (string array, optional): An array of data network ids to filter by.
+- `matchIntersection` (boolean, optional): Whether to require an intersection of all filters per device.
+
 #### Query Params
 
 - `prefabName` (optional): Only return devices with the given prefab name.
@@ -182,6 +201,37 @@ Writes a writable logic value by logic type.
 #### Body
 
 - `value` (number): The value to write to the logic type.
+
+### GET /api/cable-networks
+
+Gets all cable networks
+
+### GET /api/cable-networks/:referenceId
+
+Gets a cable network by its reference id
+
+### GET /api/cable-networks/:referenceId/devices
+
+Gets all devices in a cable network
+
+### POST /api/cable-networks/:referenceId/devices/query
+
+Queries devices on the given cable network.
+
+Each body property takes an array of values, using `OR` logic. A device will match if it matches any item
+in the list.
+
+By default, all body properties are treated with `OR` logic. That is, if a device matches any of the properties,
+it will be included. This can be changed to `AND` logic by setting `matchIntersection` to true, which will include a device only if it matches at least one value for every given body property.
+
+#### Body
+
+- `referenceIds` (string array, optional): An array of reference ids to filter by.
+- `prefabNames` (string array, optional): An array of prefab names to filter by.
+- `prefabHashes` (int array, optional): An array of prefab hashes to filter by.
+- `displayNames` (string array, optional): An array of display names to filter by.
+- `dataNetworkIds` (string array, optional): An array of data network ids to filter by.
+- `matchIntersection` (boolean, optional): Whether to require an intersection of all filters per device.
 
 ### GET /api/items
 

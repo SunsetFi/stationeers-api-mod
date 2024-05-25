@@ -20,7 +20,6 @@ namespace StationeersWebApi.Controllers
 
             context.QueryString.TryGetValue("prefabName", out var prefabName);
             context.QueryString.TryGetValue("prefabHash", out var prefabHashStr);
-            context.QueryString.TryGetValue("displayName", out var displayName);
 
             long prefabHash = 0;
             if (prefabHashStr != null)
@@ -33,8 +32,7 @@ namespace StationeersWebApi.Controllers
 
             var devices = await Dispatcher.RunOnMainThread(() => DevicesModel.GetDevices(
                 prefabName: prefabName,
-                prefabHash: prefabHash,
-                displayName: displayName));
+                prefabHash: prefabHash));
             await context.SendResponse(HttpStatusCode.OK, devices);
         }
 

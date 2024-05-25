@@ -11,7 +11,7 @@ namespace StationeersWebApi.Models
 {
     public static class DevicesModel
     {
-        public static IList<JObject> GetDevices(string prefabName = null, long prefabHash = 0, string displayName = null)
+        public static IList<JObject> GetDevices(string prefabName = null, long prefabHash = 0)
         {
             // Devices can have duplicates in this list.
             var set = new HashSet<Device>();
@@ -27,20 +27,20 @@ namespace StationeersWebApi.Models
                     continue;
                 }
 
-                if (displayName != null && device.DisplayName != displayName)
-                {
-                    continue;
-                }
-
                 set.Add(device);
             }
             return set.Select(x => JsonTranslator.ObjectToJson(x)).ToList();
         }
 
-        public static IList<JObject> QueryDevices(DeviceQueryPayload query)
+        public static IList<JObject> QueryDevices(DeviceQueryPayload query, IList<Device> source = null)
         {
+            if (source == null)
+            {
+                source = Device.AllDevices;
+            }
+
             var set = new HashSet<Device>();
-            foreach (var device in Device.AllDevices)
+            foreach (var device in source)
             {
                 var hasReferenceId = query.referenceIds.Count == 0 || query.referenceIds.Contains(device.ReferenceId.ToString());
                 var hasName = query.prefabNames.Count == 0 || query.prefabNames.Contains(device.PrefabName);
