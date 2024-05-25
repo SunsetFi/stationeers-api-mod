@@ -22,7 +22,7 @@ namespace StationeersWebApi.Controllers
             await context.SendResponse(HttpStatusCode.OK, networks);
         }
 
-        [WebRouteMethod(Method = "GET", Path = "/:referenceId")]
+        [WebRouteMethod(Method = "GET", Path = ":referenceId")]
         public async Task GetCableNetwork(IHttpContext context, long referenceId)
         {
             Authenticator.VerifyAuth(context);
@@ -36,7 +36,7 @@ namespace StationeersWebApi.Controllers
             await context.SendResponse(HttpStatusCode.OK, network);
         }
 
-        [WebRouteMethod(Method = "GET", Path = "/:referenceId/devices")]
+        [WebRouteMethod(Method = "GET", Path = ":referenceId/devices")]
         public async Task GetCableNetworkDevices(IHttpContext context, long referenceId)
         {
             Authenticator.VerifyAuth(context);
@@ -50,7 +50,7 @@ namespace StationeersWebApi.Controllers
             await context.SendResponse(HttpStatusCode.OK, devices);
         }
 
-        [WebRouteMethod(Method = "POST", Path = "/:referenceId/devices/query")]
+        [WebRouteMethod(Method = "POST", Path = ":referenceId/devices/query")]
         public async Task QueryCableNetworkDevices(IHttpContext context, long referenceId, DeviceQueryPayload query)
         {
             Authenticator.VerifyAuth(context);

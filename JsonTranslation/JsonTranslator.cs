@@ -18,6 +18,7 @@ namespace StationeersWebApi.JsonTranslation
             var strategies = (from type in assembly.GetTypes()
                               where type.IsClass && type.GetCustomAttribute(payloadStrategyAttribute) != null
                               let strategy = CreateTranslatorStrategy(type)
+                              where strategy != null
                               select strategy).ToArray();
             JsonTranslator.strategies.AddRange(strategies);
 
@@ -26,15 +27,23 @@ namespace StationeersWebApi.JsonTranslation
 
         private static IJsonTranslatorStrategy CreateTranslatorStrategy(Type type)
         {
-            if (type.GetCustomAttribute(typeof(JsonTranslatorTargetAttribute)) != null)
+            try
             {
-                return AutoJsonTranslatorStrategy.FromInstance(Activator.CreateInstance(type));
+                if (type.GetCustomAttribute(typeof(JsonTranslatorTargetAttribute)) != null)
+                {
+                    return AutoJsonTranslatorStrategy.FromInstance(Activator.CreateInstance(type));
+                }
+                else if (type.GetInterfaces().Contains(typeof(IJsonTranslatorStrategy)))
+                {
+                    return (IJsonTranslatorStrategy)Activator.CreateInstance(type);
+                }
+                throw new Exception($"Cannot create translation strategy \"{type.FullName}\": Strategy must either be IJsonTranslatorStrategy or have a JsonTranslatorTargetAttribute.");
             }
-            else if (type.GetInterfaces().Contains(typeof(IJsonTranslatorStrategy)))
+            catch (Exception ex)
             {
-                return (IJsonTranslatorStrategy)Activator.CreateInstance(type);
+                Logging.LogError($"Failed to create translation strategy \"{type.FullName}\": {ex.Message}");
+                return null;
             }
-            throw new Exception($"Cannot create translation strategy \"{type.FullName}\": Strategy must either be IJsonTranslatorStrategy or have a JsonTranslatorTargetAttribute.");
         }
 
         public static JObject ObjectToJson(object target)

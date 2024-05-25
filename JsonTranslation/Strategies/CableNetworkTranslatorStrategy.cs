@@ -1,12 +1,11 @@
 
 using System.Linq;
 using Assets.Scripts.Networks;
-using Assets.Scripts.Objects.Pipes;
 
 namespace StationeersWebApi.JsonTranslation.Strategies
 {
     [JsonTranslatorStrategy]
-    [JsonTranslatorTarget(typeof(Device))]
+    [JsonTranslatorTarget(typeof(CableNetwork))]
     public sealed class CableNetworkJsonTranslatorStrategy
     {
         [JsonPropertyGetter("referenceId")]
@@ -15,8 +14,8 @@ namespace StationeersWebApi.JsonTranslation.Strategies
             return network.ReferenceId.ToString();
         }
 
-        [JsonPropertyGetter("connectedDeviceReferenceIds")]
-        public string[] GetConnectedDevices(CableNetwork network)
+        [JsonPropertyGetter("deviceReferenceIds")]
+        public string[] GetDevices(CableNetwork network)
         {
             return network.DeviceList.Select(x => x.ReferenceId.ToString()).ToArray();
         }

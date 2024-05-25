@@ -34,11 +34,34 @@ namespace StationeersWebApi.Server
             this.handler = method;
             this.Method = attr.Method;
 
-            this.Path = rootPath;
-            if (attr.Path != null)
+            if (!rootPath.StartsWith("/"))
             {
-                this.Path = System.IO.Path.Combine(this.Path, attr.Path).Replace("\\", "/");
+                rootPath = "/" + rootPath;
             }
+
+            if (rootPath.EndsWith("/"))
+            {
+                rootPath = rootPath.Substring(0, rootPath.Length - 1);
+            }
+
+            this.Path = rootPath;
+
+            var attrPath = attr.Path;
+            if (attrPath != null)
+            {
+                if (!attrPath.StartsWith("/"))
+                {
+                    attrPath = "/" + attrPath;
+                }
+
+                if (attrPath.EndsWith("/"))
+                {
+                    attrPath = attrPath.Substring(0, attrPath.Length - 1);
+                }
+
+                this.Path += attrPath;
+            }
+
             this.Priority = attr.Priority;
         }
 
